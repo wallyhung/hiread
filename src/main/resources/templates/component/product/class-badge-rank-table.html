@@ -1,0 +1,103 @@
+﻿<th:block th:fragment="class-badge-rank-table" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+        .honors-ranking-table{
+            width:49.6%;
+        }
+        .honors-ranking-table .layui-table{
+            /*margin:0;*/
+        }
+        .honors-ranking-table .layui-table tbody tr{
+            height:58px;
+        }
+        .honors-ranking-table .layui-table tr{
+            display: flex;
+            justify-content: space-around;
+        }
+        .honors-ranking-table .layui-table td{
+            display: flex;
+            align-items: center;
+
+        }
+        .honors-ranking-table .layui-table th{
+            padding:9px 0;
+            text-align: left;
+        }
+        .honors-ranking-table .layui-table td:nth-child(1),.honors-ranking-table .layui-table th:nth-child(1){
+            width:20%;
+            justify-content: center;
+        }
+        .honors-ranking-table .layui-table td:nth-child(2),.honors-ranking-table .layui-table th:nth-child(2){
+            width:60%;
+            justify-content: flex-start;
+            text-align: center;
+        }
+        .honors-ranking-table .layui-table td:nth-child(3),.honors-ranking-table .layui-table th:nth-child(3){
+            width:20%;
+            justify-content: flex-start;
+        }
+        .honors-ranking-table .head-portrait img{
+            margin-right:15px;
+        }
+    </style>
+    <template id="class-badge-rank-table-t">
+        <div class="honors-ranking-table">
+            <table class="layui-table" lay-even="" lay-skin="nob">
+                <colgroup>
+                    <col width="100">
+                    <col width="200">
+                    <col width="100">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th></th>
+                    <th v-if="type=='behavior'">学习习惯  Behavior</th>
+                    <th v-if="type=='academic'">学习成就  Academic</th>
+                    <th><img th:src="@{/img/honors_museum_gold_icon1.png}"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="index in badgeUsersIndex">
+                    <td><i class="honor-medal honor-medal12" :class="'honor-medal1'+(index>3?5:(index+2))"></i></td>
+                    <td class="head-portrait">
+                        <img :src="badgeUsers[index].avatarLink" v-if="badgeUsers&&badgeUsers[index]">
+                        <span v-if="badgeUsers&&badgeUsers[index]">{{badgeUsers[index].wxNickname}}</span>
+                    </td>
+                    <td class="three"><span v-if="badgeUsers&&badgeUsers[index]">X{{badgeUsers[index].badgeCount}}</span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </template>
+    <script>
+        Vue.component('class-badge-rank-table', {
+            props: ['badgeUsers','showMoreBadgeUsers','type'],
+            data: function () {
+                return {
+                }
+            },
+            template: '#class-badge-rank-table-t',
+            created: function () {
+            },
+            computed:{
+                badgeUsersIndex:function(){
+                    var count=4;
+                    if(this.showMoreBadgeUsers){
+                        count=10;
+                    }
+                    var arr=[];
+                    for(var i=0;i<count;i++){
+                        arr[i]=i;
+                    }
+                    return arr;
+                }
+            },
+            mounted: function () {
+            },
+            methods:{
+
+            },
+            watch: {
+            }
+        })
+    </script>
+</th:block>

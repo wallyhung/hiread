@@ -1,0 +1,38 @@
+﻿<!--依赖:<th:block th:include="common/head :: videojs"></th:block>-->
+<th:block th:fragment="product-audio">
+	<style>
+		/* Audio: Remove big play button (leave only the button in controls). */
+		.video-js.vjs-audio .vjs-big-play-button {
+			display: none;
+		}
+		/* Audio: Make the controlbar visible by default */
+		.video-js.vjs-audio .vjs-control-bar {
+			display: -webkit-box;
+			display: -webkit-flex;
+			display: -ms-flexbox;
+			display: flex;
+			background-color:#bbb;
+		}
+		/* Make player height minimum to the controls height so when we hide video/poster area the controls are displayed correctly. */
+		.video-js.vjs-audio {
+			min-height: 3em;
+		}
+	</style>
+	<template id="product-audio-t">
+		<audio :id="id" class="video-js vjs-default-skin" controls data-setup='{}'>
+			<source src="http://freshly-ground.com/data/audio/mpc/20090119%20-%20Untitled%20Groove.mp3" type='audio/mp3'/>
+		</audio>
+	</template>
+	<script>
+        Vue.component('product-audio',{
+            props:['id'],
+            template: '#product-audio-t',
+            mounted: function () {
+                videojs(this.id, {
+                    "aspectRatio": "1:0","fluid": true,"controlBar": {"fullscreenToggle": false}
+                },function(){
+                });
+            }
+        })
+	</script>
+</th:block>

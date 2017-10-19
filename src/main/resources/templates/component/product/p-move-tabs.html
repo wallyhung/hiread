@@ -1,0 +1,255 @@
+﻿<th:block th:fragment="p-move-tabs" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+        .p-move-tabs{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-content: center;
+        }
+        .mb-row{
+            display: flex;
+            justify-content: center;
+            margin-bottom:10px;
+        }
+        .mb-row.explain{
+            color:gray;
+        }
+        .mb-row.explain i{
+            color:black;
+            font-size: 1.2em;
+        }
+
+        .mb-row .mb-column{
+            display: flex;
+            width:20%;
+            margin:0 20px;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+        }
+
+        .mb-row.arranges .mb-column{
+            border: 2px solid #78c1a2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow:5px 3px 3px #9AD0BB;
+        }
+        .mb-row.opts .mb-column{
+            border: 2px solid #89bbee;
+            box-shadow:5px 3px 3px #89bbee;
+        }
+        .mb-row .column-content{
+            width: 100%;
+            height:100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #9f9f9f;
+            color:rgb(83,83,83);
+            border-radius: 10px;
+            /*transition:all 2s;*/
+            cursor:pointer;
+        }
+        .column-content.dragging{
+            width: 100%;
+            height:100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #9f9f9f;
+            color:rgb(83,83,83);
+            border-radius: 10px;
+        }
+        .mb-row .column-content.shadowing{
+            width:50%;
+            height:50%;
+
+        }
+        .shadowing-el{
+            background-color: #9f9f9f;
+            color:rgb(83,83,83);
+        }
+        .mb-row .column-content.dropping{
+            opacity: 0;
+        }
+        .p-move-tabs .mb-row .column-content{
+            background-color: white;
+
+        }
+        .mb-row .column-content img{
+            width:100%;
+            max-height: 100%;
+            border-radius: 8px;
+
+        }
+        .mb-row .column-content div{
+            width:100%;
+            height:100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px;
+            font-size:30px;
+        }
+        .p-move-tabs .all-success{
+            font-size:50px;
+            color:rgb(235,198,124);
+            text-align: center;
+            margin:30px 0;
+        }
+
+
+    </style>
+    <template id="p-move-tabs-t">
+        <div class="p-move-tabs">
+            <div v-if="dropTime!=practiseOpts.length">
+                <div class="mb-row arranges">
+                </div>
+                <div class="mb-row explain">
+                    <div class="explain">请拖动单词到匹配的图片 <i class="fa fa-hand-o-up"></i></div>
+                </div>
+                <div class="mb-row opts">
+                </div>
+            </div>
+            <div v-else class="all-success" >恭喜你全部匹配成功!</div>
+        </div>
+    </template>
+    <script>
+        Vue.component('p-move-tabs', {
+            props: ['practiseOpts','practiseId','submitted','answer'],
+            data: function () {
+                return {
+                    arranges:[],
+                    opts:[],
+                    dropTime:0
+                }
+            },
+            template: '#p-move-tabs-t',
+            created: function () {
+                var self=this;
+                hi.bus.$on('practise-reset',function(){
+                    self.init();
+
+                });
+            },
+            mounted: function () {
+                this.init();
+            },
+            computed:{
+            },
+            methods:{
+                init:function(){
+                    var self=this;
+                    _.each(this.practiseOpts,function(o){
+                        if(o.pair1Type=='img'){
+                            o.pair1ImgSrc=hi.root + "sys/file/img?type=img_practise_opt_pair1_img&id=" + o.id;
+                        }
+                        if(o.pair2Type=='img'){
+                            o.pair2ImgSrc=hi.root + "sys/file/img?type=img_practise_opt_pair2_img&id=" + o.id;
+                        }
+                    });
+                    this.arranges=_.sortBy(this.practiseOpts, [function(p) { return parseInt(p.sort); }]);
+                    this.opts=_.shuffle(this.practiseOpts);
+                    this.dropTime=0;
+                    this.$nextTick(function(){
+                        var arranges=$('.mb-row.arranges');
+                        arranges.html('');
+                        _.each(this.arranges,function(o,index){
+                            var c=null;
+                            if(o.pair1Type=='text'){
+                                c=$('<div>'+o.pair1+'</div>');
+                            }else if(o.pair1Type=='img'){
+                                c=$('<img src="'+o.pair1ImgSrc+'"/>');
+                            }
+                            var cc=$('<div style="order:1" class="column-content" data-id="'+o.id+'"></div>').append(c);
+                            var column=$('<div class="mb-column arg'+(index+1)+'" data-id="'+o.id+'"></div>');
+                            column.append(cc);
+                            arranges.append(column);
+                        });
+
+                        var opts=$('.mb-row.opts');
+                        opts.html('');
+                        _.each(this.opts,function(o,index){
+                            var c=null;
+                            if(o.pair2Type=='text'){
+                                c=$('<div>'+o.pair2+'</div>');
+                            }else if(o.pair2Type=='img'){
+                                c=$('<img src="'+o.pair2ImgSrc+'"/>');
+                            }
+                            var cc=$('<div style="order:2;background-color: #FBFDFE;" class="column-content can-move" data-id="'+o.id+'"></div>').append(c);
+                            var column=$('<div class="mb-column opt'+(index+1)+'" data-id="'+o.id+'"></div>');
+                            column.append(cc);
+                            opts.append(column);
+                        });
+
+                        $(".mb-row.arranges .mb-column").each(function(){
+                            $(this).height($(this).width());
+                        });
+                        $(".mb-row.opts .mb-column").each(function(){
+                            $(this).height($(this).width()/2);
+                        });
+                        var dragulaContainer=[];
+                        for(var i=0;i<this.practiseOpts.length;i++){
+                            var arg=document.querySelector('.arg'+(i+1));
+                            var opt=document.querySelector('.opt'+(i+1));
+                            dragulaContainer.push(arg);
+                            dragulaContainer.push(opt);
+                        }
+                        if(hi.drag){
+                            hi.drag.destroy();
+                        }
+                        hi.drag=dragula(dragulaContainer,{
+                            moves: function (el, container, handle) {
+                                if(self.submitted){
+                                    return false;
+                                }
+                                return el.classList.contains('can-move');
+                            },
+                            accepts:function(el, target, source, sibling){
+                                if($(target).attr('data-id')){
+                                    if($(el).attr('data-id')==$(target).attr('data-id')){
+                                        return true;
+                                    }
+                                }
+                                return false;
+                            }
+                        }).on('drag',function(el,source){
+                            $(el).addClass('dragging');
+                        }).on('shadow',function(el,container,source){
+                            $(el).parent().find('.column-content').addClass('shadowing');
+                        }).on('remove',function(el,container,source){
+                            $(el).removeClass('dragging');
+                            $('.column-content').removeClass('shadowing');
+                        }).on('out',function(el,container,source){
+                            $(el).removeClass('dragging');
+                            $('.column-content').removeClass('shadowing');
+                        }).on('cancel',function(el,container,source){
+                            $(el).removeClass('dragging');
+                            $('.column-content').removeClass('shadowing');
+                        }).on('drop',function(el,container,source){
+                            $(source).css('visibility','hidden');
+                            $(container).find('img').css('max-width','50%');
+                            $(container).find('.can-move').removeClass('can-move');
+                            //$(el).parent().find('.column-content').remove();
+                            self.dropTime++;
+                            self.$emit('play-audio','match');
+                            if(self.dropTime==self.practiseOpts.length){
+                                //hi.alert("恭喜你全部答对！");
+                                self.$emit('play-audio','all');
+                                self.$emit('submit');
+                            }
+                        });
+                    })
+
+                }
+            },
+            watch: {
+                practiseId:function(){
+                    this.init();
+                }
+            }
+        })
+    </script>
+</th:block>

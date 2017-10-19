@@ -1,0 +1,25 @@
+<th:block th:fragment="menu-left2" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+    </style>
+    <template id="menu-left2-tpl">
+        <div>
+            <div class="learning-title1">{{title}}</div>
+            <ul class="learning-nav">
+                <li><span class="learning-title4"><i class="fa fa-user"></i>{{items[0].name}}</span></li>
+                <li v-for="route in items[0].routes">
+                    <router-link :to="route.path" active-class="selected"><i class="fa" :class="route.icon"></i>{{route.label}}</router-link>
+                </li>
+                <li><span class="learning-title4"><i class="fa fa-address-book-o"></i>{{items[1].name}}</span></li>
+                <li v-for="route in items[1].routes">
+                    <router-link :to="route.path" active-class="selected"><i class="fa" :class="route.icon"></i>{{route.label}}</router-link>
+                </li>
+            </ul>
+        </div>
+    </template>
+    <script>
+        Vue.component('menu-left2', {
+            props: ['items', 'title'],
+            template: '#menu-left2-tpl'
+        })
+    </script>
+</th:block>

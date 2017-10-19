@@ -1,0 +1,385 @@
+﻿<th:block th:fragment="p-choice-question" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+        .choice-ts{position: absolute;right: 20px;top: 30px;}
+        .choice-btn{text-align: center;padding-top: 30px;}
+        .choice-title{text-align: center;padding: 50px 10% 0;}
+        .choice-title h4{font-size: 40px;line-height: 1.8em;}
+        .choice-title p{font-size: 16px;}
+
+        .choice-tm{text-align: center;padding: 50px 10px;}
+        .pt-b10{padding: 10px;}
+        .choice-tm-list{display: inline-block;border: solid 4px #eee;width: 430px;height: 320px;position: relative;cursor: pointer;color: #999;padding: 28px;margin: 0 10px;}
+        .choice-tm-content{font-size: 60px;line-height: 2em;background: #f6f6f6;height: 100%;}
+        .choice-tm-check{width: 100%;text-align: center;position: absolute;bottom: 50px;left: 0;font-size: 60px;line-height: 1em;}
+
+        .choice-tm-hover{border-color: #4bd37b;}
+        .choice-tm-hover .choice-tm-check{color: #4bd37b;}
+        .choice-tm-hover .choice-tm-content{color: #D62D40;}
+
+        .unit-practise .class-left-content .choice-title {
+            padding: 20px 50px 10px 50px;
+            text-align: center;
+        }
+        .unit-practise .class-left-content .choice-title .unit-question {
+            font-size: 1.8em;
+            line-height: 2em;
+        }
+
+        .unit-practise .class-left-content .choice-title .question-trans {
+            font-size: 1.3em;
+            line-height: 1.5em;
+        }
+        .unit-practise .class-left-content .choice-title.display-left {
+            text-align: left;
+        }
+
+        .unit-practise .class-left-content .choice-title.display-left .unit-question {
+            font-size: 1.3em;
+            line-height: 1.5em;
+        }
+
+        .unit-practise .class-left-content .choice-title.display-left .question-trans {
+            font-size: 1.3em;
+            line-height: 1.5em;
+        }
+
+        .unit-practise .choice-tm-hover .link-icon.link-icon-correct {
+            background: url(../..//img/img29.png) no-repeat;
+        }
+
+        .unit-practise .choice-tm-hover .link-icon.link-icon-wrong {
+            background: url(../../img/img30.png) no-repeat;
+        }
+
+
+        .p-cq .hi-choices{
+            display: flex;
+            flex-direction: column;
+            padding-left:50px;
+            padding-right:50px;
+            font-size:1.7em;
+            margin-bottom:30px;
+            align-items: center;
+        }
+        .p-cq .hi-choice{
+            display: flex;
+            justify-content: space-between;
+            padding:10px;
+            margin-top:10px;
+            background-color: rgb(250,250,250);
+            cursor:pointer;
+            width:80%;
+
+        }
+
+        .p-cq .hi-choice:hover{
+            background:rgb(170,95,134);
+            color:white;
+
+        }
+        .p-cq .hi-choice-selected{
+            background:rgb(170,95,134);
+            color:white;
+        }
+        .p-cq .hi-choice-selected.correct{
+             background:rgb(228,78,90);
+             color:white;
+         }
+        .p-cq .hi-choice-selected.notcorrect{
+            background:rgb(228,78,90);
+            color:white;
+        }
+        .p-cq .hi-choice-selected.correct{
+            background:rgb(139,193,74);
+            color:white;
+        }
+        .p-cq .choice-tm{
+            display: flex;
+            justify-content: center;
+            flex-flow: wrap;
+            padding-top:50px;
+        }
+        .p-cq .choice-tm-list:hover{
+            border-color: #4bd37b;
+        }
+        .p-cq .choice-tm-list{
+            width:23%;
+        }
+        .p-cq .choice-tm-content{
+            font-size: 1.6em;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .p-cq .choice-tm-content img{
+            height:100%;
+            width:100%;
+        }
+        .p-cq .choice-tm-check{
+            bottom:30px;
+        }
+
+        .p-cq .class-select {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .class-select p{
+            padding-bottom: 0;
+        }
+
+        .p-cq .class-select .opt-box{
+            display: flex;
+            justify-content: flex-start;
+            width:100%;
+            margin-bottom: 3px;
+        }
+        .p-cq .class-select .opt-box .opt-head{
+            width:5%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .p-cq .class-select .opt-box .opt-head em{
+            position: relative;
+        }
+        .p-cq .class-select .opt-box .opt-head em .opt-select-mark{
+            position: absolute;
+            width:26px;
+            height:26px;
+            top:-5px;
+            left:-5px;
+            border-radius: 50%;
+        }
+        .p-cq .class-select .opt-box .opt-head em.one .opt-select-mark{
+            border:2px solid #e24956;
+        }
+        .p-cq .class-select .opt-box .opt-head em.two .opt-select-mark{
+            border:2px solid #f6cd84;
+        }
+        .p-cq .class-select .opt-box .opt-head em.theer .opt-select-mark{
+            border:2px solid #34b0b0;
+        }
+        .p-cq .class-select .opt-box .opt-head em.four .opt-select-mark{
+            border:2px solid #89bbc6;
+        }
+        .p-cq .class-select .opt-box .opt-content{
+            display: flex;
+            width:95%;
+            transition: background .5s;
+            cursor:pointer;
+            position: relative;
+            border-radius: 6px;
+        }
+        .p-cq .class-select .opt-box .opt-content.active,.p-cq .class-select .opt-box .opt-content:hover{
+            background: #e1e1e1;
+            border-radius: 5px;
+        }
+        .p-cq .class-select .opt-box .opt-content-text{
+            width:100%;
+            padding-right:0;
+            display: inline-block;
+            padding: 0 10px;
+            line-height: 40px;
+
+            font-size: 22px;
+            color: #727171;
+        }
+        .p-cq .class-select .opt-box .wrong-mark{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width:5%;
+            opacity:0;
+            font-size:26px;
+            color:#EF8476;
+        }
+
+
+        .class-selectImg {
+            margin-top:20px;
+            position: relative;
+        }
+        .class-selectImg .main{
+            display: flex;
+            align-items: center;
+            padding:10px 11px 10px 10px;
+        }
+        .class-selectImg .row {
+            display: flex;
+            justify-content: center;
+        }
+        .class-selectImg img{
+            /*height:auto;*/
+        }
+        .class-selectImg .main,.class-selectImg .item a,.class-selectImg .active{
+            height:100%;
+        }
+        .class-selectImg .active{
+            border:4px solid rgb(137,201,151);
+            background: none;
+            border-radius:10px;
+        }
+        .class-judge{
+            width:auto;
+        }
+        /*.class-selectImg ul{*/
+            /*display: flex;*/
+            /*justify-content: space-between;*/
+        /*}*/
+        /*.class-selectImg ul li{*/
+            /*width:23%;*/
+        /*}*/
+        /*.class-selectImg li a {*/
+            /*width: 240px;*/
+            /*height: 140px;*/
+        /*}*/
+        /*.class-selectImg .main {*/
+            /*width: 200px;*/
+            /*height: 100px;*/
+            /*margin:0;*/
+        /*}*/
+        /*.class-selectImg img {*/
+            /*width: 200px;*/
+            /*height:100px;*/
+        /*}*/
+
+    </style>
+    <template id="p-choice-question-t">
+        <div class="p-cq">
+            <div class="class-select" v-show="optionsType=='text'">
+                <p  v-for="(opt,index) in computedOptions"
+                        class="opt-box"
+                        :key="opt.id"
+                        v-on:click="checkOptId(opt.id)">
+                    <span class="opt-head">
+                        <em class="one" v-if="index==0"><span class="opt-select-mark" v-if="opt.id==optIdChecked"></span></em>
+                        <em class="two" v-if="index==1"><span class="opt-select-mark" v-if="opt.id==optIdChecked"></span></em>
+                        <em class="theer" v-if="index==2"><span class="opt-select-mark" v-if="opt.id==optIdChecked"></span></em>
+                        <em class="four" v-if="index==3"><span class="opt-select-mark" v-if="opt.id==optIdChecked"></span></em>
+                    </span>
+
+                    <span class="opt-content" :class="{'active':opt.id==optIdChecked,'twink-bg':wrongMarkShow(opt.id)}">
+                        <span class="opt-content-text" >{{opt.option}}</span>
+                        <span class="wrong-mark twink-opacity" v-if="wrongMarkShow(opt.id)"><i class="fa fa-times"></i></span>
+                    </span>
+
+                </p>
+            </div>
+
+            <div class="class-selectImg" v-show="optionsType=='img'">
+                <div class="row">
+                    <div class="col-lg-3 col-md-3 col-sm-6"
+                         v-for="(opt,index) in computedOptions"
+                         :key="opt.id"
+                         v-on:click="checkOptId(opt.id)">
+                        <div class="item" :class="'item'+(index+1)">
+                            <a href="javascript:;">
+                                <div class="main" v-if="opt.optionType=='img'">
+                                    <img :src="optionImg(opt)" alt="">
+                                </div>
+                                <div class="main" v-if="opt.optionType=='text'">
+                                    <div >{{opt.option}}</div>
+                                </div>
+                                <div class="box active" v-show="opt.id==optIdChecked" :class="{'twink-bd':wrongMarkShow(opt.id)}"></div>
+                                <div class="wrong-mark twink-opacity" v-if="wrongMarkShow(opt.id)"><i class="fa fa-times"></i></div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+    <script>
+        Vue.component('p-choice-question', {
+            props: ['practiseOpts','submitted','answer','correct'],
+            data: function () {
+                return {
+                    optsBefore:null,
+                    wrongMarkToggle:false
+                }
+            },
+            template: '#p-choice-question-t',
+            created: function () {
+
+            },
+            mounted: function () {
+                this.init();
+            },
+            computed:{
+                optIdChecked:function(){
+                    if(this.answer&&this.answer[0]){
+                        return this.answer[0];
+                    }
+                    return '';
+                },
+                computedOptions:function(){
+                    if(!this.submitted){
+                        var correctOpt=_.find(this.practiseOpts,['correct','Yes']);
+                        var wrongOpts=_.differenceBy(this.practiseOpts,[{'correct':'Yes'}],'correct');
+                        wrongOpts=_.shuffle(wrongOpts);
+                        wrongOpts=_.slice(wrongOpts,0,3);
+                        var choices=_.concat(wrongOpts,correctOpt);
+                        choices=_.shuffle(choices);
+                        this.optsBefore=choices;
+                        return choices;
+                    }else{
+                        return this.optsBefore;
+                    }
+
+                },
+                optionsType:function(){
+                    var hasImg=_.some(this.computedOptions,function(o){
+                        if(o.optionType=='img'){
+                            return true;
+                        }
+                        return false;
+                    });
+                    if(hasImg){
+                        return 'img'
+                    }else{
+                        return 'text';
+                    }
+                }
+            },
+            methods:{
+                init:function(){
+                    var self=this;
+                    self.$nextTick(function(){
+                        if(self.optionsType=='img'){
+                            var w=$($('.class-selectImg .main')[0]).width();
+                            if(w){
+                                $('.class-selectImg .main').height(w);
+                            }
+                            w=$($('.class-selectImg .item a')[0]).width();
+                            if(w){
+                                $('.class-selectImg .item a').height(w);
+                            }
+                        }
+                    })
+                },
+                checkOptId: function (optId) {
+                    if(this.submitted){
+                        return;
+                    }
+                    this.$emit("answer",[optId]);
+                },
+                optionImg: function (v) {
+                    if(v){
+                        return hi.root + "sys/file/img?type=img_practise_opt_img&id=" + v.id;
+                    }
+                    return '';
+                },
+                wrongMarkShow:function(optId){
+                    return optId==this.optIdChecked&&this.submitted&&this.correct=='No';
+                },
+            },
+            watch: {
+                'practiseOpts':function(){
+                    this.init();
+                }
+            }
+        })
+    </script>
+</th:block>

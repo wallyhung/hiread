@@ -1,0 +1,134 @@
+body{
+    margin:0;
+    padding: 0;
+}
+.block{
+    display:block;
+}
+.none{
+    display:none;
+}
+.rd-video-container{
+    display: flex;
+    flex-direction: column;
+    font-size: .85rem;
+
+}
+.rd-video-container .rd-head{
+    height:2rem;
+    padding:.5rem 0rem .5rem;
+    background-color:black;
+    color:white;
+    font-size:1.5rem;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 99;
+}
+.rd-video-container .rd-content{
+    display: flex;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+
+}
+.rd-video-container .rd-content .rd-content-video,.rd-video-container .rd-content .rd-content-qs{
+    width: 70%;
+}
+.rd-video-container .rd-content .rd-content-qs{
+    padding-left:1.5rem;
+    padding-right:1.5rem;
+}
+.rd-video-container .rd-content .rd-content-qs .rd-q{
+    font-size:2rem;
+    margin-top:4rem;
+
+
+}
+.rd-video-container .rd-content .rd-content-qs .rd-choices{
+     font-size:1.8rem;
+     margin-top:3rem;
+     margin-left:3rem;
+}
+.rd-video-container .rd-content .rd-content-qs .rd-choice{
+     margin-top:1.3rem;
+ }
+.rd-video-container .rd-content .rd-content-qs .rd-qs-btns{
+    text-align: center;
+}
+.rd-video-container .rd-content .rd-content-qs .rd-qs-btns button{
+    margin:2rem;
+    font-size: 3rem;
+}
+
+.rd-video-container .rd-content .rd-assist{
+     width:30%;
+     background-color: rgb(255,254,243);
+     padding-top:3rem;
+    border-left:1px solid gray;
+}
+.rd-video-container .rd-content .rd-assist .rd-tab{
+    display: flex;
+
+}
+.rd-video-container .rd-content .rd-assist .rd-tab-sub{
+    width:50%;
+    border-right:1px solid gray;
+    border-bottom:1px solid gray;
+    text-align:center;
+    padding:1rem;
+    font-size: 2rem;
+    background-color: white;
+}
+.rd-video-container .rd-content .rd-assist .rd-tab-sub.active{
+    border-bottom: none;
+    background-color: rgb(255,254,243);
+}
+.rd-video-container .rd-content .rd-assist .rd-tab-content-sub{
+    padding:1rem;
+    font-size:1.2rem;
+}
+.rd-video-container .rd-content .rd-assist .rd-tab-content-sub .rd-row{
+    margin-bottom:1rem;
+    justify-content: space-between;
+    display: flex;
+}
+.rd-video-container .rd-content .rd-assist .rd-tab-content-sub .rd-link{
+    cursor:pointer;
+    color:cornflowerblue;
+
+}
+
+
+.rd-video-js.video-js{
+    background-color: rgb(71,71,71);
+
+}
+.rd-video-js .rd-qs-point{
+    position: absolute;
+    height: .3em;
+    top: 1.4em;
+    background-color: white;
+    width:1em;
+    border-radius: 0.2em;
+}
+/* Audio: Remove big play button (leave only the button in controls). */
+.video-js.vjs-audio .vjs-big-play-button {
+    display: none;
+}
+/* Audio: Make the controlbar visible by default */
+.video-js.vjs-audio .vjs-control-bar {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    background-color:#bbb;
+}
+/* Make player height minimum to the controls height so when we hide video/poster area the controls are displayed correctly. */
+.video-js.vjs-audio {
+    min-height: 3em;
+}

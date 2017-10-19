@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="common/head :: common-head"></th:block>
+</head>
+<body>
+
+<div id="register_step1" v-cloak class="h100">
+    <hi-header></hi-header>
+    <div class="register_step">
+        <ul>
+            <li>
+                <div class="step_img step_img_color">1</div>
+                <div class="step_text_ok">微信扫一扫</div>
+            </li>
+            <li>
+                <div class="register_dotted"></div>
+            </li>
+            <li>
+                <div class="step_img">2</div>
+                <div class="step_text_no">输入手机与密码</div>
+            </li>
+        </ul>
+    </div>
+    <div class="container login-wp">
+        <div id="wx_qrcode" style="text-align: center;">
+
+        </div>
+    </div>
+    <hi-footer></hi-footer>
+</div>
+<th:block th:include="common/head :: common"></th:block>
+<script th:src="@{/js/wechat/open/wx-login.js}"></script>
+<script th:src="@{/controller/user/register-step1.js}"></script>
+</body>
+</html>

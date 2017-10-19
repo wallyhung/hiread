@@ -1,0 +1,93 @@
+<th:block th:fragment="my-integral" xmlns:th="http://www.thymeleaf.org">
+    <style></style>
+    <template id="my-integral-tpl">
+        <div>
+            <div class="learning-title2">我的积分</div>
+            <div class="pt-30 clear-fix">
+                <div class="member-title">
+                    <span>当前可用积分：{{integral.validCount}}</span>
+                    <span>累计获取积分：{{integral.totalCount}}</span>
+                    <span>累计消费积分：{{integral.consumedCount}}</span>
+                </div>
+                <div class="layui-form pt-15">
+                    <table class="layui-table" lay-even="" lay-skin="nob">
+                        <thead>
+                        <tr>
+                            <th>日期</th>
+                            <th>积分</th>
+                            <th>类型</th>
+                            <th>备注</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="item in integral.items">
+                            <td>{{item.datecreated}}</td>
+                            <td>{{item.point}}</td>
+                            <td>{{item.eventType}}</td>
+                            <td>{{item.remark}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </template>
+    <script>
+        var layuiLayer = layui.layer;
+        // 定义路由组件
+        var MyIntegral = {
+            data: function () {
+                return {
+                    integral: {
+                        validCount: 0,
+                        totalCount: 0,
+                        consumedCount: 0,
+                        items: []
+                    }
+                }
+            },
+            template: '#my-integral-tpl',
+            created: function () {
+                this.getIntegral();
+            },
+            methods: {
+                /**
+                 * 获取积分
+                 */
+                getIntegral: function () {
+                    var vm = this;
+
+                    hi.ax.get('/user/vipcenter/my-integral/get')
+                        .then(function (response) {
+                            var sr = response.data;
+                            if(sr.status == 'success'){
+                                vm.integral= sr.entity;
+                                var item;
+                                for(var i = 0; i < vm.integral.items.length; i++){
+                                    item = vm.integral.items[i];
+                                    try{
+                                        item.datecreated = moment(item.datecreated.time).format('YYYY-MM-DD HH:mm:ss');
+                                    } catch (e){
+                                        item.datecreated = '-';
+                                    }
+                                }
+                            } else {
+                                layuiLayer.open({
+                                    content: '出错了'
+                                })
+                            }
+                        })
+                        .catch(function (error) {
+                            if (error.response) {
+                                console.log(error.response.status);
+                            } else if (error.request) {
+                                console.log(error.request);
+                            } else {
+                                console.log(error.message);
+                            }
+                        })
+                }
+            }
+        }
+    </script>
+</th:block>

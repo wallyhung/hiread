@@ -1,0 +1,75 @@
+﻿<th:block th:fragment="p-true-or-false" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+    .class-judge-bottom ul{
+        display: flex;
+        justify-content: center;
+    }
+    .class-judge-bottom li {
+        margin:0 40px;
+        position: relative;
+    }
+    .class-judge-bottom .judge-btn  {
+        display: inline-block;
+        width: 230px;
+        height: 170px;
+        cursor:pointer;
+    }
+
+
+    </style>
+    <template id="p-true-or-false-t">
+        <div class="p-true-or-false">
+            <div class="class-judge">
+                <div class="class-judge-bottom">
+                    <ul>
+                        <li v-on:click="checkAnswer('TRUE')" >
+                            <span class="btn-true last judge-btn"></span>
+                            <div class="wrong-box" v-if="questionResult=='TRUE'" :class="{'twink-bd':wrongMarkShow('TRUE')}"></div>
+                            <span class="wrong-mark twink-opacity" v-if="wrongMarkShow('TRUE')"><i class="fa fa-times"></i></span>
+                        </li>
+                        <li v-on:click="checkAnswer('FALSE')">
+                            <span class="btn-false judge-btn"></span>
+                            <div class="wrong-box" v-if="questionResult=='FALSE'" :class="{'twink-bd':wrongMarkShow('FALSE')}"></div>
+                            <span class="wrong-mark twink-opacity" v-if="wrongMarkShow('FALSE')"><i class="fa fa-times"></i></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </template>
+    <script>
+        Vue.component('p-true-or-false', {
+            props: ['practise','practiseId','submitted','correct','answer'],
+            data: function () {
+                return {
+                }
+            },
+            template: '#p-true-or-false-t',
+            created: function () {
+            },
+            mounted: function () {
+            },
+            computed:{
+                questionResult:function(){
+                    if(this.answer&&this.answer[0]){
+                        return this.answer[0];
+                    }
+                    return '';
+                }
+            },
+            methods:{
+                checkAnswer: function (result) {
+                    if(this.submitted){
+                        return;
+                    }
+                    this.$emit("answer",[result]);
+                },
+                wrongMarkShow:function(a){
+                    return a==this.questionResult&&this.submitted&&this.correct=='No';
+                }
+            },
+            watch: {
+            }
+        })
+    </script>
+</th:block>

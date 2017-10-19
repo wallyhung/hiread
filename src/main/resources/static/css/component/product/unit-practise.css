@@ -1,0 +1,35 @@
+
+.unit-practise .unit-question {
+    color: rgb(105, 105, 105);
+    font-size: 20px;
+}
+
+.unit-practise .answer-analysis {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    margin: 0px 50px 50px 50px;
+    background-color: rgb(229, 229, 229);
+}
+.unit-practise .class-left-content {
+    height: calc(100% - 150px);
+}
+.class-footer .pagination {
+    margin: 0;
+}
+.class-footer .button {
+    margin-top:5px;
+}
+.class-footer .btn {
+    width: 132px;
+    height: 45px;
+    margin-right: 6px;
+    padding: 0;
+    line-height: 45px;
+    font-size: 18px;
+}
+
+.class-footer {
+    padding: 5px 0;
+    height:100px;
+}

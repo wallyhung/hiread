@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="common/head :: common-head"></th:block>
+</head>
+<body>
+<th:block th:include="common/header :: header"></th:block>
+<div id="shopping-cart-process" v-cloak>
+    <hi-header></hi-header>
+    <transition name="fade">
+        <router-view></router-view>
+    </transition>
+    <hi-footer></hi-footer>
+</div>
+<th:block th:include="common/head :: common"></th:block>
+
+<script th:src="@{/service/regionService.js}"></script>
+<th:block th:include="component/layui/lu-checkbox :: lu-checkbox"></th:block>
+<th:block th:include="component/layui/lu-checkbox2 :: lu-checkbox2"></th:block>
+<th:block th:include="component/layui/lu-select :: lu-select"></th:block>
+<th:block th:include="component/order/select-province :: select-province"></th:block>
+<th:block th:include="component/order/select-city :: select-city"></th:block>
+<th:block th:include="component/order/select-area :: select-area"></th:block>
+<th:block th:include="order/shopping-cart :: shopping-cart"></th:block>
+<th:block th:include="order/shopping-cart-order :: shopping-cart-order"></th:block>
+<th:block th:include="order/shopping-cart-payment :: shopping-cart-payment"></th:block>
+<th:block th:include="order/shopping-cart-payment-success :: shopping-cart-payment-success"></th:block>
+<script>
+    const routes = [
+        {
+            path: '/shopping-cart',
+            component: shoppingCart
+        },
+        {
+            path: '/shopping-cart-order',
+            component: shoppingCartOrder
+        },
+        {
+            path: '/shopping-cart-payment',
+            component: shoppingCartPayment
+        },
+        {
+            path: '/shopping-cart-payment-success',
+            component: shoppingCartPaymentSuccess
+        }
+    ];
+    const router = new VueRouter({
+        routes: routes
+    })
+
+    var shoppingCartProcess = new Vue({
+        el: '#shopping-cart-process',
+        router: router,
+        data: {
+            routes: routes
+        }
+
+
+    });
+</script>
+<style>
+    .register_step {
+        padding-top: 0;
+    }
+    .cart-wp1 {
+        padding-top: 0;
+    }
+    .register_step ul, .change_step ul {
+        padding: 10px 30px 10px 30px;
+    }
+    .register_step ul, .change_step ul {
+        border-bottom: none;
+    }
+
+
+</style>
+</body>
+</html>

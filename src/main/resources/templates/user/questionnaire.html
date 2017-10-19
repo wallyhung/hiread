@@ -1,0 +1,230 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="common/head :: common-head"></th:block>
+</head>
+<body>
+<style>
+    .reading-select-top .text-box {
+        height: 50px !important;
+    }
+</style>
+<div id="questionnaire" v-cloak class="h100">
+    <div class="report-box" data-p='level'>
+        <div class="report-header">
+            <div class="report-header-wraper">
+                <div class="">
+                    <img th:src="@{/img/logo.png}">
+                    <span>学员信息完善</span>
+                </div>
+            </div>
+        </div>
+        <div class="report-wraper">
+            <div class="reading-level reading-level-select">
+                <ul>
+                    <li class="select-item" v-bind:class="currentQuestionNo == 1 ? 'select-on' : ''">
+                        <button class="btn btn-danger">1</button>
+                        <div class="reading-select-top">
+                            <div class="vspace2"></div>
+                            <div class="text-box">孩子所就读学校的类型？</div>
+                        </div>
+                        <div class="reading-select-center">
+                            <p><em>A</em><a href="javascript:;" v-on:click="radio('1', 'A')" :class="{active: answer.q1.active.A}">公立学校</a></p>
+                            <p><em>B</em><a href="javascript:;" v-on:click="radio('1', 'B')" :class="{active: answer.q1.active.B}">双语学校</a></p>
+                            <p><em>C</em><a href="javascript:;" v-on:click="radio('1', 'C')" :class="{active: answer.q1.active.C}">民办/私立学校</a></p>
+                            <p><em>D</em><a href="javascript:;" v-on:click="radio('1', 'D')" :class="{active: answer.q1.active.D}">国际部/国际学校</a></p>
+                        </div>
+                    </li>
+                    <li class="select-item" v-bind:class="currentQuestionNo == 2 ? 'select-on' : ''">
+                        <button class="btn btn-danger">2</button>
+                        <div class="reading-select-top">
+                            <div class="vspace2"></div>
+                            <div class="text-box">孩⼦在学校学了几年英语？（⾮培训机构）</div>
+                        </div>
+                        <div class="reading-select-center">
+                            <p><em>A</em><a href="javascript:;" v-on:click="radio('2', 'A')" :class="{active: answer.q2.active.A}">没开始学</a></p>
+                            <p><em>B</em><a href="javascript:;" v-on:click="radio('2', 'B')" :class="{active: answer.q2.active.B}">1年</a></p>
+                            <p><em>C</em><a href="javascript:;" v-on:click="radio('2', 'C')" :class="{active: answer.q2.active.C}">2年</a></p>
+                            <p><em>D</em><a href="javascript:;" v-on:click="radio('2', 'D')" :class="{active: answer.q2.active.D}">3年</a></p>
+                            <p><em>E</em><a href="javascript:;" v-on:click="radio('2', 'E')" :class="{active: answer.q2.active.E}">4年</a></p>
+                            <p><em>F</em><a href="javascript:;" v-on:click="radio('2', 'F')" :class="{active: answer.q2.active.F}">5年及以上</a></p>
+                        </div>
+                    </li>
+                    <li class="select-item" v-bind:class="currentQuestionNo == 3 ? 'select-on' : ''">
+                        <button class="btn btn-danger">3</button>
+                        <div class="reading-select-top">
+                            <div class="vspace2"></div>
+                            <div class="text-box">孩⼦子在课外培训机构学习了几年英语？</div>
+                        </div>
+                        <div class="reading-select-center">
+                            <p><em>A</em><a href="javascript:;" v-on:click="radio('3', 'A')" :class="{active: answer.q3.active.A}">0-1年</a></p>
+                            <p><em>B</em><a href="javascript:;" v-on:click="radio('3', 'B')" :class="{active: answer.q3.active.B}">1-2年</a></p>
+                            <p><em>C</em><a href="javascript:;" v-on:click="radio('3', 'C')" :class="{active: answer.q3.active.C}">2-3年</a></p>
+                            <p><em>D</em><a href="javascript:;" v-on:click="radio('3', 'D')" :class="{active: answer.q3.active.D}">3-4年</a></p>
+                            <p><em>E</em><a href="javascript:;" v-on:click="radio('3', 'E')" :class="{active: answer.q3.active.E}">4-5年</a></p>
+                            <p><em>F</em><a href="javascript:;" v-on:click="radio('3', 'F')" :class="{active: answer.q3.active.F}">5年以上</a></p>
+                        </div>
+                    </li>
+                    <li class="select-item" v-bind:class="currentQuestionNo == 4 ? 'select-on' : ''">
+                        <button class="btn btn-danger">4</button>
+                        <div class="reading-select-top">
+                            <div class="vspace2"></div>
+                            <div class="text-box">孩⼦子在课外培训机构每周英⽂文学习几个⼩小时？</div>
+                        </div>
+                        <div class="reading-select-center">
+                            <p><em>A</em><a href="javascript:;" v-on:click="radio('4', 'A')" :class="{active: answer.q4.active.A}">没学</a></p>
+                            <p><em>B</em><a href="javascript:;" v-on:click="radio('4', 'B')" :class="{active: answer.q4.active.B}">1小时</a></p>
+                            <p><em>C</em><a href="javascript:;" v-on:click="radio('4', 'C')" :class="{active: answer.q4.active.C}">2小时</a></p>
+                            <p><em>D</em><a href="javascript:;" v-on:click="radio('4', 'D')" :class="{active: answer.q4.active.D}">3小时</a></p>
+                            <p><em>E</em><a href="javascript:;" v-on:click="radio('4', 'E')" :class="{active: answer.q4.active.E}">4小时</a></p>
+                            <p><em>F</em><a href="javascript:;" v-on:click="radio('4', 'F')" :class="{active: answer.q4.active.F}">4小时以上</a></p>
+                        </div>
+                    </li>
+                    <li class="select-item" v-bind:class="currentQuestionNo == 5 ? 'select-on' : ''">
+                        <button class="btn btn-danger">5</button>
+                        <div class="reading-select-top">
+                            <div class="vspace2"></div>
+                            <div class="text-box">孩子课外接触较多的英文资源？（多选）</div>
+                        </div>
+                        <div class="reading-select-center">
+                            <p><em>A</em><a href="javascript:;" v-on:click="multiSelect('5', 'A')" :class="{active: answer.q5.active.A}">缺乏</a></p>
+                            <p><em>B</em><a href="javascript:;" v-on:click="multiSelect('5', 'B')" :class="{active: answer.q5.active.B}">英⽂儿歌／动画</a></p>
+                            <p><em>C</em><a href="javascript:;" v-on:click="multiSelect('5', 'C')" :class="{active: answer.q5.active.C}">英文原版书</a></p>
+                            <p><em>D</em><a href="javascript:;" v-on:click="multiSelect('5', 'D')" :class="{active: answer.q5.active.D}">英文新闻</a></p>
+                        </div>
+                    </li>
+                    <li class="select-item" v-bind:class="currentQuestionNo == 6 ? 'select-on' : ''">
+                        <button class="btn btn-danger">6</button>
+                        <div class="reading-select-top">
+                            <div class="vspace2"></div>
+                            <div class="text-box">孩子课外英语阅读材料？（多选）</div>
+                        </div>
+                        <div class="reading-select-center">
+                            <p><em>A</em><a href="javascript:;" v-on:click="multiSelect('6', 'A')" :class="{active: answer.q6.active.A}">没有阅读过课外原版书籍</a></p>
+                            <p><em>B</em><a href="javascript:;" v-on:click="multiSelect('6', 'B')" :class="{active: answer.q6.active.B}">英⽂绘本</a></p>
+                            <p><em>C</em><a href="javascript:;" v-on:click="multiSelect('6', 'C')" :class="{active: answer.q6.active.C}">英文初级章节书</a></p>
+                            <p><em>D</em><a href="javascript:;" v-on:click="multiSelect('6', 'D')" :class="{active: answer.q6.active.D}">英文原版小说</a></p>
+                        </div>
+                    </li>
+                    <li class="select-item" v-bind:class="currentQuestionNo == 7 ? 'select-on' : ''">
+                        <button class="btn btn-danger">7</button>
+                        <div class="reading-select-top">
+                            <div class="vspace2"></div>
+                            <div class="text-box">孩⼦阅读过哪些系列的书籍？（多选）</div>
+                        </div>
+                        <div class="reading-select-center">
+                            <p><em>A</em><a href="javascript:;" v-on:click="multiSelect('7', 'A')" :class="{active: answer.q7.active.A}">I can Read</a></p>
+                            <p><em>B</em><a href="javascript:;" v-on:click="multiSelect('7', 'B')" :class="{active: answer.q7.active.B}">Step into Reading</a></p>
+                            <p><em>C</em><a href="javascript:;" v-on:click="multiSelect('7', 'C')" :class="{active: answer.q7.active.C}">Oxford Reading Tree</a></p>
+                            <p><em>D</em><a href="javascript:;" v-on:click="multiSelect('7', 'D')" :class="{active: answer.q7.active.D}">Usborne Reading Collection</a></p>
+                            <p><em>E</em><a href="javascript:;" v-on:click="multiSelect('7', 'E')" :class="{active: answer.q7.active.E}">Magic Tree House</a></p>
+                            <p><em>F</em><a href="javascript:;" v-on:click="multiSelect('7', 'F')" :class="{active: answer.q7.active.F}">Junie B. Jones</a></p>
+                            <p><em>G</em><a href="javascript:;" v-on:click="multiSelect('7', 'G')" :class="{active: answer.q7.active.G}">Harry Potter</a></p>
+                            <p><em>H</em><a href="javascript:;" v-on:click="multiSelect('7', 'H')" :class="{active: answer.q7.active.H}">Others</a></p>
+                            <p><em></em><textarea v-model="answer.q7.value_addition"></textarea></p>
+                        </div>
+                    </li>
+                    <li class="select-item" v-bind:class="currentQuestionNo == 8 ? 'select-on' : ''">
+                        <button class="btn btn-danger">8</button>
+                        <div class="reading-select-top">
+                            <div class="vspace2"></div>
+                            <div class="text-box">孩⼦感兴趣的题材？（多选）</div>
+                        </div>
+                        <div class="reading-select-center">
+                            <p><em>A</em><a href="javascript:;" v-on:click="multiSelect('8', 'A')" :class="{active: answer.q8.active.A}">探险类</a></p>
+                            <p><em>B</em><a href="javascript:;" v-on:click="multiSelect('8', 'B')" :class="{active: answer.q8.active.B}">科技类</a></p>
+                            <p><em>C</em><a href="javascript:;" v-on:click="multiSelect('8', 'C')" :class="{active: answer.q8.active.C}">科普类</a></p>
+                            <p><em>D</em><a href="javascript:;" v-on:click="multiSelect('8', 'D')" :class="{active: answer.q8.active.D}">自然科学类</a></p>
+                            <p><em>E</em><a href="javascript:;" v-on:click="multiSelect('8', 'E')" :class="{active: answer.q8.active.E}">科幻故事类</a></p>
+                            <p><em>F</em><a href="javascript:;" v-on:click="multiSelect('8', 'F')" :class="{active: answer.q8.active.F}">校园生活类</a></p>
+                            <p><em>G</em><a href="javascript:;" v-on:click="multiSelect('8', 'G')" :class="{active: answer.q8.active.G}">文化类</a></p>
+                            <p><em>H</em><a href="javascript:;" v-on:click="multiSelect('8', 'H')" :class="{active: answer.q8.active.H}">其他</a></p>
+                            <p><em></em><textarea v-model="answer.q8.value_addition"></textarea></p>
+                        </div>
+                    </li>
+                    <li class="select-item" v-bind:class="currentQuestionNo == 9 ? 'select-on' : ''">
+                        <button class="btn btn-danger">9</button>
+                        <div class="reading-select-top">
+                            <div class="vspace2"></div>
+                            <div class="text-box">如果孩子有⾃学，或者其他学习情况，可在下方填写信息告诉我们（选填）</div>
+                        </div>
+                        <div class="reading-select-center">
+                            <p><em></em><textarea v-model="answer.q9"></textarea></p>
+                        </div>
+                    </li>
+                    <li class="select-item" v-bind:class="currentQuestionNo == 10 ? 'select-on' : ''">
+                        <button class="btn btn-danger">10</button>
+                        <div class="reading-select-top">
+                            <div class="vspace2"></div>
+                            <div class="text-box">填写孩子的真实信息</div>
+                        </div>
+                        <div class="information-box">
+                            <div class="information-main">
+                                <form class="layui-form layui-form-pane">
+                                    <div class="layui-form-item">
+                                        <div class="layui-input-inline">
+                                            <select-province v-model="answer.q10.province" ></select-province>
+                                        </div>
+                                        <div class="layui-input-inline" >
+                                            <select-city v-model="answer.q10.city" :province-id="answer.q10.province" ></select-city>
+                                        </div>
+                                        <div class="layui-input-inline" >
+                                            <select-area v-model="answer.q10.district" :city-id="answer.q10.city" ></select-area>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">英文名</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="title" autocomplete="off" placeholder="请输入英文名" class="layui-input" v-model="answer.q10.english_name">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">生日</label>
+                                        <lu-datepicker name="studBirthday"
+                                                       :value="answer.q10.birthday"
+                                                       v-on:click="changeBirthday">
+                                        </lu-datepicker>
+                                    </div>
+                                    <div class="layui-form-item" pane="">
+                                        <label class="layui-form-label">性别</label>
+                                        <lu-radio :value="answer.q10.gender"
+                                                  :options="sexOptions"
+                                                  value-key="value"
+                                                  text-key="label"
+                                                  v-on:click="changeSex">
+                                        </lu-radio>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <div class="reading-select-bottom">
+                    <div class="clearfix">
+                        <a href="javascript:;" class="btn btn-default" v-on:click="prevQuestion" v-if="currentQuestionNo >= 2 && currentQuestionNo <= 10">上一题<i class="fa fa-long-arrow-left"></i></a>
+                        <a href="javascript:;" class="btn btn-default" v-on:click="nextQuestion" v-if="currentQuestionNo >= 1 && currentQuestionNo < 10">下一题<i class="fa fa-long-arrow-right"></i></a>
+                        <a href="javascript:;" class="btn btn-default" v-on:click="submit" v-if="currentQuestionNo == 10">完成</a>
+                    </div>
+                    <div class="vspace2"></div>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="2" aria-valuemin="0" aria-valuemax="100" v-bind:style="{minWidth: '2em', width: processPercentage}">
+                            {{processPercentage}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:include="common/head :: common"></th:block>
+<script th:src="@{/service/regionService.js}"></script>
+<th:block th:include="component/layui/lu-select :: lu-select"></th:block>
+<th:block th:include="component/order/select-province :: select-province"></th:block>
+<th:block th:include="component/order/select-city :: select-city"></th:block>
+<th:block th:include="component/order/select-area :: select-area"></th:block>
+<th:block th:include="component/layui/lu-datepicker :: lu-datepicker"></th:block>
+<th:block th:include="component/layui/lu-radio :: lu-radio"></th:block>
+<link rel="stylesheet" th:href="@{/css/user/questionnaire.css}">
+<script th:src="@{/controller/user/questionnaire.js}"></script>
+</body>
+</html>

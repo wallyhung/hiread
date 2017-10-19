@@ -1,0 +1,314 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="common/head :: common-head"></th:block>
+</head>
+<body class="report-box">
+<div id="app-reading-level" v-cloak class="class h100" >
+    <div class="" v-on:keyup.enter="pressEnter($event)" tabindex="5000">
+        <div class="report-header">
+            <div class="report-header-wraper">
+                <div class="">
+                    <img th:src="@{/img/logo.png}" v-on:click="toIndex()">
+                    <span>HIREAD阅读水平测试</span>
+                </div>
+            </div>
+        </div>
+        <div class="report-wraper">
+            <div class="reading-level" v-if="testings&&testingStage=='info'">
+                <button class="btn btn-danger">阅读水平测试</button>
+                <div class="reading-level-top">
+                    <div class="vspace" style="height: 80px;"></div>
+                    <h3>请完成HiRead测试，以便您准确了解孩子当前的英文阅读水平</h3>
+                    <p>本次测评需要<span class="color-green">15-20</span>分钟，包含<span class="color-green">{{testings.length}}道</span>单选题。请让您的孩子在安静的环境中，耐心、独立完成测试。为了体现真实水平，请家长不要参与答题，并且不要在做题过程中使用词典等辅助工具。完成评测后，系统将根据结果自动推荐个性化阅读书目。</p>
+                </div>
+                <div class="reading-level-center">
+                    <img th:src="@{/img/reading_level_cw.png}">
+                    <span>想知道您的HiRead阅读水平吗？</span>
+                </div>
+                <div class="reading-level-bottom">
+                    <a href="javascript:;" class="btn btn-default" v-on:click="later">以后再说</a>
+                    <a href="javascript:;" class="btn btn-default btn-start" v-on:click="beginTesting">开始测试</a>
+                </div>
+            </div>
+
+            <div class="reading-level reading-level-select" v-if="testingStage=='begin'&&testing">
+                <ul>
+                    <li class="select-item select-on">
+                        <button class="btn btn-danger">{{testingIndex+1}}</button>
+                        <div class="reading-select-top">
+                            <template v-if="testing.questionFile=='No'">
+                                <div class="vspace2"></div>
+                                <div class="text-box" >
+                                    <div v-html="lineBreakText(testing.question)"></div>
+                                </div>
+                            </template>
+                            <template v-if="testing.questionFile=='Image'||testing.questionFile=='Video'">
+                                <div class="question-box">
+                                    <p class="txt-box" v-html="lineBreakText(testing.question)"></p>
+                                    <div class="img-box">
+                                        <img :src="questionImgSrc()" v-if="testing.questionFile=='Image'">
+                                        <normal-video v-if="testing.questionFile=='Video'"
+                                                      :video-src="questionVideoSrc()"
+                                                      :autoplay="true"
+                                                      type="video"
+                                                      width="300"
+                                        ></normal-video>
+                                    </div>
+                                </div>
+                            </template>
+                            <template v-if="testing.questionFile=='Audio'">
+                                <div class="question-box">
+                                    <p class="txt-box">Listen and answer the question. (音频只能播放两遍哦,请认真听)</p>
+                                    <div class="img-box-audio" >
+                                        <div class="audio-main" id="readingLevelAudio">
+                                            <normal-audio
+                                                    v-if="audioTimes<2"
+                                                    :video-src="questionAudioSrc()"
+                                                    :disable-progress="true"
+                                                    :autoplay="true"
+                                                    type="audio"
+                                                    width="500"
+                                                    v-on:video-ended="onAudioEnd"
+                                            ></normal-audio>
+                                            <div v-else class="audio-disable-text">
+                                                音频只能播放两遍
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p class="txt-box" v-html="lineBreakText(testing.question)"></p>
+                                </div>
+                            </template>
+                        </div>
+                        <div class="reading-select-center">
+                            <p v-if="testing.choiceA">
+                                <em class="one"><span class="opt-select-mark" v-if="testingAnswer=='A'"></span></em>
+                                <a href="javascript:;" v-on:click="selectAnswer('A')" :class="{'active':testingAnswer=='A'}">
+                                    <span v-for="line in testing.choiceA.split('\n')">{{line}}</span>
+                                </a>
+                            </p>
+                            <p v-if="testing.choiceB">
+                                <em class="two"><span class="opt-select-mark" v-if="testingAnswer=='B'"></span></em>
+                                <a href="javascript:;" v-on:click="selectAnswer('B')" :class="{'active':testingAnswer=='B'}">
+                                    <span v-for="line in testing.choiceB.split('\n')">{{line}}</span>
+                                </a>
+                            </p>
+                            <p v-if="testing.choiceC">
+                                <em class="theer"><span class="opt-select-mark" v-if="testingAnswer=='C'"></span></em>
+                                <a href="javascript:;" v-on:click="selectAnswer('C')" :class="{'active':testingAnswer=='C'}">
+                                    <span v-for="line in testing.choiceC.split('\n')">{{line}}</span>
+                                </a>
+                            </p>
+                            <p v-if="testing.choiceD">
+                                <em class="four"><span class="opt-select-mark" v-if="testingAnswer=='D'"></span></em>
+                                <a href="javascript:;" v-on:click="selectAnswer('D')" :class="{'active':testingAnswer=='D'}">
+                                    <span v-for="line in testing.choiceD.split('\n')">{{line}}</span>
+                                </a>
+                            </p>
+                        </div>
+                    </li>
+                </ul>
+                <div class="reading-select-bottom">
+                    <div class="clearfix">
+                        <a href="javascript:;" class="btn btn-default" v-on:click="next" v-if="testingIndex<testings.length-1">下一题<i class="fa fa-long-arrow-right"></i></a>
+                        <a href="javascript:;" class="btn btn-default" v-on:click="finish" v-if="testingIndex==testings.length-1">完成</a>
+                    </div>
+                    <div class="vspace2"></div>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="2" aria-valuemin="0" aria-valuemax="100" :style="{'width':testingPercent+'%'}">
+                            {{testingPercent}}%
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="report-main" v-if="testingStage=='end'&&testingReport">
+                <button class="btn btn-danger">测试报告</button>
+                <div class="report-main-top">答题正确率：<span>{{testingReport.correctPercent}}%</span></div>
+                <div class="report-main-center">
+                    <h3>恭喜你完成了HIREAD阅读测试！ 阅读难度为<span class="rank-text">{{testingRecommendRanksText}}</span>的读物最适合您哦！</h3>
+                    <p>温馨小提示： 有研究表明，孩子从相对比较简单的书目开始学习，更有利于提高阅读兴趣，培养长期坚持阅读的习惯。</p>
+                </div>
+                <div class="report-main-bottom">
+                    <h3>推荐读物</h3>
+                    <ul>
+                        <li v-for="p in testingReport.recommendProducts">
+                            <div class="imgbox">
+                                <img :src="getProductIconSrc(p.id)" alt="" class="pic" v-on:click="toProduct(p.id)">
+                                <img :src="getLevelSrc(p.hireadRank)" class="icon">
+                            </div>
+                            <p>{{p.bookName}}</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<th:block th:include="common/head :: common"></th:block>
+<style>
+    .report-box{
+        height:auto;
+    }
+    .report-header img{
+        cursor:pointer;
+    }
+    .reading-select-top p span{
+        display: block;
+        line-height:30px;
+    }
+    .reading-select-center a{
+        heigth:40px;
+    }
+    .reading-select-center a span{
+        display: block;
+    }
+    .reading-select-top .text-box{
+        width:80%;
+    }
+    .reading-select-top .txt-box{
+        line-height:24px;
+        font-size:16px;
+    }
+
+    .reading-select-top .question-box{
+        width:80%;
+        margin:0 auto;
+    }
+    .reading-select-top .question-box .txt-box{
+        padding:30px 0;
+    }
+    .reading-select-top .img-box-audio{
+        margin:0;
+        height:50px;
+    }
+    .reading-select-top .img-box{
+        height:auto;
+    }
+    .reading-select-top .img-box-audio{
+        width:500px;
+        padding:10px;
+    }
+    .reading-select-top .img-box-audio .audio-disable-text{
+        font-size:15px;
+        line-height:30px;
+
+    }
+    .reading-select-top .audio-main{
+        height:auto;
+        line-height: inherit;
+    }
+    .audio-main .video-js{
+        background-color: #f9f9f9;
+    }
+    .audio-main .video-js{
+        background-color: #89bbc6;
+    }
+    .audio-main .video-js .vjs-control-bar,.audio-main .video-js .vjs-control-bar{
+        background-color: #89bbc6;
+    }
+    .reading-select-center {
+        padding:0;
+        margin: 30px auto;
+        width: 80%;
+    }
+    .reading-select-center em .opt-select-mark{
+        position: absolute;
+        width:26px;
+        height:26px;
+        top:-5px;
+        left:-5px;
+        border-radius: 50%;
+    }
+    .reading-select-center em.one .opt-select-mark{
+        border:2px solid #e24956;
+    }
+    .reading-select-center em.two .opt-select-mark{
+        border:2px solid #f6cd84;
+    }
+    .reading-select-center em.theer .opt-select-mark{
+        border:2px solid #34b0b0;
+    }
+    .reading-select-center em.four .opt-select-mark{
+        border:2px solid #89bbc6;
+    }
+    .reading-select-center a{
+        line-height:30px;
+    }
+    .reading-select-center em{
+        top:7px;
+    }
+
+    .report-main-top {
+        height: 237px;
+        line-height: 237px;
+        background-position-y: 30px;
+    }
+    .report-main-center{
+        width:80%;
+        margin:0 auto;
+    }
+    .report-main-center h3 {
+        height: 62px;
+        line-height: 62px;
+        background-color: white;
+        font-size: 14px;
+    }
+    .report-main-center p {
+        line-height: 60px;
+        background-color: #66cacd;
+        color:black;
+        font-size: 14px;
+    }
+    .report-main-bottom ul{
+        padding-left:130px;
+        text-align: left;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+    .report-main-bottom .imgbox{
+        height:146px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border:1px solid #66cacd;
+        border-radius:5px;
+        cursor:pointer;
+    }
+    .report-main-bottom .pic {
+        max-width: 100%;
+        max-height: 100%;
+        width:auto;
+    }
+    .report-main-bottom p{
+        padding: 15px 0;
+        font-size: 15px;
+    }
+    .rank-text{
+        font-size:18px;
+        color:#66cacd;
+        padding-left:2px;
+        padding-right:2px;
+    }
+    .reading-level-bottom .btn-start{
+        background-color: #66cacd;
+        color:white;
+    }
+    .reading-level-bottom .btn-start:hover{
+        background-color: #32979A;
+        color:white;
+    }
+
+
+
+</style>
+<th:block th:include="common/head :: videojs"></th:block>
+<th:block th:include="component/product/normal-video :: normal-video"></th:block>
+<th:block th:include="component/product/normal-audio :: normal-audio"></th:block>
+<script th:src="@{/controller/user/testing/reading-level.js}"></script>
+</body>
+</html>

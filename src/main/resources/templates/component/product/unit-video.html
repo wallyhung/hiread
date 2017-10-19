@@ -1,0 +1,300 @@
+﻿<!--依赖:<th:block th:include="common/head :: videojs"></th:block>-->
+<th:block th:fragment="unit-video">
+    <style>
+        .rd-video-js.video-js {
+            background-color: rgb(71, 71, 71);
+
+        }
+
+        .rd-video-js .rd-practise-point {
+            position: absolute;
+            height: .3em;
+            top: 2.4em;
+            background-color: white;
+            width: 1em;
+            border-radius: 0.2em;
+        }
+        .rd-video-js .vjs-control-bar,.rd-video-js .vjs-control{
+            height:5em;
+        }
+        /*播放*/
+        .rd-video-js .vjs-play-control:before{
+            font-size:3em;
+            line-height:1.35em;
+        }
+        .rd-video-js .vjs-play-control{
+            width:8em;
+            border-radius: 1em;
+            margin-top:.5em;
+            margin-bottom:.5em;
+            margin-left:1.5em;
+            height:4em;
+            margin-right:2.5em;
+        }
+        .rd-video-js .vjs-play-control:hover {
+            background: #D62D40;
+        }
+        /*音量*/
+        .rd-video-js .vjs-menu-button-inline:before{
+            line-height:2.8em;
+        }
+        .rd-video-js .vjs-volume-bar{
+            margin-top:2.35em;
+        }
+        /*时间*/
+        .rd-video-js .vjs-time-control{
+            line-height:5em;
+        }
+        /*进度条*/
+        .rd-video-js .vjs-progress-holder{
+            height:.5em;
+        }
+        .rd-video-js .vjs-play-progress:before{
+            top: -0.25em;
+            font-size: 1.2em;
+        }
+        .rd-video-js .vjs-fullscreen-control:before{
+            line-height:2.8em;
+        }
+        .rd-video-js .vjs-slider {
+            margin-left: 0;
+        }
+
+
+    </style>
+    <template id="unit-video-t">
+        <video :id="id"
+               ref="video"
+               class="rd-video-js video-js vjs-big-play-centered"
+               preload="auto"
+               controls
+               x5-video-player-type="h5"
+               x5-video-player-fullscreen="true"
+               playsinline="true"
+               webkit-playsinline="true" >
+        </video>
+
+    </template>
+    <script>
+        Vue.component('unit-video', {
+            props: ['id','unit'],
+            mixins:[hi.mixin],
+            data:function(){
+              return {
+                  player:null,
+                  currentTimeI:-1,
+                  manuset:false,
+                  lastPaused:-1,
+                  duration:0
+              }
+            },
+            template: '#unit-video-t',
+            computed:{
+                practises:  function(){
+                    var practises=_.differenceBy(this.unit.practises,[{'computedSec':-1}] ,'computedSec');
+                    return _.sortBy(practises,['computedSec','sequence']);
+                },
+                practisesDone:function(){
+                    return _.filter(this.practises,['practiseDone',true]);
+                },
+                practiseUndone:function(){
+                    var self=this;
+                    return _.find(self.practises,function(p){
+                        var pid=p.id;
+                        var practiseDone=self.practisesDone.some(function(pd){
+                            return pd.id==pid;
+                        });
+                        return !practiseDone;
+                    });
+                },
+                unitHints:function(){
+                    var hints=_.differenceBy(this.unit.unitHints,[{'computedSec':-1}] ,'computedSec');
+                    return _.sortBy(hints,['computedSec']);
+                },
+                unitAudios:function(){
+                    var hints=_.differenceBy(this.unit.unitAudios,[{'computedSec':-1}] ,'computedSec');
+                    return _.sortBy(hints,['computedSec']);
+                }
+            },
+            created:function(){
+                var self=this;
+                hi.bus.$on("practise-continue",function(){
+                    self.player.play();
+                });
+                hi.bus.$on("section-select",function(sec){
+                    self.manuset=true;
+                    self.player.currentTime(sec);
+                    self.player.play();
+                });
+                hi.bus.$on("video-pause",function(sec){
+                    self.player.pause();
+                });
+            },
+            mounted: function () {
+                var that = this;
+                var player = videojs(this.id, {
+                    controlBar: true,
+                    nativeControlsForTouch: false,
+                }, function () {
+                    this.hotkeys({
+                            volumeStep: 0.1,
+                            seekStep: 5,
+                            enableMute: true,
+                            enableFullscreen: true,
+                            enableNumbers: false,
+                            enableVolumeScroll: false});
+
+                });
+                hi.ax.post('/sys/file/sec').then(function(r){
+                    var e=r.data.entity;
+                    player.src(hi.root+"sys/file/video?type=video_unit&id="+that.unit.id+"&t="+e.id);
+                });
+
+                player.poster(hi.root+"sys/file/img?type=img_product&id="+this.unit.productId);
+                that.player=player;
+
+                $("#"+this.id).find('video').on('touchstart',function(e){
+                    if(that.player&&that.player.hasStarted()){
+                        if(that.player.paused()){
+                            that.player.play();
+                        }else{
+                            that.player.pause();
+                        }
+                    }
+                });
+
+                var width = $("#" + that.id).parent().width();
+                var height = $("#" + that.id).parent().height();
+                player.width(width).height(height);
+                //practises在进度条上渲染
+                player.one('loadedmetadata', function () {
+                    var dur = player.duration();
+                    var controlBar = player.getChild('ControlBar');
+//                    var fullscreen = controlBar.getChild('fullscreenToggle');
+//                    fullscreen.hide();
+//                    var volumeMenuButton = controlBar.getChild('volumeMenuButton');
+//                    volumeMenuButton.hide();
+                    var progressControl = controlBar.getChild('progressControl');
+                    var contentEl = progressControl.contentEl();
+
+                    for (var i = 0; i < that.practises.length; i++) {
+                        var practise = that.practises[i];
+                        var secC=practise.computedSec;
+                        if(secC<0||secC>dur){
+                            continue;
+                        }
+                        var per = parseInt((secC / dur) * 100);
+                        var style='left:'+per+'%';
+                        if(per==100){
+                            style='right:0';
+                        }
+                        var practiseEle = $("<div class='rd-practise-point' style='"+style+"' id='" + practise.id + "'></div>");
+                        $(contentEl).append(practiseEle);
+                    }
+
+                });
+                player.on('play',function(){
+                    //hi.bus.$emit('audio-pause');
+                    that.$emit('unit-audio-id-change','');
+                    that.$emit('video-play');
+                });
+                player.on('pause',function(){
+                    that.$emit('video-pause');
+                });
+                player.on('ended',function(){
+                    //hi.bus.$emit('audio-pause');
+                    that.$emit('video-ended');
+                });
+                player.on('error', function(event,a){
+                    var ed=player.getChild('ErrorDisplay');
+                    var msg="";
+                    var code=player.error().code;
+                    if(code==4){
+                        msg="媒体加载失败,请检查您的网络连接是否正常";
+                    }else if(code==3){
+                        msg="视频加载失败,请检查您的网络连接是否正常";
+                    }
+                    var fill=$('<div><span>'+msg+'</span><a class="refresh-btn" href="javascript:location.reload()">点击重试</a></div>');
+                    ed.fillWith(fill[0]);
+                });
+                player.on('timeupdate', function () {
+                    //初次跳不处理
+                    if(player.currentTime()==0){
+                        return;
+                    }
+                    //手动设置不处理
+                    if(self.manuset){
+                        self.manuset=true;
+                        return;
+                    }
+
+                    var currentTime = player.currentTime();
+                    var currentTimeI=hi.round(currentTime,0);
+                    //间隔小于1秒不处理
+                    if(currentTimeI==that.currentTimeI){
+                        return;
+                    }
+                    that.currentTimeI=currentTimeI;
+                    if(that.unit.pauseList){
+                        _.forEach(that.unit.pauseList,function(pause){
+                            if(pause==currentTimeI){
+                                that.player.pause();
+                                return false;
+                            }
+                        });
+                    }
+                    _.forEach(that.practises,function(p){
+                        if(p.computedSec==currentTimeI){
+                            that.player.pause();
+                            that.$emit('practise-id-change',p.id);
+                            that.$emit('video-show-change',false);
+                            that.$emit('practise-show-change',true);
+                            return false;
+                        }
+                    });
+                    if(that.practiseUndone&&(currentTimeI>that.practiseUndone.computedSec)){
+                        that.player.pause();
+                        that.manuset=true;
+                        that.player.currentTime(that.practiseUndone.computedSec);
+                        that.$emit('practise-id-change',that.practiseUndone.id);
+                        that.$emit('video-show-change',false);
+                        that.$emit('practise-show-change',true);
+//                        if(currentTimeI-that.practiseUndone.computedSec>1){
+//                            that.$alert('您有题目尚未完成', '提示', {
+//                                confirmButtonText: '确定'
+//                            });
+//                        }
+
+
+                    }
+                    if(that.unitHints){
+                        var hintId='';
+                        _.each(that.unitHints,function(h){
+                            if(currentTimeI>=h.computedSec&&currentTimeI<=h.computedSecEnd){
+                                hintId=h.id;
+                                return false;
+                            }
+                        });
+                        if(hintId){
+                            that.$emit('unit-hint-id-change',hintId);
+                        }
+
+                    }
+                    if(that.unitAudios){
+                        _.each(that.unitAudios,function(a){
+                            if(currentTimeI==a.computedSec){
+                                that.player.pause();
+                                that.$emit('unit-audio-id-change',a.id);
+                                return false;
+                            }
+                        });
+
+                    }
+
+                });
+            },
+            methods:{
+            }
+        })
+    </script>
+</th:block>

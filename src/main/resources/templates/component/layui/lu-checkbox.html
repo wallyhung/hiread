@@ -1,0 +1,34 @@
+﻿<th:block th:fragment="lu-checkbox" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+    </style>
+    <template id="lu-checkbox-t">
+        <div class="layui-unselect layui-form-checkbox"
+             :class="{'layui-form-checked':value}"
+             v-on:click="input"
+             lay-skin="primary">
+            <span v-if="text">{{text}}</span>
+            <i class="layui-icon">&#10003</i>
+        </div>
+    </template>
+    <script>
+        Vue.component('lu-checkbox', {
+            props:['value','text'],
+            data: function () {
+                return {
+                }
+            },
+            template: '#lu-checkbox-t',
+            created: function () {
+            },
+            mounted: function () {
+            },
+            methods:{
+                input:function(){
+                    this.$emit('input', !this.value);
+                }
+            },
+            watch: {
+            }
+        })
+    </script>
+</th:block>

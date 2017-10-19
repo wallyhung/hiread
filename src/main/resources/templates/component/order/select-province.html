@@ -1,0 +1,37 @@
+﻿<!--依赖regionService-->
+<th:block th:fragment="select-province" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+    </style>
+    <template id="select-province-t">
+        <lu-select :options="provinces"
+                   value-key="id"
+                   text-key="name"
+                   placeholder="省"
+                   verify="required"
+                   :value="value"
+                   v-on:input="input" ></lu-select>
+    </template>
+    <script>
+        var comSelectProvince=Vue.component('select-province', {
+            props:['value'],
+
+            template: '#select-province-t',
+            created: function () {
+            },
+            mounted: function () {
+            },
+            methods:{
+                input:function(v){
+                    this.$emit('input',v);
+                }
+            },
+            watch: {
+            },
+            data: function () {
+                return {
+                    provinces:hi.regionService.provinces
+                }
+            }
+        })
+    </script>
+</th:block>

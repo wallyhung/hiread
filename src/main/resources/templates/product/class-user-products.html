@@ -1,0 +1,123 @@
+﻿<th:block th:fragment="class-user-products" xmlns:th="http://www.w3.org/1999/xhtml">
+    <template id="class-user-products-t">
+        <div class="main class-my-list">
+            <div class="title">课程列表</div>
+            <div v-if="loading"></div>
+            <div v-else class="clear-fix">
+                <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                    <ul class="layui-tab-title layui-tab-title1">
+                        <li class="layui-this">正在学习</li>
+                        <li>已完成的</li>
+                        <li>试听过的</li>
+                    </ul>
+                    <div class="layui-tab-content">
+                        <div class="layui-tab-item layui-show">
+                            <div class="row clear-fix">
+                                <div class="col-md-4" v-for="up in userProducts" v-on:click="toUserProduct(up.id)" style="cursor: pointer;">
+                                    <div class="course-item">
+                                        <div class="course-img" >
+                                            <img :src="getProductIconSrc(up.product.id)" alt="" class="img-responsive transform" >
+                                        </div>
+                                        <div class="course-info">
+                                            <div class="title">{{up.product.prodName}}</div>
+                                            <div class="metas clearfix">
+                                                <div class="date data-color">
+                                                        <span style="padding-right: 8px;">
+                                                            <i class="fa fa-circle-o" v-if="up.percent=='0'"></i>
+                                                            <i class="fa fa-adjust" v-if="up.percent!='0'&&up.percent!='100'"></i>
+                                                            <i class="fa fa-circle" v-if="up.percent=='100'"></i>
+                                                        </span>
+                                                    <span>学习进度：
+                                                        <span v-if="up.percent=='0'">未开始</span>
+                                                        <span v-if="up.percent!='0'">{{up.percent}}%</span>
+                                                    </span>
+                                                </div>
+                                                <!--<div class="pt-10">-->
+                                                    <!--<a href="javascript:"-->
+                                                       <!--class="layui-btn layui-btn-small layui-btn-primary1">课程作业</a>-->
+                                                    <!--<a v-on:click="toUserProduct(up.id)"-->
+                                                       <!--class="layui-btn layui-btn-small layui-btn-primary2">课程详情</a>-->
+                                                <!--</div>-->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                        <div class="layui-tab-item">
+                            <div class="row clear-fix">
+                                暂无
+                            </div>
+                        </div>
+                        <div class="layui-tab-item">
+                            <div class="row clear-fix">
+                                暂无
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <page :page="page" v-on:change-to-page="changeToPage"></page>
+            </div>
+        </div>
+    </template>
+    <style>
+        .course-item .course-img{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height:295px;
+            border:1px solid #eee;
+        }
+        .course-item .course-img .img-responsive {
+            width:inherit;
+            max-width:100%;
+        }
+    </style>
+    <script>
+        var classUserProducts={
+            data: function () {
+                return {
+                    loading: false,
+                    userProducts:null,
+                    page:null,
+                    currentPage:1
+                }
+            },
+            template: '#class-user-products-t',
+            created:function(){
+                this.fetch()
+            },
+            methods: {
+                fetch:function(){
+                    var self=this;
+                    self.loading=true;
+                    hi.ax.get('product/classCenter/userProducts?currentPage='+self.currentPage).then(function(r){
+                        if(r.data.status=='fail'){
+                            hi.alert(r.data.msg);
+                            return;
+                        }
+                        var userProducts=r.data.entity;
+                        self.userProducts=r.data.entity;
+                        self.loading=false;
+                        self.page=r.data.page;
+                    });
+                },
+                toUserProduct:function(id){
+                    router.push({path:'/user-product',query:{id:id}});
+                },
+                getProductIconSrc:function(id){
+                    return hi.root + "sys/file/img?type=img_product&id=" + id;
+                },
+                changeToPage:function(currentPage){
+                    this.currentPage=currentPage;
+                    this.fetch();
+                }
+            },
+            watch:{
+            }
+        }
+
+    </script>
+</th:block>

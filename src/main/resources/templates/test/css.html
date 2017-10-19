@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <title>云余钢材</title>
+    
+    <link th:if="${#arrays.contains(@environment.getActiveProfiles(),'development')}" th:href="@{/css/css.css}" rel="stylesheet"/>
+
+</head>
+<style>
+#box-sizing{
+	background:yellow;
+	width:200px;
+	height:200px;
+	border:5px solid red;
+	padding:5px;
+	box-sizing:content-box;
+}
+[data-icon]:before {
+  font-family: icons; /* BYO icon font, mapped smartly */
+  content: attr(data-icon);
+  speak: none; /* Not to be trusted, but hey. */
+}
+@font-face {
+  font-family: 'iconfont';
+  src: url('//at.alicdn.com/t/font_1464588944_3314855.eot'); /* IE9*/
+  src: url('//at.alicdn.com/t/font_1464588944_3314855.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('//at.alicdn.com/t/font_1464588944_3314855.woff') format('woff'), /* chrome、firefox */
+  url('//at.alicdn.com/t/font_1464588944_3314855.ttf') format('truetype'), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+  url('//at.alicdn.com/t/font_1464588944_3314855.svg#iconfont') format('svg'); /* iOS 4.1- */	
+}
+.iconfont {
+    font-family: 'iconfont';
+    font-style: normal;
+}
+</style>
+<body >
+<h3>box-sizing</h3>
+<div id="box-sizing">
+</div>
+
+<h3>
+  <span aria-hidden="true" data-icon="&#x2297;"></span>
+  Stats
+</h3>
+<i class="iconfont" style="vertical-align: 2px;">&#xe603;</i>&nbsp; 我的购物车
+</body>
+</html>

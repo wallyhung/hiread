@@ -1,0 +1,94 @@
+﻿<th:block th:fragment="common-head">
+	<title>Hi Read</title>
+	<meta charset="utf-8">
+	<meta name="keywords" content="Hi Read">
+	<meta name="description" content="Hi Read">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="shortcut icon" th:href="@{/img/favicon.ico}" type="image/x-icon">
+	<style>
+		[v-cloak] {
+			display: none;
+		}
+	</style>
+</th:block>
+<th:block th:fragment="common">
+	<link rel="stylesheet" th:href="@{/css/bootstrap/bootstrap.min.css}">
+	<link rel="stylesheet" th:href="@{/css/font/font-awesome.min.css}">
+	<link rel="stylesheet" th:href="@{/css/vue/element-ui.min.css}">
+	<link rel="stylesheet" th:href="@{/layui/css/layui.css}">
+	<link rel="stylesheet" th:href="@{/css/css.css}">
+	<link rel="stylesheet" th:href="@{/css/media.css}">
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+	<link rel="stylesheet" th:href="@{/css/style2.css}">
+	<link rel="stylesheet" th:href="@{/css/hi.css}">
+	<script th:src="@{/js/moment/moment.min.js}"></script>
+	<script th:src="@{/js/numeral/numeral.min.js}"></script>
+	<script th:src="@{/js/axios/axios.min.js}"></script>
+	<script th:src="@{/js/lodash/lodash.min.js}"></script>
+	<script th:src="@{/js/jquery/jquery-2.1.4.min.js}"></script>
+	<script th:src="@{/js/jquery/jquery.nicescroll.js}"></script>
+	<script th:src="@{/js/bootstrap/bootstrap.min.js}"></script>
+	<script th:src="@{/layui/lay/dest/layui.all.js}"></script>
+	<script th:src="@{/js/other/fly.js}"></script>
+	<script th:src="@{/js/vue/vue.js}"></script>
+	<script th:src="@{/js/vue/vue-router.js}"></script>
+	<script th:src="@{/js/vue/vue-resource.js}"></script>
+	<script th:src="@{/js/vue/vuex.js}"></script>
+	<script th:src="@{/js/vue/element-ui.min.js}"></script>
+	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+	<!--[if lt IE 9]>
+	<script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+	<script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
+	<script th:inline="javascript">
+        var hi={};
+        hi.root = /*[[@{/}]]*/ ;
+	</script>
+	<script th:src="@{/js/common/hi.js}"></script>
+	<script th:src="@{/service/userService.js}"></script>
+	<script th:src="@{/service/prodService.js}"></script>
+	<script th:src="@{/service/cartService.js}"></script>
+	<script th:src="@{/service/sysService.js}"></script>
+	<script th:src="@{/service/UserClassTrack.js}"></script>
+	<script th:src="@{/service/wxService.js}"></script>
+
+	<th:block th:include="component/index/hi-header :: hi-header"></th:block>
+	<th:block th:include="component/index/hi-footer :: hi-footer"></th:block>
+	<th:block th:include="component/index/hi-sidebar :: hi-sidebar"></th:block>
+	<th:block th:include="component/product/hi-alert :: hi-alert"></th:block>
+</th:block>
+
+
+<th:block th:fragment="videojs" >
+	<link th:href="@{/css/videojs/video-js.css}" rel="stylesheet">
+	<script th:src="@{/js/videojs/videojs-ie8.min.js}"></script>
+	<script th:src="@{/js/videojs/video.min.js}"></script>
+	<script th:src="@{/js/videojs/videojs-hotkeys.js}"></script>
+	<script th:src="@{/js/videojs/videojs-disable-progress.js}"></script>
+	<link rel="stylesheet" th:href="@{/css/video2.css}">
+</th:block>
+
+<th:block th:fragment="dragula" >
+	<link th:href="@{/css/dragula/dragula.min.css}" rel="stylesheet">
+	<script th:src="@{/js/dragula/dragula.min.js}"></script>
+</th:block>
+
+<th:block th:fragment="practises" >
+	<th:block th:include="component/product/p-true-or-false :: p-true-or-false"></th:block>
+	<th:block th:include="component/product/p-choice-question :: p-choice-question"></th:block>
+	<th:block th:include="component/product/p-timeline :: p-timeline"></th:block>
+	<th:block th:include="component/product/p-clicking-pairs :: p-clicking-pairs"></th:block>
+	<th:block th:include="component/product/p-open-question :: p-open-question"></th:block>
+	<th:block th:include="component/product/p-fill-blank :: p-fill-blank"></th:block>
+	<th:block th:include="component/product/p-make-sentence :: p-make-sentence"></th:block>
+	<th:block th:include="component/product/p-move-tabs :: p-move-tabs"></th:block>
+	<th:block th:include="component/product/p-word-card :: p-word-card"></th:block>
+	<th:block th:include="component/ui/page :: page"></th:block>
+</th:block>
+
+<th:block th:fragment="china-regions" >
+	<script th:src="@{/js/china-regions/provinces.js}"></script>
+	<script th:src="@{/js/china-regions/provinceCities.js}"></script>
+	<script th:src="@{/js/china-regions/cityAreas.js}"></script>
+</th:block>

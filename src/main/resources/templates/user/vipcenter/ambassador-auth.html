@@ -1,0 +1,87 @@
+<th:block th:fragment="ambassador-auth" xmlns:th="http://www.thymeleaf.org">
+    <style>
+        .layui-form-label {
+            text-align: left;
+        }
+    </style>
+    <template id="ambassador-auth-tpl">
+        <div>
+            <div class="learning-title2">大使认证</div>
+            <div class="pt-30 clear-fix">
+                <div style="padding-bottom: 15px;"><a href class="btn-blue">什么是阅读大使？</a></div>
+                <form class="layui-form layui-form1 pt-r01">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">姓名</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="" placeholder="Hi Read" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">联系电话</label>
+                        <div class="layui-form-mid layui-word-aux"><span class="pt-r10">183****4422</span> （已绑定）</div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">微信号</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">性别</label>
+                        <div class="layui-input-block">
+                            <input type="radio" name="sex" value="男" title="男" checked>
+                            <input type="radio" name="sex" value="女" title="女">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">省市</label>
+                        <div class="layui-input-inline">
+                            <select name="quiz1">
+                                <option value="">请选择省</option>
+                                <option value="浙江" selected="">浙江省</option>
+                                <option value="你的工号">江西省</option>
+                                <option value="你最喜欢的老师">福建省</option>
+                            </select>
+                        </div>
+                        <div class="layui-input-inline">
+                            <select name="quiz2">
+                                <option value="">请选择市</option>
+                                <option value="杭州">杭州</option>
+                                <option value="宁波" disabled="">宁波</option>
+                                <option value="温州">温州</option>
+                                <option value="温州">台州</option>
+                                <option value="温州">绍兴</option>
+                            </select>
+                        </div>
+                        <div class="layui-input-inline">
+                            <select name="quiz3">
+                                <option value="">请选择县/区</option>
+                                <option value="西湖区">西湖区</option>
+                                <option value="余杭区">余杭区</option>
+                                <option value="拱墅区">临安市</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div style="padding-left: 15px;">
+                            <img th:src="@{/img/wx.png}"/>
+                            <p>申请前请确保已关注 Hi Read 公众号</p>
+                        </div>
+                    </div>
+                    <div class="layui-form-item" style="text-align: center;">
+                        <button class="layui-btn layui-btn-normal" lay-submit lay-filter="formDemo">提交申请</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </template>
+    <script>
+        // 定义路由组件
+        var AmbassadorAuth = {
+            data: function () {
+                return {}
+            },
+            template: '#ambassador-auth-tpl'
+        }
+    </script>
+</th:block>

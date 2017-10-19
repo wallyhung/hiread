@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="common/head :: common-head"></th:block>
+</head>
+<body>
+<th:block th:include="common/header :: header"></th:block>
+<div class="container">
+    <div class="row page-wp">
+        <div class="col-md-2">
+            <div class="learning-title1">营销</div>
+            <ul class="learning-nav">
+                <li><a href="marketing-fxy.html" abbr="marketing-fxy"><i class="fa fa-superpowers"></i>活动分析页</a></li>
+                <li><a href="marketing-lyx.html" abbr="marketing-lyx"><i class="fa fa-microphone"></i>人个录音秀</a></li>
+                <li><a href="marketing-yqy.html" abbr="marketing-yqy"><i class="fa fa-male"></i>邀请页</a></li>
+                <li><a href="marketing-jg.html" abbr="marketing-jg" class="selected"><i class="fa fa-group"></i>合作机构</a></li>
+                <li><a href="marketing-dx.html" abbr="marketing-dx"><i class="fa fa-address-book-o"></i>课程兑现</a></li>
+                <li><a href="marketing-new.html" abbr="marketing-new"><i class="fa fa-newspaper-o"></i>最新动态</a></li>
+            </ul>
+        </div>
+        <div class="col-md-10">
+            <div class="learning-title2">合作机构</div>
+            <div class="pt-30 clear-fix">
+                <ul class="ma-jg clear-fix">
+                    <li><span><img th:src="@{/hi_img/cooperation1.jpg}"></span></li>
+                    <li><span><img th:src="@{/hi_img/cooperation2.jpg}"></span></li>
+                    <li><span><img th:src="@{/hi_img/cooperation3.jpg}"></span></li>
+                    <li><span><img th:src="@{/hi_img/cooperation4.jpg}"></span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:include="common/footer :: footer"></th:block>
+<th:block th:include="common/head :: common"></th:block>
+<script th:src="@{/controller/index/header.js}"></script>
+
+<style>
+    .ma-jg{
+        padding:0;
+    }
+    .ma-jg li{
+        width: 100%;
+    }
+</style>
+</body>
+</html>

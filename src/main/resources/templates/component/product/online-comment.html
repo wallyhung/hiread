@@ -1,0 +1,370 @@
+﻿<th:block th:fragment="online-comment" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+        .task-content-right .text h4{
+            font-weight: bolder;
+            font-size:15px;
+        }
+        .task-content-right {
+            width: auto;
+            padding: 0 18px 26px 18px;
+        }
+
+        .online-comment .task-content {
+            margin-top: 40px;
+
+        }
+
+        .online-comment .task-content li.clearfix {
+            display: flex;
+        }
+        .task-content li .task-time{
+            width:13%;
+        }
+        .task-content li .task-content-right{
+            width:85%;
+            border-bottom:2px solid #f1f1f1;
+            border-left:2px solid #f1f1f1;
+            margin-bottom:10px;
+            margin-right:5px;
+            padding:0 0px 6px 18px;
+
+        }
+        .task-content li .task-content-right .task-answer{
+            padding-bottom:5px;
+        }
+        .task-content li .task-content-right .answer-ctrl {
+            position: absolute;
+            cursor: pointer;
+            top:20px;
+            right:10px;
+            color:#676a6c;
+            font-size:12px;
+            cursor:pointer;
+        }
+        .task-content li .task-content-right .answer-ctrl span {
+            margin-right: 15px;
+        }
+
+        .task-content li .task-content-right .answer-ctrl .fa {
+            font-size: 20px;
+            position: absolute;
+            right: 0px;
+            top: -4px;
+            color:#676a6c;
+        }
+        .task-content li .task-content-right .text p{
+            width:auto;
+        }
+        .task-username{
+            cursor:default;
+        }
+        .task-username .time-box{
+            display: flex;
+            flex-direction: column;
+        }
+        .task-username .time-box .name {
+            font-size: inherit;
+            margin-top: 0;
+        }
+        .task-username .score-img{
+            left: -127px;
+            top: 0px;
+            width:100px;
+
+        }
+        .task-username .score-img p{
+            padding-bottom: 10px;
+            text-align: right;
+        }
+        .task-comment p {
+            text-indent: 0;
+        }
+
+        .task-username .progress-box span {
+            top: 14px;
+        }
+
+        .task-username .scoreBox i {
+            top: -2px;
+        }
+        .task-username .scoreBox:hover .task-popupBox{
+            display: block;
+        }
+        .task-username .scoreBox .task-popupBox{
+            display: none;
+            top:55px;
+            left: -100px;
+            width: 500px;
+        }
+
+        .task-username .progress-slider .clor-green {
+        }
+
+        .task-popupBox {
+            display: block;
+        }
+
+        .task-img img {
+            width: 32%;
+            border-radius: 10px;
+        }
+        .task-teacher .comment-flag{
+            background-color: #99cc00;
+            color:#fff;
+            text-align: center;
+            padding:5px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            cursor:pointer;
+        }
+        .task-teacher .comment-flag.not-read{
+            background-color: #da3716;
+            color:#fff;
+        }
+
+    </style>
+    <template id="online-comment-t">
+        <div class="online-comment">
+            <div class="task-content" v-if="pus">
+                <ul>
+                    <li class="clearfix" v-for="pu in pus">
+                        <div class="task-time">
+                            <p>{{pu.dateCreatedTime.split(' ')[0]}}</p>
+                            <p>{{pu.dateCreatedTime.split(' ')[1]}}</p>
+                        </div>
+                        <div class="task-content-right">
+                            <div class="text">
+                                <div class="clearfix">
+                                    <div class="">
+                                        <h4>Unit {{pu.practise.unit.unitNo}}- Chapter {{pu.practise.unit.chapter}}
+                                            {{pu.practise.title}}</h4>
+                                        <h4>Question：</h4>
+                                    </div>
+                                    <!--<div class="pull-right">-->
+                                    <!--<a href="javascript:;">-->
+                                    <!--<i class="fa fa-share"></i>-->
+                                    <!--<strong>分享</strong>-->
+                                    <!--</a>-->
+                                    <!--</div>-->
+                                </div>
+                                <div class="clearfix">
+                                    <p class="">{{pu.practise.question}}</p>
+
+                                    <a href="javascript:;" class="answer-ctrl"
+                                       v-on:click="pu.answerShow=!pu.answerShow">
+                                        <span v-if="!pu.answerShow">Show My Answer</span><span v-if="pu.answerShow">Hide My Answer</span>
+                                        <i class="fa"
+                                           :class="{'fa-angle-up':pu.answerShow,'fa-angle-down':!pu.answerShow}"></i>
+                                    </a>
+
+                                    <div class="task-img">
+                                        <img v-if="pu.practise.questionImg" v-for="name in pu.practise.questionImg.split(';')" :src="questionImgSrc(name,pu.practise.id)">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="task-content-hide" >
+                                <div class="task-answer" v-show="pu.answerShow">
+                                    <div class="text">
+                                        <h4 class="answer">Your Answer:</h4>
+                                        <p v-html="pu.answer"></p>
+                                    </div>
+                                </div>
+                                <div class="task-teacher" v-if="pu.teacherComment" >
+                                    <div class="task-username clearfix" >
+                                        <div class="time-box pull-left" v-on:click="commentToggle(pu)">
+                                            <div>
+                                                <img th:src="@{/img/username_logo.jpg}">
+                                                <p class="name">Jack Z.</p>
+                                            </div>
+                                        </div>
+                                        <div class="scoreBox pull-right">
+                                            <div class="progress-box">
+                                                <!--后台传值date-width（0-100） 分数与描述js写好了-->
+
+                                                <div class="progress-bar"
+                                                     :style="barStyle(pu.teacherComment.score)"></div>
+                                                <div class="progress-slider"
+                                                     :style="sliderStyle(pu.teacherComment.score)">
+                                                    <i class="fa fa-check-circle-o"></i>
+                                                    <span class="clor-green" v-if="pu.teacherComment.score">{{pu.teacherComment.score}}</span>
+                                                </div>
+                                                <span class="num-0">0</span><span class="num-4">4</span>
+                                                <i class="first"></i><i class="two"></i><i class="three"></i>
+                                            </div>
+                                            <!--<div class="score-bar" v-if="pu.teacherComment.score">-->
+                                                <!--(悬停查看明细)-->
+                                            <!--</div>-->
+                                            <div class="score-btn" v-if="pu.teacherComment.score">
+                                                {{scoreText(pu.teacherComment.score)}}
+                                            </div>
+
+                                            <!--<div class="task-popupBox" >-->
+                                                <!--<div class="task-teacher-comments">-->
+                                                    <!--<h4 class="title">ApproachingMastery</h4>-->
+                                                    <!--<h3>Vocabulary Acquisition and Use:</h3>-->
+                                                    <!--<p><span>L.2.1</span>Use commas in greetings and closings of-->
+                                                        <!--letters.<span class="score-bar pull-right">3.5</span></p>-->
+                                                    <!--<p><span>L.2.2</span>Use linking words and phrases (e.g., because,-->
+                                                        <!--therefore, since, for example) to connect opinion and reasons.pay-->
+                                                        <!--more attention on these two standards when you answer the questions-->
+                                                        <!--next time, it would be much better.<span-->
+                                                                <!--class="score-bar color-yellow pull-right">3.5</span></p>-->
+                                                    <!--<h3>Writing:</h3>-->
+                                                    <!--<p><span>W.3.1 </span>Write opinion pieces on topics or texts,-->
+                                                        <!--supporting a point of view with reasons.<span-->
+                                                                <!--class="score-bar color-yellow pull-right">3.5</span></p>-->
+                                                <!--</div>-->
+                                            <!--</div>-->
+                                        </div>
+
+                                        <div class="score-img">
+                                            <!--<img v-if="!pu.teacherCommentShow" th:src="@{/img/task-icon-evaluate_2.png}">-->
+                                            <div class="">
+                                                <p>{{pu.teacherComment.dateCreatedTime.split(' ')[0]}}</p>
+                                                <p>{{pu.teacherComment.dateCreatedTime.split(' ')[1]}}</p>
+                                            </div>
+                                            <div v-on:click="commentToggle(pu)" class="comment-flag" :class="{'not-read':!pu.teacherComment.hasRead || pu.teacherComment.hasRead == '0'}">
+                                                <h3><span v-if="!pu.teacherCommentShow">查看</span>老师评论</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--老师评价-->
+                                    <div class="task-comment" v-show="pu.teacherCommentShow">
+                                        <ul>
+                                            <li v-if="pu.teacherComment.textSample">
+                                                <h3>Sample</h3>
+                                                <p class="color-green" v-html="pu.teacherComment.textSample"></p>
+                                            </li>
+                                            <li v-if="pu.teacherComment.textMark">
+                                                <h3>Correcting</h3>
+                                                <p v-html="pu.teacherComment.textMark"></p>
+                                            </li>
+                                            <li v-if="pu.teacherComment.comment">
+                                                <h3>Comments</h3>
+                                                <p v-html="lineBreakText(pu.teacherComment.comment)"></p>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </template>
+    <script>
+        Vue.component('online-comment', {
+            props: ['userProduct'],
+            mixins: [hi.mixin],
+            data: function () {
+                return {
+                    pus: null
+                }
+            },
+            template: '#online-comment-t',
+            computed: {
+                unreadCount: function () {
+                    if (this.pus == null) {
+                        return 0;
+                    }
+                    var unread = _.filter(this.pus, function (pu) {
+                        if (pu.teacherComment && (!pu.teacherComment.hasRead || pu.teacherComment.hasRead == '0')) {
+                            return true;
+                        }
+                        return false;
+                    });
+                    if (unread) {
+                        return unread.length;
+                    }
+                    return 0;
+                }
+            },
+            created: function () {
+                this.fetchMyOnlinePractises();
+            },
+            mounted: function () {
+            },
+            methods: {
+                fetchMyOnlinePractises: function () {
+                    var self = this;
+                    hi.ax.get('/product/product/onlineComment/myOnlinePractises?userProductId=' + self.userProduct.id).then(function (r) {
+                        if (r.data.status == 'fail') {
+                            hi.alert(r.data.msg);
+                            return;
+                        }
+                        var pus = r.data.entity;
+                        _.each(pus, function (pu) {
+                            pu.answerShow = false;
+                            pu.teacherCommentShow = false;
+                            pu.scoreShow = false;
+                        });
+                        self.pus = pus;
+                        self.$emit('unread-count', self.unreadCount);
+                    });
+                },
+                commentToggle: function (pu) {
+                    var self = this;
+                    pu.teacherCommentShow = !pu.teacherCommentShow;
+                    if (!pu.teacherComment.hasRead || pu.teacherComment.hasRead == '0') {
+                        var fd = new FormData();
+                        fd.append('teacherCommentId', pu.teacherComment.id);
+                        hi.ax.post('/product/product/onlineComment/hasRead', fd).then(function (r) {
+                            if (r.data.status == 'fail') {
+                                hi.alert(r.data.msg);
+                                return;
+                            }
+                            pu.teacherComment.hasRead = '1';
+                            self.$emit('unread-count', self.unreadCount);
+                        });
+                    }
+                },
+                barStyle: function (score) {
+                    var style = {};
+                    var w = 0;
+                    if (score) {
+                        w = (score / 4) * 100;
+                    }
+                    if (w > 100) {
+                        w = 100;
+                    }
+                    style.width = w + '%';
+                    return style;
+                },
+                sliderStyle: function (score) {
+                    var style = {};
+                    var w = 0;
+                    if (score) {
+                        w = (score / 4) * 100 - 3;
+                    }
+                    if (w > 97) {
+                        w = 97;
+                    }
+                    style.left = w + '%';
+                    return style;
+                },
+                scoreText: function (score) {
+                    var t = "";
+                    if (score) {
+                        if (score < 1) {
+                            t = "try harder";
+                        } else if (score < 2) {
+                            t = "average";
+                        } else if (score < 3) {
+                            t = "good";
+                        } else {
+                            t = "excellent";
+                        }
+                    }
+                    return t.toUpperCase();
+                },
+                toggleScore: function (pu) {
+                    pu.scoreShow = !pu.scoreShow;
+                },
+                questionImgSrc: function (name, practiseId) {
+                    return hi.root + "sys/file/img?type=img_practise_question_img&id=" + practiseId + "&name=" + name;
+                },
+            }
+        })
+    </script>
+</th:block>

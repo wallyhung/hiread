@@ -1,0 +1,187 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="common/head :: common-head"></th:block>
+</head>
+<body>
+<div id="class-preview" v-cloak class="h100">
+    <reward :panel-display="false"></reward>
+    <div class="class-left" v-if="unit">
+        <div class="class-left-title">
+            <div class="title-left">
+                <a v-on:click="backToUserProduct" class="class-btn class-btn2"><img th:src="@{/img/class_back.png}">
+                    返回课程</a>
+                <span class="class-title-text1 fl" v-if="unit">{{unit.product.bookName}} » {{unit.unitName}} » Preview</span>
+            </div>
+        </div>
+        <div class="class-main scroll" :class="{'type-video':unit.previewType=='video'}">
+            <div class="class-text">
+                <h3>{{unit.product.bookName}}, Chapter {{unit.chapter}}, Paragraph {{unit.previewParagraph}}</h3>
+                <p v-if="unit.previewInstruction" v-for="line in unit.previewInstruction.split('\n')">{{line}}</p>
+                <div class="class-line"></div>
+            </div>
+            <div class="class-main-content">
+                <div class="text-audio text" v-if="unit.previewType=='textAudio'">
+                    <p v-if="unit.previewText" v-for="line in unit.previewText.split('\n')">{{line}}</p>
+                </div>
+                <div class="image-audio image" v-if="unit.previewType=='imageAudio'">
+                    <img :src="previewImageSrc" v-if="previewImageSrc">
+                </div>
+                <div class="text-image-audio" v-if="unit.previewType=='textImageAudio'">
+                    <div class="image">
+                        <img :src="previewImageSrc" v-if="previewImageSrc">
+                    </div>
+                    <div class="text">
+                        <p v-if="unit.previewText"  v-for="line in unit.previewText.split('\n')">{{line}}</p>
+                    </div>
+                </div>
+                <div class="class-video" v-if="unit.previewType=='video'">
+                    <normal-video
+                            v-if="previewVideoSrc"
+                            :video-src="previewVideoSrc"
+                            :autoplay="false"
+                            type="video"
+                            v-on:video-play="onAudioPlay"
+                            v-on:video-ended="onAudioEnded"
+                            v-on:video-paused="onAudioPaused"
+                    ></normal-video>
+                </div>
+            </div>
+
+        </div>
+        <div class="class-listen-audio" id="listenAudio" v-if="unit.previewType=='textAudio'||unit.previewType=='imageAudio'||unit.previewType=='textImageAudio'">
+            <div  class="class-video">
+                <normal-audio
+                        v-if="previewAudioSrc"
+                        :video-src="previewAudioSrc"
+                        :autoplay="false"
+                        type="audio"
+                        v-on:video-play="onAudioPlay"
+                        v-on:video-ended="onAudioEnded"
+                        v-on:video-paused="onAudioPaused"
+                ></normal-audio>
+            </div>
+        </div>
+
+
+
+
+    </div>
+</div>
+
+
+
+
+<th:block th:include="common/head :: common"></th:block>
+<th:block th:include="common/head :: videojs"></th:block>
+<link rel="stylesheet" th:href="@{/css/class2.css}">
+<link rel="stylesheet" th:href="@{/css/class-custom.css}">
+<style>
+    .class-main{
+        height:calc(100% - 135px);
+    }
+    .class-main.type-video{
+        height:calc(100% - 55px);
+    }
+    .class-main-content{
+        display: flex;
+        padding:20px 40px;
+        justify-content: center;
+        align-items: center;
+    }
+    .class-main-content .text-audio{
+        display: flex;
+        flex-direction: column;
+        width:60%;
+    }
+    .class-main-content .text p{
+        line-height: 30px;
+        font-size: 16px;
+    }
+    .class-main-content .image-audio{
+        display: flex;
+        justify-content: center;
+    }
+    .class-main-content .image-audio img{
+        width:60%;
+        height:100%;
+    }
+    .class-main-content .text-image-audio{
+        display: flex;
+        width:60%;
+        flex-direction: column;
+    }
+    .class-main-content .text-image-audio .image{
+        display: flex;
+        justify-content: center;
+        margin-bottom:20px;
+    }
+    .class-main-content .text-image-audio .image img{
+        width:50%;
+        height:100%;
+    }
+    .class-listen-audio{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height:80px;
+    }
+    .class-video{
+        width: 90%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+    }
+    .class-main .class-video{
+        width:100%;
+        height:500px;
+    }
+
+    .video-js{
+        background-color: #fff;
+        color:#999;
+    }
+    .class-main .class-video .video-js{
+        background-color: #f9f9f9;
+    }
+    .video-js .vjs-control-bar,.class-audio .video-js .vjs-control-bar{
+        background-color: #fff;
+    }
+    .video-js .vjs-play-progress,.video-js .vjs-volume-level{
+        background-color: #d62d40;
+    }
+
+    .vjs-control-bar,.rd-video-js .vjs-control{
+        height:5em;
+    }
+    /*播放*/
+    .vjs-play-control:before{
+        font-size:3em;
+        line-height:1.35em;
+        background: #D62D40;
+        color:white;
+        border-radius: 1em;
+    }
+    .video-js .vjs-control{
+        margin-right:10px;
+        margin-left:10px;
+    }
+    .video-js .vjs-mute-control, .video-js .vjs-volume-menu-button{
+        display: none;
+    }
+    .vjs-control-bar{
+        border-radius: 0 0 0 0;
+    }
+
+</style>
+<th:block th:include="component/product/unit-video :: unit-video"></th:block>
+<th:block th:include="common/head :: practises"></th:block>
+<th:block th:include="component/product/icon-audio :: icon-audio"></th:block>
+<th:block th:include="component/product/normal-video :: normal-video"></th:block>
+<th:block th:include="component/product/normal-audio :: normal-audio"></th:block>
+<th:block th:include="component/product/reward :: reward"></th:block>
+<script th:src="@{/controller/product/class-preview.js}"></script>
+
+</body>
+</html>

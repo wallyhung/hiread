@@ -1,0 +1,72 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<th:block th:include="common/head :: common-head"></th:block>
+</head>
+<body>
+
+<div id="app-index" v-cloak>
+	<hi-header></hi-header>
+	<transition name="fade">
+		<router-view></router-view>
+	</transition>
+	<hi-footer></hi-footer>
+	<hi-sidebar></hi-sidebar>
+</div>
+
+
+<th:block th:include="common/head :: common"></th:block>
+
+<th:block th:include="component/product/prod-info :: prod-info"></th:block>
+<th:block th:include="component/product/btn-adds-to-cart :: btn-adds-to-cart"></th:block>
+<th:block th:include="index/index :: index"></th:block>
+<th:block th:include="product/products :: products"></th:block>
+<th:block th:include="product/product :: product"></th:block>
+<style>
+	.section-title .text {
+		padding: 0 44px;
+	}
+</style>
+<script>
+    const routes = [
+        {
+            path: '/index',
+            component: index
+        },
+        {
+            path: '/products',
+            component: products
+        },
+        {
+            path: '/product',
+            component: product
+        }
+
+    ];
+    const router = new VueRouter({
+        routes: routes,
+    });
+    router.afterEach(function(r){
+		$("body").scrollTop(0);
+    })
+
+    var appIndex = new Vue({
+        el: '#app-index',
+        router: router,
+        data: {
+            routes: routes
+        },
+		created:function(){
+            var path=this.$route.path;
+			if(path=='/'){
+                router.push("index");
+			}
+
+
+		}
+
+
+    });
+</script>
+</body>
+</html>

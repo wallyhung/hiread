@@ -1,0 +1,76 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <title>vue</title>
+    <meta charset="utf-8">
+    <meta name="keywords" content="vue">
+	<meta name="description" content="vue">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta http-equiv="Cache-control" content="no-cache">
+	<link rel="shortcut icon" th:href="@{/imgs/favicon.ico}" type="image/x-icon"> 
+	<!-- lib js -->
+    <script th:if="${#arrays.contains(@environment.getActiveProfiles(),'development')}" th:src="@{/js/vue/vue.js(r=${version})}"></script>
+	
+</head>
+
+<body>
+<video id="media" controls width="360" height="240" preload="metadata" th:src="@{http://localhost:8080/test/videos/oceans.mp4}">
+    <source />
+    Video cannot be displayed
+</video>
+<table id="info" border="1">
+    <tr><th>Property</th><th>Value</th></tr>
+</table>
+<div>current time:<span id="currentTime"></span></div>
+<div>
+    <button>Play</button>
+    <button>Pause</button>
+    <button>Step Forward</button>
+</div>
+<script type="text/javascript" th:src="@{/js/jquery/jquery-2.1.1.min.js}"></script>
+<script>
+    $(function(){
+        var mediaElem = document.getElementById("media");
+        var tableElem = document.getElementById("info");
+        var buttons = document.getElementsByTagName("button");
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].onclick = handleButtonPress;
+        }
+        function handleButtonPress(e) {
+            switch (e.target.innerHTML) {
+                case 'Play':
+                    mediaElem.play();
+                    break;
+                case 'Pause':
+                    mediaElem.pause();
+                    break;
+                case 'Step Forward':
+                    var forwardTime=mediaElem.currentTime+1;
+                    console.log(forwardTime);
+                    mediaElem.currentTime=forwardTime;
+                    break;
+            }
+            displayValues();
+        }
+        displayValues();
+        function displayValues() {
+            var propertyNames = ["currentTime", "duration", "paused", "ended","buffered","bufferingRate","currentSrc","src","seeking","start","videoWidth","volume"];
+            tableElem.innerHTML = "";
+            for (var i = 0; i < propertyNames.length; i++) {
+                tableElem.innerHTML +=
+                    "<tr><td>" + propertyNames[i] + "</td><td>" +
+                    mediaElem[propertyNames[i]] + "</td></tr>";
+            }
+        }
+        setInterval(function(){
+            document.getElementById("currentTime").innerHTML = mediaElem.currentTime; }, 250);
+        mediaElem.addEventListener('ended',function(e){
+            console.log("ended");
+        },false);
+    });
+
+
+
+</script>
+</body>
+</html>

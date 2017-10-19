@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="common/head :: common-head"></th:block>
+</head>
+<body>
+<div id="class-hw" v-cloak class="h100">
+    <div class="class-left" >
+        <div class="class-left-title">
+            <div class="title-left">
+                <a v-on:click="backToUserProduct" class="class-btn class-btn2"><img th:src="@{/img/class_back.png}">
+                    返回课程</a>
+                <span class="class-title-text1 fl" v-if="unit">{{unit.product.bookName}} » {{unit.unitName}} » {{type=='previewHW'?'Preview':'Review'}} Homework</span>
+            </div>
+            <div class="title-right .class-title-text1">
+                <reward :panel-display="true"></reward>
+            </div>
+        </div>
+        <unit-practise
+                       v-if="unit&&practiseId&&track"
+                       :practises="unit.practises"
+                       :practise-id="practiseId"
+                       :type="type"
+                       :track="track"
+                       v-on:back-to-user-product="backToUserProduct"
+                       v-on:practise-id-change="onPractiseIdChange"
+        ></unit-practise>
+
+    </div>
+</div>
+
+
+
+
+<th:block th:include="common/head :: common"></th:block>
+<th:block th:include="common/head :: videojs"></th:block>
+<th:block th:include="common/head :: dragula"></th:block>
+<link rel="stylesheet" th:href="@{/css/class2.css}">
+<link rel="stylesheet" th:href="@{/css/video2.css}">
+<link rel="stylesheet" th:href="@{/css/class-custom.css}">
+<th:block th:include="component/product/unit-video :: unit-video"></th:block>
+<th:block th:include="component/product/unit-practise :: unit-practise"></th:block>
+<th:block th:include="common/head :: practises"></th:block>
+<th:block th:include="component/product/icon-audio :: icon-audio"></th:block>
+<th:block th:include="component/product/normal-video :: normal-video"></th:block>
+<th:block th:include="component/product/normal-audio :: normal-audio"></th:block>
+<th:block th:include="component/product/reward :: reward"></th:block>
+<script th:src="@{/controller/product/class-hw.js}"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<th:block th:include="common/head :: common"></th:block>
+	<th:block th:include="component/index/login-status :: login-status"></th:block>
+</head>
+
+<body>
+<div id="app-index" v-cloak>
+	<div class="head-bar">
+		<login-status :auth="auth"></login-status>
+	</div>
+	<div class="body">
+		<a th:href="@{/test/demo/index}">demo1</a>
+		<a th:href="@{/product/unit}">unit video</a>
+	</div>
+</div>
+
+<script th:src="@{/service/user/userService.js}"></script>
+<script th:src="@{/controller/index/index.js}"></script>
+</body>
+</html>

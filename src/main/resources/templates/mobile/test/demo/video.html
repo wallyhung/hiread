@@ -1,0 +1,80 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <title>vue</title>
+    <meta charset="utf-8">
+    <meta name="keywords" content="vue">
+	<meta name="description" content="vue">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta http-equiv="Cache-control" content="no-cache">
+    <link th:href="@{/test/demo/css/videojs/video-js.css}" rel="stylesheet">
+    <link th:href="@{/test/demo/css/videoDemoMobile.css}" rel="stylesheet">
+    
+    <script th:src="@{/test/demo/js/videojs/videojs-ie8.min.js}"></script>
+    <script th:src="@{/test/demo/js/videojs/video.min.js}"></script>
+	<script th:src="@{/test/demo/js/vue/vue.js}"></script>
+    <script th:src="@{/test/demo/js/jquery/jquery-2.1.1.min.js}"></script>
+</head>
+
+<body>
+<div class="rd-video-container" id="app-1">
+    <div class="rd-head">新概念英语第1册</div>
+    <div class="rd-content">
+        <div class="rd-content-video" v-bind:class="{ block: videoShow ,none:!videoShow}" >
+            <video id="my-video" class="rd-video-js video-js vjs-big-play-centered"
+                   preload="auto"
+                   x5-video-player-type="h5"
+                   x5-video-player-fullscreen="true"
+                   playsinline="true"
+                   webkit-playsinline="true"
+                   src="http://vjs.zencdn.net/v/oceans.mp4" controls >
+            </video>
+        </div>
+        <div class="rd-content-qs" v-for="(q,index) in qss" v-bind:id="'rd-content-qs-'+q.id" v-bind:class="{ block: !videoShow&&q.show,none:!(!videoShow&&q.show) }" >
+            <div class="rd-q">Q{{index+1}}:The president promised to keep all the board members ______ of how the negotiations were going on.</div>
+            <div class="rd-choices">
+                <div class="rd-choice"><input type="radio">be informed</div>
+                <div class="rd-choice"><input type="radio">inform</div>
+                <div class="rd-choice"><input type="radio">informed</div>
+                <div class="rd-choice"><input type="radio">incoming</div>
+            </div>
+            <div class="rd-qs-btns">
+                <button v-on:click="qback(index)">Back</button>
+                <button v-on:click="submit(index)" v-if="q.ava">Submit</button>
+            </div>
+        </div>
+        <div class="rd-content-qs" v-if="congradulationShow">
+            <div class="rd-q">Congradulations!</div>
+            <div class="rd-qs-btns">
+                <button v-on:click="congradulationBack">Back</button>
+            </div>
+        </div>
+        <div class="rd-assist">
+            <div class="rd-tab">
+                <div class="rd-tab-sub" v-bind:class="{active:tab==1}" v-on:click="changeTab(1)">Info</div>
+                <div class="rd-tab-sub" v-bind:class="{active:tab==2}" v-on:click="changeTab(2)">History</div>
+            </div>
+            <div class="rd-tab-content">
+                <div class="rd-tab-content-sub" v-show="tab==1">
+                    <div class="rd-row"><span class="rd-label">Teacher :</span><span class="rd-text">Jacky</span></div>
+                    <div class="rd-row"><span class="rd-label">Estimated Study Time :</span><span class="rd-text">1 hour</span></div>
+                    <div class="rd-row"><span class="rd-label">Got stars form this class :</span><span class="rd-text">{{qssAnswered.length}}</span></div>
+                    <div class="rd-row" v-show="audio.show">
+                        <audio id="my-audio" class="video-js vjs-default-skin" controls data-setup='{}'>
+						    <source src="http://freshly-ground.com/data/audio/mpc/20090119%20-%20Untitled%20Groove.mp3" type='audio/mp3'/>
+						</audio>
+                    </div>
+                </div>
+                <div class="rd-tab-content-sub" v-show="tab==2">
+                    <div class="rd-row" v-for="(item,index) in qssAnswered">
+                        <span class="rd-name">{{item.name}}</span>
+                        <a class="rd-link" v-on:click="view(index)">view</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:src="@{/test/demo/js/videojs-vue.js}"></script>
+</body>
+</html>

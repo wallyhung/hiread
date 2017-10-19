@@ -1,0 +1,345 @@
+<th:block th:fragment="product" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+        .img-max3 img {
+            height: 165px;
+        }
+        a.btn-warning2{
+            color:#FFF;
+        }
+    </style>
+    <template id="product-t">
+        <div class="content-page clear-fix">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <prod-info :p="product" :user="user" type="product"></prod-info>
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="block-title">
+                    <h2 class="title">组合套餐</h2>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 position-r" v-for="(cart,index) in compoundCarts">
+                        <div class="img-max3"><img :src="getProdIconSrc(cart.product.id)"></div>
+                        <div>{{cart.product.prodName}}</div>
+                        <div class="p-price">
+                            <label>
+                                <input type="checkbox" :disabled="index==0" :value="cart.checked" v-on:change="checkCompound(cart)" :checked="cart.checked">
+                                ￥{{numeral(cart.product.videoCoursePriceN).format('0.00')}}
+                            </label>
+                        </div>
+                        <span class="icon-img2" v-if="index<compoundCarts.length-1"><i class="fa fa-plus"></i></span>
+                    </div>
+                    <div class="col-md-1">
+                        <div style="text-align: center;padding-top: 77px;"><img th:src="@{/img/equal.png}" alt=""></div>
+                    </div>
+                    <div class="col-md-5">
+                        <div style="padding-top: 36px;">已选择{{compoundCartsSelected.length}}本书</div>
+                        <div class="block-b">
+                            <ul>
+                                <li class="p-text2">
+                                    <span class="">组合价：</span><span class="block-b1-c">￥{{numeral(totalPrice).format('0.00')}}</span> <span class="p-text1">省￥{{numeral(totalSave).format('0.00')}}</span>
+                                </li>
+                                <li class="p-text3">
+                                    <span class="">原价：</span><span class="font-d1">￥{{numeral(coursePriceSum).format('0.00')}}</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="clear" style="padding-top: 10px;">
+                            <!--<a class="btn btn-warning add-car" href="javascript:">加入购物车</a>-->
+                            <!-- <a class="btn btn-warning2" href="class.html">试听课程</a> -->
+                            <btn-adds-to-cart :products="productsSelected" multiple="true"></btn-adds-to-cart>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="pd-15 color-666">推荐理由：理由说明理由说明理由说明理由说明理由说明理由说明理由说明理由说明</div>
+                </div>
+            </div>
+
+            <div class="container pt-50">
+                <div class="tabs-container">
+                    <ul class="nav nav-tabs nav-tabs-project">
+                        <li class="active"><a data-toggle="tab" href="#tab-1" aria-expanded="true">简介</a></li>
+                        <li class=""><a data-toggle="tab" href="#tab-2" aria-expanded="false">课程大纲</a></li>
+                        <li class=""><a data-toggle="tab" href="#tab-3" aria-expanded="false">课程包</a></li>
+                        <li class=""><a data-toggle="tab" href="#tab-5" aria-expanded="false">常见问题</a></li>
+                    </ul>
+                    <div class="tab-content tab-content2">
+                        <div id="tab-1" class="tab-pane active">
+                            <div class="panel-body">
+                                <div class="field">
+                                    <dl>
+                                        <dt><span>课程简介</span></dt>
+                                        <dd>
+                                            <div class="row">
+                                                <div class="col-md-3"><img th:src="@{/img/img14.jpg}" alt=""></div>
+                                                <div class="col-md-9">
+                                                    <h3>Roald Dahl – Fantastic Mr. Fox</h3>
+                                                    <p>罗尔德·达尔– 神奇的狐狸先生</p>
+                                                    <p>蓝思指数: 600L  ｜  ATOS值: 4.1</p>
+                                                    <p>推荐年龄: 4-8岁</p>
+                                                    <p>公立学校英语学习：2年</p>
+                                                    <p>HiRead级别: Level 5</p>
+                                                    <p>总字数：9387</p>
+                                                    <p>课时数：16节课（8周）</p>
+                                                    <p>有效期：自购买日12个月</p>
+                                                </div>
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                </div>
+                                <div class="field">
+                                    <dl>
+                                        <dt><span>荐书理由</span></dt>
+                                        <dd class="text-p">
+                                            <p>Roald Dahl（罗尔德·达尔）是全球读者追捧的世界儿童文学顶级大师，三次获得“爱伦·坡文学奖”、“美国神奇作家奖”，这本经典作品能让孩子情不自禁迷倒在他创造的畅快淋漓的魔力世界里。他的作品让孩子们爱上阅读。</p>
+                                            <p>Fantastic Mr. Fox《了不起的狐狸爸爸》讲述博吉斯、邦斯和比恩这三位是卑鄙、小气的饲养场主，他们憎恨狐狸先生，决定把他全家除掉。于是，这三个人拿着枪，阴险地等在狐狸先生的洞外……但狐狸先生自有对付他们的妙计！于是，一场智慧和力量的较量开始了……三个凶狠贪婪的饲养场主和狐狸一家追捕与反追捕的故事，被罗尔德•达尔用异常轻松的笔调讲来，让人读了爱不释手。书中暗含了“善良”和“生存”等主题。</p>
+                                            <p>该书被列为欧美青少年读者首选及必读书目，后被改编为同名动画电影，2010年获最佳奥斯卡动画长片提名。</p>
+                                            <p>近几年，《了不起的狐狸爸爸》也被很多国内知名的国际学校、双语学校作为英文课的推荐书籍。</p>
+                                            <p></p>
+                                        </dd>
+                                    </dl>
+                                </div>
+                                <div class="field">
+                                    <dl>
+                                        <dt><span>关于作者</span></dt>
+                                        <dd>
+                                            <div class="metas clearfix">
+                                                <div class="homework-author1">
+                                                    <a class=" js-user-card" href="javascript:" title="">
+                                                <span class="avatar-smd2">
+                                                  <img class="img-responsive" th:src="@{/img/img13.jpg}">
+                                                </span>
+                                                    </a>
+                                                    <div class="author-info">
+                                                        <h4 class="font-c1">Roald Dahl（罗尔德·达尔）</h4>
+                                                        <div class="text-p pt-15">
+                                                            <p>英国杰出儿童文学作家，“世界奇幻文学大会终生成就奖”得主，2000年英国读者票选战胜J·K·罗琳，他是当之无愧的儿童文学大师。他的著名作品有：查理与巧克力工厂（Charlie and the Chocolate Factory），了不起的狐狸爸爸（Fantastic Mr. Fox）和玛蒂尔达（Matilda）等。</p>
+                                                            <p>Roald Dahl曾三度获得“爱伦·坡文学奖”，获得英国“白面包儿童图书奖”，获得“世界奇幻文学大会奖”等多个分量极高的奖项。他对世界儿童文学有巨大而深远的影响，他的作品构思奇特，情节紧凑，在每个故事的一开始就打破现实与幻想之间的常规对应，给人一种或幽默或荒诞或机智的美感；同时更重要的是，他的作品都具有一种让人一读就爱不释手的魔力。</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                </div>
+                                <div class="field">
+                                    <dl>
+                                        <dt><span>课程收获</span></dt>
+                                        <dd>
+                                            <p class="text-i"><i class="fa fa-check"></i>激发阅读兴趣：精彩的故事、风趣的语言，在专业老师的带领下，让孩子自觉建立起对英文阅读的兴趣。</p>
+                                            <p class="text-i"><i class="fa fa-check"></i>提高阅读技巧：在专业老师的引导下，潜移默化地掌握英文原版的阅读技巧，领略到原版书籍的内容精髓，让孩子充满信心。</p>
+                                            <p class="text-i"><i class="fa fa-check"></i>激发思辩能力：在整本书的领读过程中，经验丰富的老师不仅带领孩子真正读懂书的情节，更会通过不断的提问和课堂互动的形式启发孩子的独立思考和分析能力。</p>
+                                            <p class="text-i"><i class="fa fa-check"></i>孩子通过2个月时间学习本书课程，可掌握。</p>
+                                            <p class="text-i"><i class="fa fa-check"></i>单词：170个 词组：56个 熟读背诵精彩段落：20段</p>
+                                            <p class="text-i"><i class="fa fa-check"></i>课堂延伸知识：影片、音乐、故事</p>
+                                        </dd>
+                                    </dl>
+                                </div>
+                                <div class="field">
+                                    <dl>
+                                        <dt><span>师资介绍</span></dt>
+                                        <dd class="row">
+                                            <div class="col-md-3"><img th:src="@{/img/img15.jpg}" alt=""></div>
+                                            <div class="col-md-9">
+                                                <p>Isaac Johnson-Tyas</p>
+                                                <p>Personal Background and Professional Experience:  </p>
+                                                <p>Over the past 10 years I’ve lived in Mexico, Spain, South Korea, Russia, Saudi Arabia, and now China.  I have an MBA from the University of North Carolina, USA and an MA in International Management from the IBS Academy in Russia.  My career began in education as an English teacher, then I progressed up to coordinator, site director, regional director, country director, and then director of operations before moving to China to become an Academic Quality Manager for Online Services with EF.  I started my Doctorate in Business Administration in 2013 and I expect to graduate in 2018.  Even though I have travelled the world teaching and learning, making an impact on the future through education has always been my passion.</p>
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                </div>
+                                <div class="field">
+                                    <dl>
+                                        <dt><span>4大教学优势</span></dt>
+                                        <dd>
+                                            <p><img th:src="@{/img/img16.jpg}" alt=""></p>
+                                        </dd>
+                                    </dl>
+                                </div>
+                                <div class="field">
+                                    <dl>
+                                        <dt><span>专业课程设计</span></dt>
+                                        <dd class="text-img">
+                                            <p><img th:src="@{/img/img17.jpg}" alt=""></p>
+                                        </dd>
+                                    </dl>
+                                </div>
+                                <div class="field">
+                                    <dl>
+                                        <dt><span>课程特色</span></dt>
+                                        <dd>
+                                            <p class="text-i"><i class="fa fa-check"></i>对接国际教育标准，基于美国共同核心州立标准（CCSS）研发的适合中国孩子学习的英文原版阅读系统性课程。</p>
+                                            <p class="text-i"><i class="fa fa-check"></i>孩子们随时随地，利用碎片化时间进行英文原版阅读。在浸润式的英语环境中培养类母语的核心阅读能力，不断提高对于跨文化的深度理解，以及形成批判性思维、思辨能力。</p>
+                                            <p class="text-i"><i class="fa fa-check"></i>从课前听读预习、趣味翻转课堂，到外教名师精读录播课，到课后复习和语音作业，再到每本原版书学完后的针对性总结报告，以及孩子阶段性的美国权威Star阅读能力跟踪测评，六大环节打造完整的原版阅读教学闭环，为培养孩子的原版阅读兴趣和能力，以及全面提高听说读写提供了丰富资源和优质平台。</p>
+                                            <p class="text-i"><i class="fa fa-check"></i>我们的教师均来自英语母语国家，他们热爱孩子、热爱阅读、热爱教育事业，均持有TESOL/TEFL教学资格，并拥有多年的丰富少儿英语教学经验。</p>
+                                            <p class="text-i"><i class="fa fa-check"></i>原汁原味、生动有趣的经典英文原版书，结合CCSS标准以及中国孩子学英文的不同年龄段和特点，开发的精读课程跨文化、跨题材，以学生为中心，提供个性化的课程学习和阅读培养。 词组：56个 熟读背诵精彩段落：20段</p>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="tab-2" class="tab-pane">
+                            <div class="panel-body">
+                                <div class="panel-group tab-pr" id="accordion" role="tablist" aria-multiselectable="true">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" role="tab" id="headingOne">
+                                            <h4 class="panel-title">
+                                                <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                                    <!--<span class="fr"><i class="fa fa-caret-down"></i></span>-->
+                                                    <i class="fa fa-minus-circle"></i> <strong>第1章 课程介绍</strong>
+                                                </a>
+                                            </h4>
+                                        </div>
+                                    </div>
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" role="tab" id="headingTwo">
+                                            <h4 class="panel-title">
+                                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                                    <!--<span class="fr"><i class="fa fa-caret-down"></i></span>-->
+                                                    <i class="fa fa-minus-circle"></i> <strong>第2章 课程介绍</strong>
+                                                </a>
+                                            </h4>
+                                        </div>
+                                    </div>
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" role="tab" id="headingThree">
+                                            <h4 class="panel-title">
+                                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                                    <!--<span class="fr"><i class="fa fa-caret-down"></i></span>-->
+                                                    <i class="fa fa-minus-circle"></i> <strong>第3章 课程介绍</strong>
+                                                </a>
+                                            </h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="tab-3" class="tab-pane">
+                            <div class="panel-body">
+                                <div class="row project-dl">
+                                    <div class="col-xs-2">
+                                        <div class="project-dl1">所属体系</div>
+                                    </div>
+                                    <div class="col-xs-10">少儿中教DIY课程</div>
+                                </div>
+                                <div class="row project-dl">
+                                    <div class="col-xs-2">
+                                        <div class="project-dl1">学习时长</div>
+                                    </div>
+                                    <div class="col-xs-10">180天</div>
+                                </div>
+                                <div class="row project-dl">
+                                    <div class="col-xs-2">
+                                        <div class="project-dl1">课时数</div>
+                                    </div>
+                                    <div class="col-xs-10">50课时</div>
+                                </div>
+                                <div class="row project-dl">
+                                    <div class="col-xs-2">
+                                        <div class="project-dl1">包装清单</div>
+                                    </div>
+                                    <div class="col-xs-10">视频*1</div>
+                                </div>
+                                <div class="pt-15">
+                                    <table class="course-material-list">
+                                        <thead>
+                                        <tr>
+                                            <th>文件名</th>
+                                            <th>大小</th>
+                                            <th></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr class="material-item">
+                                            <td>01 Hi Read直播课上课指引.png</td>
+                                            <td>185.10 KB</td>
+                                            <td class="download-item">
+                                                <a class="download-url"><i class="fa fa-cloud-download"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr class="material-item">
+                                            <td>01 Hi Read直播课上课指引.png</td>
+                                            <td>185.10 KB</td>
+                                            <td class="download-item">
+                                                <a class="download-url"><i class="fa fa-cloud-download"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr class="material-item">
+                                            <td>01 Hi Read直播课上课指引.png</td>
+                                            <td>185.10 KB</td>
+                                            <td class="download-item">
+                                                <a class="download-url"><i class="fa fa-cloud-download"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr class="material-item">
+                                            <td>01 Hi Read直播课上课指引.png</td>
+                                            <td>185.10 KB</td>
+                                            <td class="download-item">
+                                                <a class="download-url"><i class="fa fa-cloud-download"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr class="material-item">
+                                            <td>01 Hi Read直播课上课指引.png</td>
+                                            <td>185.10 KB</td>
+                                            <td class="download-item">
+                                                <a class="download-url"><i class="fa fa-cloud-download"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr class="material-item">
+                                            <td>01 Hi Read直播课上课指引.png</td>
+                                            <td>185.10 KB</td>
+                                            <td class="download-item">
+                                                <a class="download-url"><i class="fa fa-cloud-download"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr class="material-item">
+                                            <td>01 Hi Read直播课上课指引.png</td>
+                                            <td>185.10 KB</td>
+                                            <td class="download-item">
+                                                <a class="download-url"><i class="fa fa-cloud-download"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr class="material-item">
+                                            <td>01 Hi Read直播课上课指引.png</td>
+                                            <td>185.10 KB</td>
+                                            <td class="download-item">
+                                                <a class="download-url"><i class="fa fa-cloud-download"></i></a>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="tab-5" class="tab-pane">
+                            <div class="panel-body">
+                                <div class="common-qa-content clear-fix">
+                                    <div class="qa-item">
+                                        <div class="question">1、上课如何操作？</div>
+                                        <div class="answer">
+                                            <p>直播课次日10:00后可以无限次观看回放。</p>
+                                        </div>
+                                    </div>
+                                    <div class="qa-item">
+                                        <div class="question">2、如果错过了直播课程的时间怎么办？</div>
+                                        <div class="answer">
+                                            <p>直播课次日10:00后可以无限次观看回放。</p>
+                                        </div>
+                                    </div>
+                                    <div class="qa-item a-link">
+                                        更多常见问题
+                                        <a href="javascript:" target="_blank">点击这里查看</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+    <script th:src="@{/app/product/product.js}"></script>
+</th:block>

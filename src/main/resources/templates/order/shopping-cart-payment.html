@@ -1,0 +1,79 @@
+<th:block th:fragment="shopping-cart-payment" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+        .wx-img1{
+            height:332px;
+        }
+        .wx-img2{
+            right:-250px;
+        }
+        .order-title .channel{
+            margin-right:10px;
+        }
+        a.refresh{
+            color:rgb(57,148,241);
+        }
+        .order-title .back{
+            font-size:0.9em;
+            color:rgb(57,148,241);
+        }
+        .order-title .back span{
+            margin-right:5px;
+        }
+    </style>
+    <template id="shopping-cart-payment-t">
+        <div class="container cart-wp1">
+            <div class="register_step register_step2">
+                <ul>
+                    <li>
+                        <div class="step_img">1</div>
+                        <div class="step_text_no">我的购物车</div>
+                    </li>
+                    <li>
+                        <div class="register_dotted"></div>
+                    </li>
+                    <li>
+                        <div class="step_img">2</div>
+                        <div class="step_text_no">填写核对订单信息</div>
+                    </li>
+                    <li>
+                        <div class="register_dotted"></div>
+                    </li>
+                    <li>
+                        <div class="step_img step_img_color">3</div>
+                        <div class="step_text_ok">订单支付</div>
+                    </li>
+                </ul>
+            </div>
+            <div class="cart-wp clear-fix">
+                <div class="order-title" v-if="prodOrder">
+                    <span class="channel" v-if="prodOrder.channel=='wx'">微信支付</span>
+                    <span class="channel" v-if="prodOrder.channel=='zfb'">支付宝支付</span>
+                </div>
+                <div class="col-md-8" >
+                    <div class="text-center pd-30 wx-wp">
+                    <span class="wx-text">
+                        <span v-if="fetchingCodeUrl"><img th:src="@{/hi_img/loading.gif}" alt="">请求中...</span>
+                        <span v-else>
+                            <a href="javascript:" class="refresh" v-on:click="fetchCodeUrl" >刷新二维码</a>
+                            <span v-show="!codeUrl">二维码请求失败</span>
+                        </span>
+                    </span><br/>
+                        <!--<span class="wx-img1"><img th:src="@{/img/wx5.png}" alt=""></span><br/>-->
+                        <span class="wx-img1" id="qrcode"></span><br/>
+                        <span class="wx-bg">
+                    <span class="wx-img3"><img th:src="@{/img/wx6.png}" alt=""></span>
+                    <span class="wx-text1">请使用微信扫一扫<br/>扫描二维码支付</span>
+                </span>
+                        <span class="wx-img2"><img th:src="@{/img/img35.jpg}" alt=""></span>
+                    </div>
+                </div>
+                <div class="clear"></div>
+                <div class="order-title">
+                    <a href="javascript:" class="back" v-on:click="toCartOrder"><span class="iconfont icon-back"></span>选择其他支付方式</a>
+                </div>
+            </div>
+        </div>
+    </template>
+    <script th:src="@{/js/qrcode/qrcode.min.js}"></script>
+    <script th:src="@{/app/order/shopping-cart-payment.js}"></script>
+</th:block>

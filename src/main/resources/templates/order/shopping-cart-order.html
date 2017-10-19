@@ -1,0 +1,173 @@
+<th:block th:fragment="shopping-cart-order" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+        .cart-img img {
+            height: 100%;
+        }
+
+        .cart-list td {
+            padding: 25px 0px 25px 70px;
+        }
+
+        .order-title, .order-title1 {
+            font-weight: 900;
+        }
+
+        .order-count {
+            color: rgb(28, 171, 251);
+            margin-left: 50px;
+            font-size: .8em;
+        }
+
+        .buyer-message textarea {
+            border: 1px solid #e2e2e2;
+        }
+        .cart-btn.disabled{
+            opacity:0.7;
+        }
+    </style>
+    <template id="shopping-cart-order-t">
+        <div>
+            <div class="container cart-wp1">
+                <div class="register_step register_step2">
+                    <ul>
+                        <li>
+                            <div class="step_img">1</div>
+                            <div class="step_text_no">我的购物车</div>
+                        </li>
+                        <li>
+                            <div class="register_dotted"></div>
+                        </li>
+                        <li>
+                            <div class="step_img step_img_color">2</div>
+                            <div class="step_text_ok">填写核对订单信息</div>
+                        </li>
+                        <li>
+                            <div class="register_dotted"></div>
+                        </li>
+                        <li>
+                            <div class="step_img">3</div>
+                            <div class="step_text_no">订单支付</div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="cart-wp clear-fix">
+                    <div class="order-title">收货地址</div>
+                    <div class="order-content">
+                        <div class="row">
+                            <div class="col-sm-4 order-add-wp " v-for="(addr,index) in addrList" :class="{'order-add-link':addr.id==selectedAddrId}">
+                                <div class="order-add border3" v-on:click="selectAddr(addr.id)"   style="margin-bottom:5px;">
+                                    <div class="order-add-title clear-fix">
+                                        <span class="fr color-999 cup-pointer" v-if="addr.asDefault=='1'">默认地址</span>{{addr.name}}
+                                    </div>
+                                    <div class="pt-5">{{addr.mobile}}</div>
+                                    <div class="color-999">
+                                        <span>{{addr.province}}</span>
+                                        <span>{{addr.city}}</span>
+                                        <span>{{addr.area}}</span>
+                                    </div>
+                                    <div class="color-999">{{addr.detailAdddress}}</div>
+                                    <div class="order-add-a">
+                                        <a href="javascript:" class="order-add-g" v-on:click="updateAddr(addr)">修改</a>
+                                        <a href="javascript:" v-on:click="deleteAddr(addr.id)">删除</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="order-newly border3 order-add-addr">
+                                    <div class="text-center"><span class="cart-close"><i class="fa fa-plus-circle"></i></span>
+                                    </div>
+                                    <div class="text-center pt-10">添加新地址</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="order-title" v-if="!sub.noPayment">支付方式</div>
+                    <div class="order-content" v-if="!sub.noPayment">
+                        <span class="order-link border3" :class="{'order-link-hover':channel=='wx'}" v-on:click="channel='wx'"><img th:src="@{/img/wx4.png}" alt=""></span>
+                        <span class="order-link border3" :class="{'order-link-hover':channel=='zfb'}" v-on:click="channel='zfb'"><img th:src="@{/img/zf.png}" alt=""></span>
+                    </div>
+                    <div class="order-title1">购买课程 <span class="order-count" v-if="sub.cartSelectedList">共{{sub.cartSelectedList.length}}门课程</span>
+                    </div>
+                    <div class="layui-form cart-list">
+                        <table class="layui-table cart-table" lay-skin="line">
+                            <tbody>
+                            <tr v-for="(cart,index) in sub.cartSelectedList">
+                                <td width="5%">{{index+1}}</td>
+                                <td>
+                                    <label class="cart-pt1">
+                                        <span class="cart-img"><img :src="getProdIconSrc(cart.product.id)" alt=""></span>
+                                        <span class="cart-center">{{cart.product.prodName}}<br/>{{cart.product.bookName}}</span>
+                                    </label>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="order-title">买家留言</div>
+                    <div class="order-content buyer-message">
+                        <textarea name="" id="" cols="100" rows="3" v-model="buyerMessage"></textarea>
+                    </div>
+
+                    <div class="cart-bottom clear-fix">
+                        <div class="fr text-right">
+                    <span class="cart-jg">总计（不含运费） : <span
+                            class="cart-color3">￥{{numeral(sub.total).format('0.00')}}</span></span>
+                            <a href="javascript:" class="cart-btn" :class="{'disabled':submitting}" v-on:click="submit">提交订单</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="popup-content" style="display: none;">
+                <span class="cart-close fr layui-layer-close cart-close1"><i class="fa fa-times-circle"></i></span>
+                <div class="popup-title">填写收货地址</div>
+                <div class="popup-con">
+                    <form id="form1" class="layui-form layui-form1">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">姓名</label>
+                            <div class="layui-input-inline">
+                                <input v-model="addr.name" type="text" lay-verify="username"  placeholder="" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">手机号码</label>
+                            <div class="layui-input-inline">
+                                <input v-model="addr.mobile" type="tel" name="phone"  autocomplete="off" class="layui-input" lay-verify="phone">
+                            </div>
+                        </div>
+                        <div class="layui-form-item pt-15">
+                            <label class="layui-form-label">填写地址</label>
+                            <div class="layui-input-inline">
+                                <select-province v-model="addr.provinceId" ></select-province>
+                            </div>
+                            <div class="layui-input-inline" >
+                                <select-city v-model="addr.cityId" :province-id="addr.provinceId" ></select-city>
+                            </div>
+                            <div class="layui-input-inline" >
+                                <select-area v-model="addr.areaId" :city-id="addr.cityId" ></select-area>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">详细地址</label>
+                            <div class="layui-input-block">
+                                <input v-model="addr.detailAddress" type="text" name="" class="layui-input" lay-verify="required">
+                            </div>
+                        </div>
+                        <div class="layui-form-item" pane="">
+                            <label class="layui-form-label">默认地址</label>
+                            <div class="layui-input-block">
+                                <lu-checkbox v-model="addr.isDefault"></lu-checkbox>
+                            </div>
+                        </div>
+                        <div class="layui-form-item text-right">
+                            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveAddr" :class="{'layui-btn-disabled':addrSaving}">保存</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+    </template>
+    <script th:src="@{/app/order/shopping-cart-order.js}"></script>
+</th:block>

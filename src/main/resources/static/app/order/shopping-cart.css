@@ -1,0 +1,140 @@
+.cart-img {
+    text-align: center;
+}
+
+.cart-img img {
+    height: 100%;
+}
+
+.down-menu1 a {
+    display: flex;
+    justify-content: space-between;
+}
+
+#bottom-td-1 {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.cart-bottom {
+    padding: 10px 5px 10px 26px;
+}
+
+.cart-bottom.cart-opt {
+    display: flex;
+    justify-content: space-between;
+}
+
+.cart-bottom.cart-opt .bottom-left {
+    width: 65%;
+}
+
+.cart-bottom.cart-opt .bottom-right {
+    width: 35%;
+    flex-direction: column;
+}
+
+.cart-bottom.cart-opt .bottom-right .br-title {
+    width: 30%;
+}
+
+.cart-bottom.cart-opt .cart-select-info {
+    margin-left: 20px;
+}
+
+.cart-bottom.cart-opt .user-point-info {
+    margin-top: 5px;
+}
+
+.cart-bottom.cart-opt .down-btn {
+    border-color: black;
+}
+
+.cart-bottom.cart-opt .user-point-info input {
+    width: 60px;
+    margin-right: 20px;
+    border: 1px solid black;
+    height: 32px;
+    margin: 0;
+    padding: 5px 10px;
+}
+
+.cart-bottom.cart-opt .user-coupon {
+}
+
+.cart-bottom.cart-opt .user-coupon .dropdown {
+    height: 32px;
+}
+
+.cart-bottom .price-info {
+    display: flex;
+    align-items: center;
+}
+
+.cart-bottom .price-info .bottom-left {
+    width: 65%;
+}
+
+.cart-bottom .price-info .bottom-right {
+    width: 35%;
+}
+
+.cart-bottom .price-info .price-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.cart-bottom .price-info .price-details .price-details-row {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.cart-bottom .price-info .price-details .price-details-row div:nth-child(1) {
+    width: 30%;
+}
+
+.cart-bottom .price-info .price-sum {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.cart-bottom .price-info .price-sum .sum {
+    font-size: 1.6em;
+    font-weight: 700;
+    line-height: 1.2em;
+    display: flex;
+
+}
+
+.cart-bottom .price-info .price-sum .sum div:nth-child(1), .cart-bottom .price-info .price-sum .saved div:nth-child(1) {
+    width: 30%;
+}
+
+.cart-bottom .price-info .price-sum .saved {
+    font-size: 1.6em;
+    line-height: 1.5em;
+    font-weight: 400;
+    display: flex;
+    margin-top: 10px;
+}
+
+.cart-bottom .cart-submit {
+    position:absolute ;
+    right:10px;
+    bottom:.5em;
+}
+
+.price-red {
+    color: #d62d40;
+}
+
+.cart-btn:hover, .cart-btn:active, .cart-btn:link, .cart-btn:visited {
+    color: white;
+}
+a.cart-btn{
+    padding-left:30px;
+    padding-right: 30px;
+    font-size:1.2em;
+
+}

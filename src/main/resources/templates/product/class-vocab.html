@@ -1,0 +1,350 @@
+﻿<th:block th:fragment="class-vocab" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+        .word-book-top .head-portrait{
+            display: flex;
+            align-items: center;
+        }
+        .word-book-top .head-portrait img{
+            margin:0 30px;
+        }
+        .word-book-center{
+            position: relative;
+        }
+        .word-book-center .prod-name{
+            position: absolute;
+            top:30px;
+            right:30px;
+            z-index:10;
+            color:#fff;
+            font-size:20px;
+            font-weight:900;
+        }
+        .opt-box{
+            padding:10px 0 30px 60px;
+            color:#34b0b0;
+
+        }
+        .opt-box .delete-btn{
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .layui-form-select{
+            font-size:20px;
+        }
+
+        /*自适应*/
+        @media (max-width: 1200px){
+            .honors-museum-top .text{
+                width:550px;
+            }
+        }
+
+    </style>
+    <template id="class-vocab-t">
+        <div class="class-vocab">
+            <div class="main">
+                <div class="clearfix">
+                    <h4 class="title pull-left">我的单词本</h4>
+                    <p class="nav-text pull-right">
+                        <i class="fa fa-map-marker"></i>学习中心
+                        <i class="fa fa-angle-double-right"></i>我的单词本
+                    </p>
+                </div>
+                <div class="word-book-box">
+                    <div class="word-book-top clearfix">
+                        <div class="head-portrait pull-left">
+                            <img :src="prodImgSrc()" width="70" height="70">
+                            <lu-select :options="userProducts"
+                                       value-key="productId"
+                                       text-key="bookName"
+                                       verify="required"
+                                       :value="userProductSelected.productId"
+                                       v-on:input="inputUserProduct" v-if="userProducts&&userProducts.length>0"></lu-select>
+                        </div>
+                        <div class="collection-box pull-right">
+                            <a href="javascript:;" class="collection" v-on:click="tab='vocabs'" :class="{'collection-active':tab=='vocabs'}"></a>
+                            <a href="javascript:;" class="review" v-on:click="tab='vocabsReview'" :class="{'review-active':tab=='vocabsReview'}"></a>
+                        </div>
+                    </div>
+                    <div class="word-book-center">
+                        <!--<a href="javascript:;"><img th:src="@{/img/word_book_3.png}"></a>-->
+                        <div class="prod-name" v-if="userProductSelected">{{userProductSelected.product.prodName}}</div>
+                        <a href="javascript:;" v-if="tab=='vocabs'"><img th:src="@{/img/word_book_6.png}"></a>
+                        <a href="javascript:;" v-if="tab=='vocabsReview'"><img th:src="@{/img/word_book_4.png}"></a>
+                    </div>
+                    <div class="word-book-table" v-if="tab=='vocabs'&&vocabs&&vocabs.length>0">
+                        <table class="layui-table" lay-even="" lay-skin="nob">
+                            <colgroup>
+                                <col width="100">
+                                <col width="150">
+                                <col width="200">
+                                <col width="250">
+                            </colgroup>
+                            <thead>
+                            <tr>
+                                <th><input type="checkbox" name="chk" class="all-select" v-model="allSelected" /></th>
+                                <th><a href="javascript:;" v-on:click="showQuestion=!showQuestion">
+                                    <span v-if="showQuestion">隐藏单词</span>
+                                    <span v-if="!showQuestion">显示单词</span>
+                                </a></th>
+                                <th><a href="javascript:;" v-on:click="showExplain=!showExplain">
+                                    <span v-if="showExplain">隐藏词义</span>
+                                    <span v-if="!showExplain">显示词义</span>
+                                </a></th>
+                                <td><a href="javascript:;">操作</a></td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="v in vocabsInPage" :key="v.id">
+                                <td><input type="checkbox" v-model="v.selected"/></td>
+                                <td><span v-if="showQuestion">{{v.practise.question}}</span></td>
+                                <td><span v-if="showExplain">{{v.practise.cardCnExplain}}</span></td>
+                                <td><a href="javascript:;" v-on:click="deleteVocab(v)">删除</a></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="opt-box">
+                            <a href="javascript:;" class="delete-btn" v-on:click="deleteSelected()">删除勾选项</a>
+                        </div>
+                        <page2 :max-pages-per-row="5"
+                               :entity-count-per-row="entityCountPerRow"
+                               :current-page-index="currentPageIndex"
+                               :entity-count="vocabs.length"
+                               v-on:change-to-page="changeToPage" v-if="vocabs&&vocabs.length>entityCountPerRow"></page2>
+                    </div>
+
+                    <div class="word-book-table" v-if="tab=='vocabsReview'&&reviewVocabs&&reviewVocabs.length>0">
+                        <table class="layui-table" lay-even="" lay-skin="nob">
+                            <colgroup>
+                                <col width="150">
+                                <col width="150">
+                                <col width="200">
+                                <col>
+                            </colgroup>
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th>Unit<br><span class="small-title">单元</span></th>
+                                <th>Chapter<br><span class="small-title">章节</span></th>
+                                <th>Vocabulary Gym<br><span class="small-title">单身健身房</span></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="v in reviewVocabsInPage">
+                                <td><img th:src="@{/img/word_book_5.png}"></td>
+                                <td>Unit {{v.practise.unit.unitNo}}</td>
+                                <td>Chapter {{v.practise.chapter}}</td>
+                                <td><a href="javascript:;" v-on:click="toClass(v.practise.unit)">去复习</a></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <page2 :max-pages-per-row="5"
+                               :entity-count-per-row="entityCountPerRow"
+                               :current-page-index="currentReviewPageIndex"
+                               :entity-count="reviewVocabs.length"
+                               v-on:change-to-page="changeToReviewPage" v-if="reviewVocabs&&reviewVocabs.length>entityCountPerRow"></page2>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </template>
+    <script>
+        var classVocab={
+            data: function () {
+                return {
+                    userProducts:null,
+                    userProductSelected:null,
+                    vocabs:null,
+                    reviewVocabs:null,
+                    tab:'vocabs',
+                    entityCountPerRow:10,
+                    currentPageIndex:0,
+                    currentReviewPageIndex:0,
+                    allSelected:false,
+                    showQuestion:true,
+                    showExplain:true
+                }
+            },
+            mixins:[hi.mixin],
+            template: '#class-vocab-t',
+            created:function(){
+                var self=this;
+                self.fectchMyProducts().then(function(){
+                    self.fetchMyList();
+                });
+            },
+            computed:{
+                vocabsInPage:function(){
+                    if(this.vocabs){
+                        var start=this.currentPageIndex*this.entityCountPerRow;
+                        var end=this.currentPageIndex*this.entityCountPerRow+this.entityCountPerRow-1;
+                        var result=[];
+                        for(var i=0;i<this.vocabs.length;i++){
+                            if(i>=start&&i<=end){
+                                result.push(this.vocabs[i]);
+                            }
+                        }
+                        return result;
+                    }
+                },
+                reviewVocabsInPage:function(){
+                    if(this.reviewVocabs){
+                        var start=this.currentReviewPageIndex*this.entityCountPerRow;
+                        var end=this.currentReviewPageIndex*this.entityCountPerRow+this.entityCountPerRow-1;
+                        var result=[];
+                        for(var i=0;i<this.reviewVocabs.length;i++){
+                            if(i>=start&&i<=end){
+                                result.push(this.reviewVocabs[i]);
+                            }
+                        }
+                        return result;
+                    }
+                },
+            },
+            methods: {
+                fectchMyProducts:function(){
+                    var self=this;
+                    return hi.ax.get('product/classCenter/userProducts?currentPage=0').then(function(r){
+                        if(r.data.status=='fail'){
+                            hi.alert(r.data.msg);
+                            return Promise.reject();
+                        }
+                        var userProducts=r.data.entity;
+
+                        if(userProducts&&userProducts.length>0){
+                            _.each(userProducts,function(up){
+                                up.bookName=up.product.bookName;
+                                up.prodName=up.product.prodName;
+                            });
+                            self.userProducts=userProducts;
+                            self.userProductSelected=userProducts[0];
+                            return Promise.resolve();
+                        }
+                        return Promise.reject();
+
+                    });
+                },
+                inputUserProduct:function(v){
+                    var self=this;
+                    self.userProductSelected=_.find(self.userProducts,{'productId':v});
+                    self.fetchMyList();
+                },
+                fetchMyList:function(){
+                    var self=this;
+                    if(!self.userProductSelected){
+                        return;
+                    }
+                    hi.ax.get('/product/userVocab/myList').then(function(r){
+                        var result=r.data.entity;
+                        if(result){
+                            var vocabs=_.filter(result,function(uv){
+                                return uv.practise.productId==self.userProductSelected.productId;
+                            });
+                            vocabs=_.orderBy(vocabs,['practise.question']);
+                            _.each(vocabs,function(v){
+                                v.selected=false;
+                                var unitNo=999;
+                                try{
+                                    unitNo=parseInt(v.practise.unit.unitNo);
+                                }catch(e){}
+                                v.unitNo=unitNo;
+                                var chapter=999;
+                                try{
+                                    chapter=parseInt(v.practise.chapter);
+                                }catch(e){}
+                                v.chapter=chapter;
+                            });
+                            self.vocabs=vocabs;
+                            self.reviewVocabs=_.orderBy(vocabs,['unit','chapter']);
+                            self.allSelected=false;
+                        }
+                    });
+                },
+                changeToPage:function(currentPage){
+                    this.currentPageIndex=currentPage-1;
+                },
+                changeToReviewPage:function(currentPage){
+                    this.currentReviewPageIndex=currentPage-1;
+                },
+                toggleAllSelected:function(){
+                    var self=this;
+                    self.allSelected=!self.allSelected;
+                    if(self.vocabs){
+                        var start=self.currentPageIndex*self.entityCountPerRow;
+                        var end=self.currentPageIndex*self.entityCountPerRow+self.entityCountPerRow-1;
+                        var result=[];
+                        for(var i=0;i<self.vocabs.length;i++){
+                            if(i>=start&&i<=end){
+                                result.push(this.vocabs[i]);
+                            }
+                        }
+
+                        _.each(self.vocabs,function(v){
+                            v.selected=true;
+                        });
+                    }
+
+                },
+                deleteVocab:function(vocab){
+                    var self=this;
+                    layer.confirm('确认要删除吗?', {
+                        title: false,
+                        closeBtn: 0,
+                        btn: ['确认', '取消']
+                    }, function () {
+                        hi.ax.delete('/product/userVocab/delete?userVocabIds='+vocab.id).then(function(r){
+                            self.fetchMyList();
+                            layer.close(layer.index);
+                        });
+                    });
+
+                },
+                deleteSelected:function(){
+                    var self=this;
+                    var toDelete=_.filter(self.vocabs,{'selected':true});
+                    if(self.empty(toDelete)){
+                        hi.alert('请选择要删除的单词');
+                        return;
+                    }
+                    var userVocabIds=[];
+                    _.each(toDelete,function(v){
+                        userVocabIds.push(v.id);
+                    });
+                    layer.confirm('确认要删除吗?', {
+                        title: false,
+                        closeBtn: 0,
+                        btn: ['确认', '取消']
+                    }, function () {
+                        hi.ax.delete('/product/userVocab/delete?userVocabIds='+userVocabIds.join(';')).then(function(r){
+                            self.fetchMyList();
+                            layer.close(layer.index);
+                        });
+                    });
+                },
+                prodImgSrc:function(){
+                    if(this.userProductSelected){
+                        return hi.root + "sys/file/img?type=img_product&id=" + this.userProductSelected.productId;
+                    }
+                },
+                toClass:function(unit){
+                    if(unit&&this.userProductSelected){
+                        var url=hi.root+'product/classCenter/hw?type=previewHW&unitId='+unit.id+'&userProductId='+this.userProductSelected.id;
+                        window.open(url);
+                    }
+
+                }
+            },
+            watch:{
+                'allSelected':function(v){
+                    var self=this;
+                    _.each(self.vocabsInPage,function(vc){
+                        vc.selected=v;
+                    });
+                }
+            }
+
+        }
+
+    </script>
+</th:block>

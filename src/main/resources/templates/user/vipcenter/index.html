@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="common/head :: common-head"></th:block>
+</head>
+<body>
+<div id="vipcenter" v-cloak class="h100">
+    <hi-header></hi-header>
+    <div class="container">
+        <div class="row page-wp">
+            <div class="col-md-2">
+                <menu-left2 :items="items" title="会员中心"></menu-left2>
+            </div>
+            <div class="col-md-10">
+                <router-view></router-view>
+            </div>
+        </div>
+    </div>
+    <hi-footer></hi-footer>
+</div>
+<th:block th:include="common/head :: common"></th:block>
+<th:block th:include="component/user/menu-left2 :: menu-left2"></th:block>
+<th:block th:include="component/layui/lu-select :: lu-select"></th:block>
+<th:block th:include="component/layui/lu-radio :: lu-radio"></th:block>
+<th:block th:include="component/layui/lu-datepicker :: lu-datepicker"></th:block>
+<th:block th:include="user/vipcenter/profile-setting :: profile-setting"></th:block>
+<th:block th:include="user/vipcenter/reset-password :: reset-password"></th:block>
+<th:block th:include="user/vipcenter/my-notification :: my-notification"></th:block>
+<th:block th:include="user/vipcenter/my-integral :: my-integral"></th:block>
+<th:block th:include="user/vipcenter/my-coupon :: my-coupon"></th:block>
+<th:block th:include="user/vipcenter/my-invitation :: my-invitation"></th:block>
+<th:block th:include="user/vipcenter/ambassador-auth :: ambassador-auth"></th:block>
+<th:block th:include="user/vipcenter/my-performance :: my-performance"></th:block>
+<script th:src="@{/controller/user/vipcenter/index.js}"></script>
+</body>
+</html>

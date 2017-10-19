@@ -1,0 +1,187 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="common/head :: common-head"></th:block>
+</head>
+<body>
+<div id="app-1" v-cloak class="class h100" v-on:click="appClick">
+    <div class="class-left" >
+        <div class="class-left-title">
+            <div class="title-left">
+                <a v-on:click="backToUserProduct" class="class-btn class-btn2"><img th:src="@{/img/class_back.png}">
+                    返回课程</a>
+                <span class="class-title-text1" v-if="unit">{{unit.product.bookName}} » {{unit.unitName}}</span>
+            </div>
+
+            <div class="title-right .class-title-text1">
+                <reward :panel-display="true"></reward>
+            </div>
+        </div>
+        <div class="h100" v-show="videoShow">
+            <div class="class-left-content clear-fix scroll">
+                <unit-video v-show="videoShow"
+                            v-if="unit&&track"
+                            :id="'unit-video-'+unit.id"
+                            :unit="unit"
+                            v-on:practise-id-change="onPractiseIdChange"
+                            v-on:video-show-change="onVideoShowChange"
+                            v-on:practise-show-change="onPractiseShowChange"
+                            v-on:unit-hint-id-change="onUnitHintIdChange"
+                            v-on:unit-audio-id-change="onUnitAudioIdChange"
+                            v-on:video-ended="onVideoEnded"
+                            v-on:video-play="onVideoPlay"
+                            v-on:video-pause="onVideoPause"
+                ></unit-video>
+                <div v-else>
+                    视频加载中...
+                </div>
+            </div>
+        </div>
+        <unit-practise v-show="practiseShow"
+                       v-if="unit&&practiseId&&trackGami"
+                       :practises="unit.practises"
+                       :practise-id="practiseId"
+                       :track="trackGami"
+                       type="video"
+                       v-on:video-show-change="onVideoShowChange"
+                       v-on:practise-show-change="onPractiseShowChange"
+                       v-on:practise-id-change="onPractiseIdChange"
+                       v-on:video-gami-finish="onVideoGamiFinish"
+                       v-on:practise-submit="onPractiseSubmit"
+        ></unit-practise>
+    </div>
+    <div class="mui-mbar-tabs">
+        <div class="quick_link_mian">
+            <div class="quick_links_panel">
+                <ul id="quick_links" class="quick_links">
+                    <li v-on:click="quickLinkChange('section')">
+                        <a href="javascript:" class="section_list linktab" :class="{'sectionShow':true}">
+                            <img th:src="@{/img/class_basic_01.png}" alt="">
+                            <span class="class-right-menu">目录</span>
+                        </a>
+                    </li>
+                    <li v-on:click="quickLinkChange('gami')">
+                        <a href="javascript:" class="gami_list linktab" :class="{'gamiShow':true}">
+                            <img th:src="@{/img/class_basic_02.png}" alt="">
+                            <span class="class-right-menu">练习</span>
+                        </a>
+                    </li>
+                    <li v-on:click="quickLinkChange('hint')" >
+                        <a href="javascript:" class="hint_list twink linktab" :class="{'hintShow':true}">
+                            <img th:src="@{/img/class_basic_03.png}" alt="">
+                            <span class="class-right-menu">词汇</span>
+                        </a>
+                    </li>
+                    <li v-on:click="quickLinkChange('audio')" >
+                        <a href="javascript:" class="hint_list linktab" :class="{'audioShow':true}">
+                            <img th:src="@{/img/class_basic_04.png}" alt="">
+                            <span class="class-right-menu">音频</span>
+                        </a>
+                    </li>
+
+                </ul>
+            </div>
+
+            <div class="quick_links_pop" v-show="sectionShow">
+                <div class="class-menu1">
+                    <dl>
+                        <dt>
+                        <h4><i class="fa fa-bars"></i>课程目录</h4></dt>
+                        <dd>
+                            <div class="panel-body">
+                                <ul class="tab-pr-ul">
+                                    <li v-for="(us,index) in unitSections" >
+                                        <a href="javascript:" v-if="!us.lock" v-on:click="sectionSelect(us)"><i class="fa fa-check-circle"></i>
+                                            {{us.title}}</a>
+                                        <a href="javascript:" v-if="us.lock"><i class="fa fa-circle-o"></i>
+                                            {{us.title}}</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="quick_links_pop" v-show="gamiShow">
+                <div class="class-menu2">
+                    <dl>
+                        <dt>
+                        <h4><i class="fa fa-bars"></i>练习</h4></dt>
+                        <dd>
+                            <div class="panel-body">
+                                <ul class="tab-pr-ul">
+                                    <li v-for="(p,index) in practises">
+                                        <a href="javascript:" v-on:click="practiseSelect(p)" v-if="p.practiseDone"><i class="fa fa-check-circle"></i>
+                                            P{{index+1}} {{resovleType(p.questionType)}}</a>
+                                        <a href="javascript:" v-else><i class="fa fa-lock"></i>
+                                            P{{index+1}} {{resovleType(p.questionType)}}</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="quick_links_pop" v-show="hintShow">
+                <div class="class-menu3">
+                    <h4><i class="fa fa-bars"></i> 课程词汇：</h4>
+                    <div class="panel-body">
+                        <div class="hint-content" v-for="hint in unitHints" v-if="hint.id==unitHintId">
+                            <p v-for="(line,index) in hint.instruction.split('\n')">{{line}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quick_links_pop" v-show="audioShow">
+                <div class="class-menu4">
+                    <h4><i class="fa fa-bars"></i> 文章朗读：</h4>
+                    <div class="panel-body">
+                        <p class="pt-10" v-for="audio in unitAudios" v-if="audio.id==unitAudioId">
+                            {{audio.instruction}}
+                        </p>
+                        <div v-for="audio in unitAudios" v-if="audio.id==unitAudioId">
+                            <normal-audio
+                                    :video-src="getUnitAudioSrc(audio)"
+                                    :autoplay="false"
+                                    type="audio"
+                                    v-on:video-play="onAudioPlay"
+                                    v-on:video-ended="onAudioEnded"
+                                    v-on:video-paused="onAudioPaused"
+                            ></normal-audio>
+                    </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+
+
+<th:block th:include="common/head :: common"></th:block>
+<th:block th:include="common/head :: videojs"></th:block>
+<th:block th:include="common/head :: dragula"></th:block>
+<link rel="stylesheet" th:href="@{/css/class2.css}">
+<link rel="stylesheet" th:href="@{/css/class-custom.css}">
+<th:block th:include="component/product/unit-video :: unit-video"></th:block>
+<th:block th:include="component/product/unit-practise :: unit-practise"></th:block>
+<th:block th:include="common/head :: practises"></th:block>
+<th:block th:include="component/product/icon-audio :: icon-audio"></th:block>
+<th:block th:include="component/product/normal-video :: normal-video"></th:block>
+<th:block th:include="component/product/normal-audio :: normal-audio"></th:block>
+<th:block th:include="component/product/reward :: reward"></th:block>
+<script th:src="@{/controller/product/class.js}"></script>
+<!--<script th:if="${#arrays.contains(@environment.getActiveProfiles(),'production')}">-->
+    <!--$(document).bind("contextmenu", function (event) {-->
+        <!--event.preventDefault();-->
+    <!--});-->
+<!--</script>-->
+</body>
+</html>

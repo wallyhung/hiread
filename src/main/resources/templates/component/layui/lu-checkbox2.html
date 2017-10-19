@@ -1,0 +1,28 @@
+﻿<th:block th:fragment="lu-checkbox2" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+    </style>
+    <template id="lu-checkbox2-t">
+        <div class="layui-unselect layui-form-checkbox" :class="{'layui-form-checked':value}" v-on:click="changeCheckd"><span>{{text}}</span><i class="layui-icon">&#10003</i></div>
+    </template>
+    <script>
+        Vue.component('lu-checkbox2', {
+            props:['value','text'],
+            data: function () {
+                return {
+                }
+            },
+            template: '#lu-checkbox2-t',
+            created: function () {
+            },
+            mounted: function () {
+            },
+            methods:{
+                changeCheckd:function(){
+                    this.$emit('input', !this.value);
+                }
+            },
+            watch: {
+            }
+        })
+    </script>
+</th:block>

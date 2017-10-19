@@ -1,0 +1,576 @@
+﻿<th:block th:fragment="class-badge" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+        .honors-museum-top{
+            padding:20px 0 4px;
+        }
+        .layui-form-select{
+            font-size:20px;
+        }
+        .honors-museum-top .title-small{
+            padding:14px 0 8px;
+            font-size:14px;
+        }
+        .main-progress .progress-bar{
+            width:0;
+        }
+        .honors-ranking-table{
+            width:470px;
+        }
+        .medal-box{
+            display: inline-block;
+            position: relative;
+            width: 38px;
+            height:38px;
+            text-align: center;
+            padding-top:10px;
+        }
+        .medal-box .accurate-num{
+            position: absolute;
+            width:38px;
+            height:38px;
+            line-height: 38px;
+            text-align: center;
+            font-size:13px;
+            color:#fff;
+            top:6px;
+            left:2px;
+        }
+        .honors-ranking-table{
+            width:49.5%;
+            margin-left:1px;
+        }
+        .honors-museum-center {
+            margin: 30px 0 20px;
+        }
+        .honors-museum-center ul {
+            padding: 20px 20px 20px;
+        }
+        .honors-museum-bottom .badge-desc{
+            display: flex;
+            line-height: 20px;
+            margin-bottom: 10px;
+        }
+        .honors-museum-bottom .badge-desc i {
+            padding-right: 10px;
+            padding-top: 3px;
+        }
+        .honors-museum-bottom .badge-desc i.white {
+            color:#FFF;
+        }
+        .honors-museum-bottom .badge-desc p {
+            text-indent: 0%;
+        }
+        .honor-medal{
+            vertical-align: text-top;
+        }
+        .class-badge .el-button{
+            background: transparent;
+            position: absolute;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            border:none;
+        }
+
+    </style>
+    <template id="class-badge-t">
+        <div class="class-badge">
+            <div class="main">
+                <div class="clearfix">
+                    <h4 class="title pull-left">荣誉馆</h4>
+                    <p class="nav-text pull-right">
+                        <i class="fa fa-map-marker"></i>学习中心
+                        <i class="fa fa-angle-double-right"></i>荣誉馆
+                    </p>
+                </div>
+                <div class="honors-museum-box" v-if="userProductSelected">
+                    <div class="honors-museum-top clearfix">
+                        <div class="head-portrait pull-left">
+                            <img :src="getProductIconSrc(userProductSelected.product.id)" >
+                        </div>
+                        <div class="text pull-left">
+                            <lu-select :options="userProducts"
+                                       value-key="productId"
+                                       text-key="bookName"
+                                       verify="required"
+                                       :value="userProductSelected.productId"
+                                       v-on:input="inputUserProduct" v-if="userProducts&&userProducts.length>0"></lu-select>
+                            <p class="title-small">{{userProductSelected.product.prodName}}</p>
+                            <div class="main-progress">
+                                <div class="clearfix">
+                                    <div class="progress">
+                                        <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" :style="{'width':userProductSelected.percent==0?'1%':userProductSelected.percent+'%'}">
+                                        </div>
+                                    </div>
+                                    <div class="progress-text pull-left">已学{{userProductSelected.percent}}%</div>
+                                    <div class="btn-more pull-right" v-if="userProductSelected">
+                                        <button href="javascript:;" class="btn btn-success btn-sm pull-right" v-on:click="toUserProduct">去学习</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="honors-museum-center">
+                        <div class="title-img"></div>
+                        <div class="vspace3"></div>
+                        <ul>
+                            <li>
+                                <dl class="clearfix">
+                                    <dt><button class="btn btn-success btn-sm">本周获得</button></dt>
+                                    <dd v-for="b in userWeekBadges" data-title="连续答对5题获得勋章">
+                                        <div v-if="b.type=='accurate'" class="medal-box">
+                                            <img th:src="@{/img/badge-accurate.png}" alt="">
+                                            <div class="accurate-num">{{b.accurateNum}}</div>
+                                        </div>
+                                        <i v-else class="honor-medal" :class="'honor-medal'+badgeInfo(b.type,'imgIndex')"></i>
+                                        <el-tooltip class="item" effect="dark" :content="badgeInfo(b.type,'hoverInfo')" placement="top-start">
+                                            <el-button></el-button>
+                                        </el-tooltip>
+                                        <span>X{{b.count}}</span>
+                                    </dd>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl class="clearfix">
+                                    <dt data-title="连续答对5题获得勋章"><button class="btn btn-success btn-sm">全部获得</button></dt>
+                                    <dd v-for="b in userAllBadges" data-title="连续答对5题获得勋章">
+                                    <div v-if="b.type=='accurate'" class="medal-box">
+                                        <img th:src="@{/img/badge-accurate.png}" alt="">
+                                        <div class="accurate-num">{{b.accurateNum}}</div>
+                                    </div>
+                                    <i v-else class="honor-medal" :class="'honor-medal'+badgeInfo(b.type,'imgIndex')"></i>
+                                    <el-tooltip class="item" effect="dark" :content="badgeInfo(b.type,'hoverInfo')" placement="top-start">
+                                        <el-button></el-button>
+                                    </el-tooltip>
+                                    <span>X{{b.count}}</span>
+                                    </dd>
+                                </dl>
+                            </li>
+                            <!--<li class="text">-->
+                                <!--恭喜您！您已超越<span>90%</span>的用户，再获得3枚<i class="honor-medal honor-medal1"></i>或者5枚<i class="honor-medal honor-medal2"></i>就能上周榜了！-->
+                            <!--</li>-->
+                            <!--<li class="clearfix">-->
+                                <!--<button href="javascript:;" class="btn btn-success btn-sm pull-right">继续学习</button>-->
+                            <!--</li>-->
+                        </ul>
+                        <div class="advertisement-box">
+                            <img th:src="@{/img/honors_museum_gg3.png}">
+                        </div>
+                    </div>
+                    <div class="honors-museum-ranking">
+                        <div class="layui-tab">
+                            <ul class="layui-tab-title">
+                                <li class="layui-this">周排行 Weekly Rank</li>
+                                <li>总排行 Totally Rank</li>
+                            </ul>
+                            <div class="layui-tab-content">
+                                <div class="layui-tab-item layui-show">
+                                    <class-badge-rank-table :badge-users="badgeBehaviorWeekUsers" :show-more-badge-users="showMoreBadgeUsers" type="behavior"></class-badge-rank-table>
+                                    <class-badge-rank-table :badge-users="badgeAcademicWeekUsers" :show-more-badge-users="showMoreBadgeUsers" type="academic"></class-badge-rank-table>
+                                </div>
+
+                                <div class="layui-tab-item">
+                                    <class-badge-rank-table :badge-users="badgeBehaviorAllUsers" :show-more-badge-users="showMoreBadgeUsers" type="behavior"></class-badge-rank-table>
+                                    <class-badge-rank-table :badge-users="badgeAcademicAllUsers" :show-more-badge-users="showMoreBadgeUsers" type="academic"></class-badge-rank-table>
+                                </div>
+                            </div>
+                            <div class="btn-more clearfix">
+                                <button href="javascript:;" class="btn btn-success btn-sm pull-right" v-on:click="toggleMoreBadgeUsers">{{showMoreBadgeUsers?'收起':'更多'}}</button>
+                            </div>
+                        </div>
+                        <div class="advertisement-box">
+                            <div class="vspace2"></div>
+                            <img th:src="@{/img//honors_museum_gg2.png}">
+                        </div>
+                    </div>
+                    <div class="honors-museum-bottom">
+                        <div class="learning-box">
+                            <div class="title-box">
+                                <span>Academic Badges</span>
+                                <span>学术徽章</span>
+                                <img th:src="@{/img//learning_reward_gold.png}">
+                            </div>
+                            <table class="layui-table">
+                                <colgroup>
+                                    <col width="100">
+                                    <col width="200">
+                                    <col width="400">
+                                    <col width="200">
+                                </colgroup>
+                                <tbody>
+                                <tr>
+                                    <td><i class="fa fa-circle"></i></td>
+                                    <td>Unit Complete Badg
+                                        <p>“解锁专家”徽章</p>
+                                    </td>
+                                    <td class="three">
+                                        <div class="badge-desc">
+                                            <i class="fa fa-circle"></i>
+                                            <div>
+                                                <p>首次完整完成一个解锁环节</p>
+                                            </div>
+                                        </div>
+                                        <div class="badge-desc">
+                                            <i class="fa fa-circle white"></i>
+                                            <div>
+                                                <p>(包括课前、课中、课后作业各个环节)</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><i class="honor-medal honor-medal5"></i></td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fa fa-circle"></i></td>
+                                    <td>
+                                        <h3>Accurate Answer Badge</h3>
+                                        <p>连续正确答题徽章 </p>
+                                    </td>
+                                    <td class="three">
+                                        <div class="badge-desc">
+                                            <i class="fa fa-circle"></i>
+                                            <div>
+                                                <p>首次答题,未使用“翻译”和“提示”</p>
+                                            </div>
+                                        </div>
+                                        <div class="badge-desc">
+                                            <i class="fa fa-circle"></i>
+                                            <div>
+                                                <p>连续答对5题,获得对应数字徽章1枚</p>
+                                            </div>
+                                        </div>
+                                        <div class="badge-desc">
+                                            <i class="fa fa-circle"></i>
+                                            <div>
+                                                <p>连续答对10/15/20题,分别获得特别徽章1枚</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <i class="honor-medal honor-medal1"></i>
+                                            <i class="honor-medal honor-medal2"></i>
+                                            <i class="honor-medal honor-medal3"></i>
+                                        </div>
+                                        <div>
+                                            <i class="honor-medal honor-medal4"></i>
+                                        </div>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fa fa-circle"></i></td>
+                                    <td>
+                                        <h3>Subject Specialist Badge</h3>
+                                        <p>词汇/语法/情节专家徽章</p>
+                                    </td>
+                                    <td class="three">
+                                        <div class="badge-desc">
+                                            <i class="fa fa-circle"></i>
+                                            <div>
+                                                <p>首次答题,未使用“翻译”和“提示”</p>
+                                            </div>
+                                        </div>
+                                        <div class="badge-desc">
+                                            <i class="fa fa-circle"></i>
+                                            <div>
+                                                <p>累计答对4道词汇/语法/角色理解题</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><i class="honor-medal honor-medal16"></i></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="daily-box">
+                            <div class="title-box">
+                                <span>Behavior Badges</span>
+                                <span>日常徽章</span>
+                                <img th:src="@{/img//learning_reward_gold.png}">
+                            </div>
+                            <table class="layui-table">
+                                <colgroup>
+                                    <col width="100">
+                                    <col width="200">
+                                    <col width="400">
+                                    <col width="200">
+                                </colgroup>
+                                <tbody>
+                                <tr>
+                                    <td><i class="fa fa-circle"></i></td>
+                                    <td>
+                                        <h3>Great Start Badge</h3>
+                                        <p>Great Start 徽章 </p>
+                                    </td>
+                                    <td class="three">
+                                        <div class="badge-desc">
+                                            <i class="fa fa-circle"></i>
+                                            <div>
+                                                <p>所有环节的第一次完成</p>
+                                            </div>
+                                        </div>
+                                        <div class="badge-desc">
+                                            <i class="fa fa-circle white"></i>
+                                            <div>
+                                                <p>(如第一次回答对一道题，第一次提交每日录音)</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><i class="honor-medal honor-medal17"></i></td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fa fa-circle"></i></td>
+                                    <td>
+                                        <h3>Daily Study Badge</h3>
+                                        <p>天天向上徽章 </p>
+                                    </td>
+                                    <td class="three">
+                                        <div class="badge-desc">
+                                            <i class="fa fa-circle "></i>
+                                            <div>
+                                                <p>每天学习25分钟</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><i class="honor-medal honor-medal11"></i></td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fa fa-circle"></i></td>
+                                    <td>
+                                        <h3>Consistent Learning Badge</h3>
+                                        <p>连续学习徽章 </p>
+                                    </td>
+                                    <td class="three">
+                                        <div class="badge-desc">
+                                            <i class="fa fa-circle "></i>
+                                            <div>
+                                                <p>连续3天学习15分钟即获得一枚徽章</p>
+                                            </div>
+                                        </div>
+                                        <div class="badge-desc">
+                                            <i class="fa fa-circle "></i>
+                                            <div>
+                                                <p>连续3天后的每天继续学习15分钟每天都再获得一枚</p>
+                                            </div>
+                                        </div>
+                                        <div class="badge-desc">
+                                            <i class="fa fa-circle "></i>
+                                            <div>
+                                                <p>连续3天后停止一天则重新计数，再连续3天才能获得一枚该徽章</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><i class="honor-medal honor-medal10"></i></td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fa fa-circle"></i></td>
+                                    <td>
+                                        <h3>Daily Recording Badge</h3>
+                                        <p>每日录音徽章 </p>
+                                    </td>
+                                    <td class="three">
+                                        <div class="badge-desc">
+                                            <i class="fa fa-circle "></i>
+                                            <div>
+                                                <p>每天完成录音并提交</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><i class="honor-medal honor-medal7"></i></td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fa fa-circle"></i></td>
+                                    <td>
+                                        <h3>Consistent Recording Badge</h3>
+                                        <p>连续录音徽章 </p>
+                                    </td>
+                                    <td class="three">
+                                        <div class="badge-desc">
+                                            <i class="fa fa-circle "></i>
+                                            <div>
+                                                <p>连续提交录音5天</p>
+                                            </div>
+                                        </div>
+                                        <div class="badge-desc">
+                                            <i class="fa fa-circle "></i>
+                                            <div>
+                                                <p>连续5天后每天继续提交录音都再获得一枚</p>
+                                            </div>
+                                        </div>
+                                        <div class="badge-desc">
+                                            <i class="fa fa-circle "></i>
+                                            <div>
+                                                <p>连续5天后停止一天则重新计数,再连续5天才能获得一枚该徽章</p>
+                                            </div>
+                                        </div>
+
+                                    </td>
+                                    <td><i class="honor-medal honor-medal6"></i></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="advertisement-box">
+                            <img th:src="@{/img//honors_museum_gg1.png}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </template>
+    <script>
+        var classBadge={
+            data: function () {
+                return {
+                    userProducts:null,
+                    userProductSelected:null,
+                    userWeekBadges:null,
+                    userAllBadges:null,
+                    badgeAcademicWeekUsers:null,
+                    badgeAcademicAllUsers:null,
+                    badgeBehaviorWeekUsers:null,
+                    badgeBehaviorAllUsers:null,
+                    showMoreBadgeUsers:false
+
+                }
+            },
+            mixins:[hi.mixin],
+            template: '#class-badge-t',
+            created:function(){
+                var self=this;
+                self.fetchMyProducts().then(function(){
+                    self.fetchPanel();
+                });
+            },
+            computed:{
+                badgeUsersIndex:function(){
+                    var count=4;
+                    if(this.showMoreBadgeUsers){
+                        count=10;
+                    }
+                    var arr=[];
+                    for(var i=0;i<count;i++){
+                        arr[i]=i;
+                    }
+                    return arr;
+                }
+            },
+            methods: {
+                fetchMyProducts:function(){
+                    var self=this;
+                    return hi.ax.get('product/classCenter/userProducts?currentPage=0').then(function(r){
+                        if(r.data.status=='fail'){
+                            hi.alert(r.data.msg);
+                            return Promise.reject();
+                        }
+                        var userProducts=r.data.entity;
+
+                        if(userProducts&&userProducts.length>0){
+                            _.each(userProducts,function(up){
+                                up.bookName=up.product.bookName;
+                                up.prodName=up.product.prodName;
+                            });
+                            self.userProducts=userProducts;
+                            self.userProductSelected=userProducts[0];
+                            return Promise.resolve();
+                        }
+                        return Promise.reject();
+
+                    });
+                },
+                fetchPanel:function(){
+                    var self=this;
+                    if(self.userProductSelected){
+                        return hi.ax.get('product/study/reward/panel?productId='+self.userProductSelected.productId).then(function(r){
+                            if(r.data.status=='fail'){
+                                hi.alert(r.data.msg);
+                                return Promise.reject();
+                            }
+                            var panel=r.data.entity;
+                            self.userWeekBadges=self.userBadgesProcess(panel.userWeekBadges);
+                            self.userAllBadges=self.userBadgesProcess(panel.userAllBadges);
+                            self.badgeAcademicWeekUsers=panel.badgeAcademicWeekUsers;
+                            self.badgeAcademicAllUsers=panel.badgeAcademicAllUsers
+                            self.badgeBehaviorWeekUsers=panel.badgeBehaviorWeekUsers;
+                            self.badgeBehaviorAllUsers=panel.badgeBehaviorAllUsers;
+                            return Promise.resolve();
+                        });
+                    }
+                    return Promise.reject();
+
+                },
+                userBadgesProcess:function(userBadges){
+                    var self=this;
+                    if(!self.empty(userBadges)){
+                        var accurates=_.filter(userBadges,{'type':'accurate'});
+                        accurates=_.orderBy(accurates,function(b){
+                            return parseInt(b.accurateNum);
+                        });
+                        var accurateAdditional=_.filter(userBadges,{'type':'accurateAdditional'});
+                        var accurateList=_.concat(accurates,accurateAdditional);
+
+                        var others=_.filter(userBadges,function(ub){
+                            return ub.type!='accurate'&&ub.type!='accurateAdditional';
+                        });
+                        return _.concat(accurateList,others);
+                    }
+                    return null;
+
+                },
+                toggleMoreBadgeUsers:function(){
+                    this.showMoreBadgeUsers=!this.showMoreBadgeUsers;
+                },
+                inputUserProduct:function(v){
+                    var self=this;
+                    self.userProductSelected=_.find(self.userProducts,{'productId':v});
+                    self.fetchPanel();
+                },
+                getProductIconSrc:function(id){
+                    return hi.root + "sys/file/img?type=img_product&id=" + id;
+                },
+                toUserProduct:function(){
+                    router.push({path:'/user-product',query:{id:this.userProductSelected.id}});
+                },
+                badgeInfo:function(type,infoType){
+                    var imgIndex=0;
+                    var hoverInfo='';
+                    if(type=='accurate'){
+                        imgIndex=0;
+                        hoverInfo='连续正确答题';
+                    }else if(type=='accurateAdditional'){
+                        imgIndex=4;
+                        hoverInfo='连续正确答题特别奖励';
+                    }else if(type=='consistent'){
+                        imgIndex=10;
+                        hoverInfo='连续学习';
+                    }else if(type=='dailyStudy'){
+                        imgIndex=11;
+                        hoverInfo='每日学习';
+                    }else if(type=='dailyRecording'){
+                        imgIndex=7;
+                        hoverInfo='每日录音';
+                    }else if(type=='consistentRecording'){
+                        imgIndex=6;
+                        hoverInfo='连续录音';
+                    }else if(type=='unitComplete'){
+                        imgIndex=5;
+                        hoverInfo='解锁专家';
+                    }else if(type=='greatStart'){
+                        imgIndex=17;
+                        hoverInfo='Great Start';
+                    }
+                    if(infoType=='imgIndex'){
+                        return imgIndex;
+                    }
+                    if(infoType=='hoverInfo'){
+                        return hoverInfo;
+                    }
+                }
+            }
+        }
+
+    </script>
+</th:block>

@@ -1,0 +1,13 @@
+.register-wrap .register .register-top h2.normal {
+    border-bottom: none;
+}
+
+.register-wrap .register .register-top h2.active {
+    border-bottom: 2px solid #f55;
+}
+
+.register-wrap .register .login-con {
+    padding: 20px;
+    display: block;
+}
+

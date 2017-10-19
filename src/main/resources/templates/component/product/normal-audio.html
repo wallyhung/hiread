@@ -1,0 +1,136 @@
+﻿<th:block th:fragment="normal-audio" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+        .normal-audio{
+            width:100%;
+            height:100%;
+        }
+
+    </style>
+    <template id="normal-audio-t">
+        <div class="normal-audio">
+            <div v-show="audioManulPlayed">
+                <audio ref="audio" controls class="video-js vjs-big-play-centered" :width="width" height="30"></audio>
+            </div>
+            <div class="video-js" style="height: 30px;" v-show="!audioManulPlayed">
+                <button v-on:click="play" class="vjs-play-control vjs-control vjs-button vjs-paused" type="button" aria-live="polite" title="Play" aria-disabled="false"><span class="vjs-control-text">Play</span></button>
+            </div>
+
+        </div>
+    </template>
+    <script>
+        Vue.component('normal-audio', {
+            props: ['videoSrc','autoplay','width','type','disableProgress'],
+            data: function () {
+                return {
+                    video:null,
+                    audioManulPlayed:false,
+                    audioManulPaused:false,
+                }
+            },
+            template: '#normal-audio-t',
+            created: function () {
+                var self=this;
+                hi.bus.$on('normal-audio-play',function(){
+                    self.video.play();
+                });
+                hi.bus.$on("normal-audio-pause",function(){
+                    self.video.pause();
+                });
+            },
+            beforeDestroy:function(){
+                hi.bus.$off('normal-audio-play');
+                hi.bus.$off('normal-audio-pause');
+            },
+            mounted: function () {
+                var self=this;
+                this.init();
+            },
+            methods:{
+                init:function(){
+                    var self=this;
+                    this.video = videojs(this.$refs.audio, {
+                        controlBar: true,
+                        nativeControlsForTouch: false,
+                    }, function () {
+                        this.hotkeys({
+                            volumeStep: 0.1,
+                            seekStep: 5,
+                            enableMute: true,
+                            enableFullscreen: true,
+                            enableNumbers: false,
+                            enableVolumeScroll: false});
+                        if(self.disableProgress){
+                            this.disableProgress();
+                            this.disableProgress.disable();
+                        }
+
+                    });
+                    if(this.videoSrc){
+                        this.video.src(this.videoSrc);
+                    }
+                    var controlBar = self.video.getChild('ControlBar');
+                    var fullscreen = controlBar.getChild('fullscreenToggle');
+                    fullscreen.hide();
+                    if(!self.width){
+                        var width = $('.normal-audio').width();
+                        console.log(width);//TO DELETE
+                        self.video.width(width);
+                    }
+
+                    self.video.one('loadedmetadata', function () {
+                        if(self.autoplay){
+                            self.video.play();
+                        }else{
+                            self.video.play();//TO SPECIAL:解决如果不播放样式就乱的问题
+                            self.video.pause();
+                        }
+                    });
+
+                    this.video.on('ended',function(){
+                        self.$emit('video-ended')
+                    },false);
+                    this.video.on('play',function(){
+                        if(!self.autoplay&&!self.audioManulPlayed){
+                            self.audioManulPlayed=true;
+                        }else{
+                            self.$emit('video-play')
+                        }
+                    },false);
+                    this.video.on('pause',function(){
+                        if(!self.autoplay&&!self.audioManulPaused){
+                            self.audioManulPaused=true;
+                        }else{
+                            self.$emit('video-paused')
+                        }
+                    },false);
+                    this.video.on('error', function(event,a){
+                        var ed=self.video.getChild('ErrorDisplay');
+                        var msg="";
+                        var code=self.video.error().code;
+                        if(code==4){
+                            msg="媒体加载失败,请检查您的网络连接是否正常";
+                        }else if(code==3){
+                            msg="视频加载失败,请检查您的网络连接是否正常";
+                        }else{
+                            msg="加载失败,请检查您的网络连接是否正常";
+                        }
+                        var fill=$('<div><span>'+msg+'</span><a class="refresh-btn" href="javascript:;">点击重试</a></div>');
+                        fill.on('click',function(){
+                            self.init();
+                        });
+                        ed.fillWith(fill[0]);
+                    });
+                },
+                play:function(){
+                    this.audioManulPlayed=true;
+                    this.video.play();
+                }
+            },
+            watch: {
+                'videoSrc':function(){
+                    this.init();
+                }
+            }
+        })
+    </script>
+</th:block>

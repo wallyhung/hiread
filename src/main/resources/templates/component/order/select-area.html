@@ -1,0 +1,45 @@
+﻿<!--依赖regionService-->
+<th:block th:fragment="select-area" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+    </style>
+    <template id="select-area-t">
+        <lu-select :options="areas"
+                   value-key="id"
+                   text-key="name"
+                   placeholder="地区"
+                   verify="required"
+                   :value="value"
+                   v-on:input="input" ></lu-select>
+    </template>
+    <script>
+        Vue.component('select-area', {
+            props:['value','cityId'],
+            template: '#select-area-t',
+            computed:{
+                areas:function(){
+                    if(this.cityId){
+                        return this.cityAreas[this.cityId];
+                    }else{
+                        return [];
+                    }
+                }
+            },
+            created: function () {
+            },
+            mounted: function () {
+            },
+            methods:{
+                input:function(v){
+                    this.$emit('input',v);
+                }
+            },
+            watch: {
+            },
+            data: function () {
+                return {
+                    cityAreas: hi.regionService.cityAreas
+                }
+            }
+        })
+    </script>
+</th:block>

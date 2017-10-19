@@ -1,0 +1,425 @@
+﻿<th:block th:fragment="reward" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+        .reward{
+            display: flex;
+            width:200px;
+
+        }
+        .study-point-panel{
+            margin-right:50px;
+        }
+        /*金币*/
+        .clipped-box{display: block; position: absolute; top: 0px; right: 0px; width: 200px; height: 300px;z-index:99;}
+        .clipped-number{display: none; position: absolute; bottom: 0px; left: 120px; width: 50px; height: 50px;font-size: 12px; color:red;}
+        .clipped-box img{position: absolute; top: 200px; left: 0; -webkit-transition: -webkit-transform 0.8s ease-in, background 0.3s ease-in;
+            transition: transform 0.8s ease-in;}
+        .gold-img{
+            width:20px;
+            height:15px;
+            margin-top: -3px;
+            transition: all;
+        }
+        .point-count{
+            margin-left:10px;
+        }
+        .class-star-box{
+            display: block;
+            position: absolute;
+            right: 10px;
+            top: 130px;
+            width: 363px;
+            height: 65px;
+            z-index:999;
+        }
+        .el-notification__title {
+            font-weight: 400;
+            font-size: 16px;
+            color: #1f2d3d;
+            margin: 0 0 0 5px;
+        }
+        .el-notification__content {
+            font-size: 14px;
+            line-height: 21px;
+            margin: 10px 0 0 5px;
+            color: #8391a5;
+            text-align: justify;
+        }
+        .el-notification__icon.el-icon-star-on{
+            color:gold;
+        }
+    </style>
+    <template id="reward-t">
+        <div class="reward" v-if="panelDisplay">
+            <div class="study-point-panel">
+                <span>金币数:<span class="point-count">{{studyPoint}}</span></span>
+                <img class="gold-img" th:src="@{/img/goldimg/jb5.png}">
+            </div>
+            <transition
+                    v-on:enter="enter"
+                    v-bind:css="false"
+            >
+                <div class="class-star-box" v-if="accurateNumShow">
+                    <div class="class-star">
+                        <div class="number">{{accurateNum}}</div>
+                    </div>
+                </div>
+            </transition>
+
+        </div>
+    </template>
+    <script>
+        Vue.component('reward', {
+            props: ['panelDisplay'],
+            mixins:[hi.mixin],
+            data: function () {
+                return {
+                    studyPoint:0,
+                    accurateNum:0,
+                    accurateNumShow:false,
+                    goldInterval:null
+                }
+            },
+            template: '#reward-t',
+            created: function () {
+                var self=this;
+                self.init();
+
+                hi.bus.$on('reward',function(type,param,param2,param3){
+                    if(type=='studyPoint'){
+                        self.rewardStudyPoint(param).then(function(r){
+                            var point=r.data.entity;
+                            self.rewardStudyPointEffect(point);
+                        });
+                    }else if(type=='accurateProcess'){
+                        self.accurateProcess(param);
+                        self.greatStartProcess(param2,'practise');
+                    }else if(type=='studyTimeProcess'){
+                        self.studyTimeProcess(param);
+                    }else if(type=='recordingProcess'){
+                        self.recordingProcess(param,param2);
+                        self.greatStartProcess(param,'dailyRecording');
+                    }else if(type=='unitCompleteProcess'){
+                        self.unitCompleteProcess(param,param2,param3);
+                        if(param3=='video'||param3=='preview'){
+                            self.greatStartProcess(param,param3);
+                        }else if(param3=='preTestFreeTalk'||param3=='postTestFreeTalk'){
+                            self.greatStartProcess(param,'freeTalk');
+                        }
+                    }
+                });
+            },
+            mounted: function () {
+            },
+            methods:{
+                init:function(){
+                    var self=this;
+                    if(self.goldInterval){
+                        clearInterval(self.goldInterval);
+                    }
+                    hi.ax.get('/user/login/refreshLoginUser',{}).then(function (r) {
+                        var user=r.data.entity;
+                        if(user&&user.studyPoint){
+                            self.studyPoint=parseInt(user.studyPoint);
+                        }
+                    });
+                },
+
+                /*
+                 作对题目金币奖励
+                 */
+                rewardStudyPoint:function(practiseUserId){
+                    var self=this;
+                    var fd=new FormData();
+                    fd.append('practiseUserId',practiseUserId);
+                    return hi.ax.post('/product/study/reward/studyPoint', fd).then(function(r){
+                        var studyPoint=r.data.entity;
+                        return Promise.resolve(r);
+                    });
+                },
+                rewardStudyPointEffect:function(point){
+                    var self=this;
+                    hi.ax.get('/user/login/refreshLoginUser',{}).then(function (r) {
+                        var user=r.data.entity;
+                        if(user&&user.studyPoint){
+                            var studyPoint=parseInt(user.studyPoint);
+                            if(studyPoint>self.studyPoint){
+                                self.goldInterval=setInterval(function(){
+                                    self.studyPoint++;
+                                    if(self.studyPoint==studyPoint){
+                                        clearInterval(self.goldInterval);
+                                    }
+                                },70);
+                            }
+                            var index = 1;
+                            for(var i=0;i<point;i++){
+                                var flyer = $('<img class="clipped" src="'+hi.root+'img/goldimg/jb' + index + '.png" />');
+                                flyer.fly({
+                                    start: {
+                                        left: $(".gold-img").offset().left-100-i*60,
+                                        top: $(".gold-img").offset().top-$("body").scrollTop()+200
+                                    },
+                                    end: {
+                                        left: $(".gold-img").offset().left,
+                                        top: $(".gold-img").offset().top-$("body").scrollTop(),
+                                        width: 15,
+                                        height: 15,
+                                        vertex_Rtop:100
+                                    },
+                                    speed: 1.2,
+                                    onEnd: function () {
+                                        flyer.hide('fast');
+                                    }
+                                });
+                                if (index >= 5) {
+                                    index = 1;
+                                };
+                                index++;
+                            }
+                            //self.goldEffect(point);
+                        }
+                    });
+                },
+                goldEffect:function(point){
+                    genClips();
+                    changeNum();
+                    function genClips() {
+                        var index = 1;
+                        for(var i=0;i<point;i++){
+                            $('<img class="clipped" src="'+hi.root+'img/goldimg/jb' + index + '.png" />').appendTo($('.clipped-box'));
+                            if (index >= 5) {
+                                index = 1;
+                            };
+                            index++;
+                        }
+                    };
+                    //金币动画
+                    function changeNum() {
+                        $('.clipped-box').show();
+                        $('.clipped-box img').each(function () {        //索引图片变换角度
+                            var v = 100,
+                                angle = rand(80, 89),
+                                theta = (85 * Math.PI) / 180,
+                                g = -rand(7, 10);
+                            var self = $(this);
+                            var t = 0,
+                                z, r, nx, ny, number,
+                                totalt = 15;
+                            var negate = [1],
+                                direction = negate[Math.floor(Math.random() * negate.length)];
+                            var randDeg = 0,
+                                randScale = 0.9,
+                                randDeg2 = 0;
+                            // And apply those
+                            $(this).css({
+                                'transform': 'scale(' + randScale + ') skew(' + randDeg + 'deg) rotateZ(' + randDeg2 + 'deg)'
+                            });
+
+                            // Set an interval
+                            z = setInterval(function () {
+                                var ux = (Math.cos(theta) * v) * direction;
+                                var uy = (Math.sin(theta) * v) - ((-g) * t);
+                                nx = (ux * t);
+                                ny = (uy * t) + (0.25 * (g) * Math.pow(t, 2));
+                                number = ny - 50;
+                                if (ny < -40) {
+                                    ny = -40;
+                                };
+                                $(self).css({
+                                    'top': (ny) + 'px',
+                                    'left': (nx) + 'px'
+                                });
+
+
+                                t = t + 0.10;
+
+                                if (t > totalt) {
+                                    $(".clipped-box").html("").hide();
+
+                                    clearInterval(z);
+                                }
+                            }, 10);
+                        });
+
+                    };
+                    //随机数
+                    function rand(min, max) {
+                        return Math.floor(Math.random() * (max - min + 1)) + min;
+                    };
+                },
+                /*
+                 连续作对处理
+                 */
+                accurateProcess:function(practiseUserId){
+                    var self=this;
+                    var fd=new FormData();
+                    fd.append('practiseUserId',practiseUserId);
+                    return hi.ax.post('/product/study/reward/accurateProcess',fd).then(function(r){
+                        var badges=r.data.entity;
+                        _.each(badges,function(b,key){
+                            if(b.type=='accurateNum'){
+                                var num=parseInt(b.accurateNum);
+                                if(num>1){
+                                    self.accurateNum=num;
+                                    self.accurateNumShow=true;
+                                }
+                            }else{
+                                self.newBadgeNotice(b,key+1);
+                            }
+                        });
+                        return Promise.resolve();
+                    });
+                },
+                beforeEnter: function (el) {
+                    $(el).css({
+                        top: '130px'
+                    });
+                },
+                enter:function(el, done){
+                    var self=this;
+                    $(el).animate({ top: '40px' }, 1000, function () {
+                        $(el).fadeOut(1000, function () {
+                            self.accurateNumShow=false;
+                        });
+                    });
+                },
+                /*
+                 做题时间处理
+                 */
+                studyTimeProcess:function(productId){
+                    var self=this;
+                    var fd=new FormData();
+                    fd.append('productId',productId);
+                    return hi.ax.post('/product/study/reward/studyTimeProcess',fd).then(function(r){
+                        var badges=r.data.entity;
+                        _.each(badges,function(b,key){
+                            self.newBadgeNotice(b,key+1);
+                        });
+                        return Promise.resolve();
+                    });
+                },
+                /*
+                 录音提交处理
+                 */
+                recordingProcess:function(productId,unitId){
+                    var self=this;
+                    var fd=new FormData();
+                    fd.append('productId',productId);
+                    fd.append('unitId',unitId);
+                    return hi.ax.post('/product/study/reward/recordingProcess',fd).then(function(r){
+                        var badges=r.data.entity;
+                        _.each(badges,function(b,key){
+                            self.newBadgeNotice(b,key+1);
+                        });
+                        return Promise.resolve();
+                    });
+                },
+                /*
+                 环节完成处理
+                 */
+                unitCompleteProcess:function(productId,unitId,unitSection){
+                    var self=this;
+                    var fd=new FormData();
+                    fd.append('productId',productId);
+                    fd.append('unitId',unitId);
+                    fd.append('unitSection',unitSection);
+                    return hi.ax.post('/product/study/reward/unitCompleteProcess',fd).then(function(r){
+                        var badges=r.data.entity;
+                        _.each(badges,function(b,key){
+                            var exp="";
+                            if(unitSection=='video'){
+                                exp="英文原版导读课";
+                            }else if(unitSection=='reviewHW'){
+                                exp="课后复习作业";
+                            }else if(unitSection=='previewHW'){
+                                exp="课前单词健身房";
+                            }else if(unitSection=='preview'){
+                                exp="课前听读";
+                            }else if(unitSection=='preTestPractise'){
+                                exp="课前测试习题";
+                            }else if(unitSection=='preTestFreeTalk'){
+                                exp="课前测试Free Talk";
+                            }else if(unitSection=='postTestPractise'){
+                                exp="课后测试习题";
+                            }else if(unitSection=='postTestFreeTalk'){
+                                exp="课后测试Free Talk";
+                            }
+                            self.newBadgeNotice(b,key+1,exp);
+                        });
+                        return Promise.resolve();
+                    });
+                },
+                /*
+                 第一次完成处理
+                 */
+                greatStartProcess:function(productId,greateStartType){
+                    var self=this;
+                    var fd=new FormData();
+                    fd.append('productId',productId);
+                    fd.append('greatStartType',greateStartType);
+                    return hi.ax.post('/product/study/reward/greatStartProcess',fd).then(function(r){
+                        var badges=r.data.entity;
+                        _.each(badges,function(b,key){
+                            var exp="";
+                            if(greateStartType=='video'){
+                                exp="第一次观看完整视频";
+                            }else if(greateStartType=='freeTalk'){
+                                exp="第一次完成Free Talk";
+                            }else if(greateStartType=='practise'){
+                                exp="第一次完成习题";
+                            }else if(greateStartType=='dailyRecording'){
+                                exp="第一次提交每日录音";
+                            }else if(greateStartType=='preview'){
+                                exp="第一次完成课前听读";
+                            }
+                            self.newBadgeNotice(b,key+1,exp);
+                        });
+                        return Promise.resolve();
+                    });
+                },
+                newBadgeNotice:function(badge,delay,badgeExplain){
+                    var self=this;
+                    var typeText=self.typeText(badge.type);
+                    if(typeof(badgeExplain)!='undefined'){
+                        typeText+='('+badgeExplain+')';
+                    }
+                    setTimeout(function(){
+                        self.$notify({
+                            title: '恭喜您获得一枚徽章:',
+                            message: typeText,
+                            offset: 200,
+                            duration:5000,
+                            iconClass:'el-icon-star-on'
+                        });
+                    },delay*1000);
+
+
+                },
+                typeText:function(type){
+                    if(type=='dailyStudy'){
+                        return '天天向上';
+                    }else if(type=='consistent'){
+                        return '连续学习';
+                    }else if(type=='greatStart'){
+                        return 'Great Start';
+                    }else if(type=='dailyRecording'){
+                        return '每日录音';
+                    }else if(type=='consistentRecording'){
+                        return '连续录音';
+                    }else if(type=='unitComplete'){
+                        return '解锁专家';
+                    }else if(type=='accurate'){
+                        return '连续正确答题';
+                    }else if(type=='accurateAdditional'){
+                        return '连续正确答题特别奖励';
+                    }else if(type=='subjectSpecialist'){
+                        return '词汇/语法/情节专家';
+                    }
+                }
+            },
+
+
+            watch: {
+            }
+        })
+    </script>
+</th:block>

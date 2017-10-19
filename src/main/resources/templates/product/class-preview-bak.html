@@ -1,0 +1,170 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="common/head :: common-head"></th:block>
+</head>
+<body>
+<div id="class-preview" v-cloak class="h100">
+    <div class="class-left" v-if="unit">
+        <div class="class-left-title clear-fix">
+            <a v-on:click="backToUserProduct" class="class-btn fl class-btn2"><i class="fa fa-chevron-left"></i>
+                返回课程</a>
+            <span class="class-title-text1 fl" >{{unit.product.bookName}} » {{unit.unitName}} » Preview</span>
+        </div>
+        <div class="class-left-content" >
+            <div class="captions">
+                <div class="chapter-info">{{unit.product.bookName}}, Chapter {{unit.chapter}}, Paragraph {{unit.previewParagraph}}</div>
+                <div class="instruct-info">
+                    <template v-if="unit.previewInstruction" v-for="line in unit.previewInstruction.split('\n')">{{line}}<br></template>
+                </div>
+            </div>
+            <div class="content">
+                <template v-if="unit.previewType=='textAudio'||unit.previewType=='imageAudio'||unit.previewType=='textImageAudio'">
+                    <div class="text-audio text" v-if="unit.previewType=='textAudio'">
+                        <template v-if="unit.previewText" v-for="line in unit.previewText.split('\n')">{{line}}<br></template>
+                    </div>
+                    <div class="image-audio image" v-if="unit.previewType=='imageAudio'">
+                        <img :src="previewImageSrc" v-if="previewImageSrc">
+                    </div>
+                    <div class="text-image-audio" v-if="unit.previewType=='textImageAudio'">
+                        <div class="image">
+                            <img :src="previewImageSrc" v-if="previewImageSrc">
+                        </div>
+                        <div class="text">
+                            <template v-if="unit.previewText"  v-for="line in unit.previewText.split('\n')">{{line}}<br></template>
+                        </div>
+                    </div>
+                    <div class="audio">
+                        <icon-audio
+                                v-if="previewAudioSrc"
+                                :audio-src="previewAudioSrc"
+                                :autoplay="false"
+                                :icon-show="false"
+                                :bar-show="true"
+                                v-on:audio-play="onAudioPlay"
+                                v-on:audio-ended="onAudioEnded"
+                                v-on:audio-paused="onAudioPaused"
+                                ></icon-audio>
+                    </div>
+                </template>
+
+                <template v-if="unit.previewType=='video'">
+                    <div class="class-video">
+                        <normal-video
+                                v-if="previewVideoSrc"
+                                :video-src="previewVideoSrc"
+                                :autoplay="false"
+                                v-on:video-play="onAudioPlay"
+                                v-on:video-ended="onAudioEnded"
+                                v-on:video-paused="onAudioPaused"
+                        ></normal-video>
+                    </div>
+                </template>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<th:block th:include="common/head :: common"></th:block>
+<th:block th:include="common/head :: videojs"></th:block>
+<link rel="stylesheet" th:href="@{/css/product/class.css}">
+<style>
+    .class-left{
+        width: 100%;
+
+    }
+    .class-left .class-left-title{
+        padding-top:10px;
+        padding-bottom: 10px;
+    }
+    .class-left .class-btn{
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .class-left-content {
+        height: calc(100% - 70px);
+        display: flex;
+        flex-direction: column;
+    }
+    .captions{
+        height:20%;
+        border:1px solid gray;
+        padding:10px;
+        overflow-y: scroll;
+    }
+    .captions .chapter-info{
+        font-size: 1.5em;
+        font-weight: 900;
+    }
+    .content{
+        height:80%;
+        border:1px solid gray;
+        border-top:none;
+    }
+    .content .text{
+        overflow-y: scroll;
+    }
+    .content .text-audio.text,.content .image-audio.image,.content .text-image-audio{
+        height:90%;
+    }
+    .content .audio{
+        height:10%;
+        border-top:1px solid gray;
+    }
+    .content .image-audio.image{
+        display: flex;
+        justify-content: center;
+    }
+    .content .image-audio.image img{
+        width:100%;
+        height:100%;
+    }
+    .content .text-image-audio{
+        display: flex;
+    }
+    .content .text-image-audio .image{
+        width: 40%;
+
+    }
+    .content .text-image-audio .image img{
+        width: 100%;
+        height:100%;
+    }
+    .content .text-image-audio .text{
+        width: 60%;
+
+    }
+    .content .class-video{
+        width: 100%;
+        height:100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    .content .class-video video{
+        border-radius:10px;
+    }
+    .content .class-video .video-js{
+        background-color: #f9f9f9;
+    }
+    .content .class-audio .video-js{
+        background-color: #89bbc6;
+    }
+    .content .class-video .video-js .vjs-control-bar,.class-main .class-audio .video-js .vjs-control-bar{
+        background-color: #89bbc6;
+    }
+</style>
+<th:block th:include="component/product/unit-video :: unit-video"></th:block>
+<th:block th:include="component/product/unit-practise :: unit-practise"></th:block>
+<th:block th:include="common/head :: practises"></th:block>
+<th:block th:include="component/product/icon-audio :: icon-audio"></th:block>
+<th:block th:include="component/product/normal-video :: normal-video"></th:block>
+<script th:src="@{/controller/product/class-preview.js}"></script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="common/head :: common-head"></th:block>
+</head>
+<body>
+<div id="register_step2" v-cloak class="h100">
+    <hi-header></hi-header>
+    <div class="register_step">
+        <ul>
+            <li>
+                <div class="step_img ">1</div>
+                <div class="step_text_no">微信扫一扫</div>
+            </li>
+            <li>
+                <div class="register_dotted"></div>
+            </li>
+            <li>
+                <div class="step_img step_img_color">2</div>
+                <div class="step_text_ok">输入手机与密码</div>
+            </li>
+        </ul>
+    </div>
+    <div id="register" class="container login-wp">
+        <div class="col-sm-6 register-right1">
+            <div class="login-right">
+                <div class="page-title">微信账号信息</div>
+                <div class="metas clear-fix pt-15">
+                    <div class="homework-author1">
+                        <a class=" js-user-card" href="javascript:" title="">
+                        <span class="avatar-smd2">
+                          <img class="img-responsive" v-bind:src="wxuser != null ? wxuser.avatar : '/hiread/img/img.jpg'">
+                        </span>
+                        </a>
+                        <div class="author-info register-text1">
+                            <h4 class="font-c1">微信账号：</h4>
+                            <div class="pt-15">昵称：{{wxuser!= null ? wxuser.wxNickname : ''}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 register-left">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="page-title">
+                        <div class="login-title">注册</div>
+                    </div>
+                </div>
+            </div>
+            <validation name="register-validation">
+                <form class="clear-fix pt-10" novalidate>
+                    <div class="form-group form-group1">
+                        <label for="mobile" class="fa fa-user-o"></label>
+                        <input type="text" class="form-control form-control1" id="mobile" placeholder="手机号将作为登录帐号" v-model="formData.mobile" v-validate:mobile="{required: true}">
+                    </div>
+                    <div class="row">
+                        <div class="form-group form-group2 col-sm-6">
+                            <label for="captcha" class="fa fa-ticket"></label>
+                            <input type="text" class="form-control form-control1" id="captcha" placeholder="短信验证码" v-model="formData.captcha" v-validate:captcha="{required: true}">
+                        </div>
+                        <div class="col-sm-6">
+                            <button type="button" class="btn btn-warning btn-warning-register" v-on:click="sendSMSCaptcha">获取短信验证码</button>
+                        </div>
+                    </div>
+                    <div class="form-group form-group1">
+                        <label for="password" class="fa fa-unlock-alt"></label>
+                        <input type="password" class="form-control form-control1" id="password" placeholder="请输入密码" v-model="formData.password" v-validate:password="{required: true}">
+                        <i class="fa fa-eye-slash register-icon1"></i>
+                    </div>
+                    <div class="checkbox form-control2">
+                        点击注册表示你已阅读并同意 <a href="javascript:">《服务协议》</a>
+                    </div>
+                    <button type="button" class="btn btn-warning btn-warning1" v-on:click="submit">注册</button>
+                </form>
+            </validation>
+        </div>
+    </div>
+    <hi-footer></hi-footer>
+</div>
+<th:block th:include="common/head :: common"></th:block>
+<script th:src="@{/controller/user/register-step2.js}"></script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+﻿<th:block th:fragment="lu-select" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+        .layui-form-select dl dd.layui-this{
+            background-color: #fff;
+            color:rgb(51,51,51);
+        }
+        .layui-form-select dl dd.layui-this:hover{
+            background-color: #f2f2f2;
+        }
+    </style>
+    <template id="lu-select-t">
+        <div class="layui-unselect layui-form-select"
+             :class="{'layui-form-selected':selectShow}"
+
+        >
+            <div class="layui-select-title">
+                <input type="text"
+                       :placeholder="placeholder?placeholder:'请选择'"
+                       v-on:click="changeSelect"
+                       readonly
+                       :lay-verify="verify"
+                       :value="currentValue.text"
+                       class="layui-input layui-unselect">
+                <i class="layui-edge"></i>
+            </div>
+            <dl class="layui-anim layui-anim-upbit" v-show="selectShow">
+                <dd v-for="item in options" :class="{'layui-this':currentValue.value==item[valueKey]}" v-on:click="currentSelect(item)"  value="item[valueKey]">{{item[textKey]}}</dd>
+            </dl>
+        </div>
+    </template>
+    <script>
+        Vue.component('lu-select', {
+            props:['value','options','valueKey','textKey','placeholder','verify'],
+            mixins:[hi.mixin],
+            data: function () {
+                return {
+                    selectShow:false
+                }
+            },
+            template: '#lu-select-t',
+            computed:{
+                currentValue:function(){
+                    var self=this;
+                    var result={};
+                    if(self.value){
+                        self.options.forEach(function(item){
+                            if(item[self.valueKey]==self.value){
+                                result={
+                                    text:item[self.textKey],
+                                    value:item[self.valueKey]
+                                }
+                            }
+                        })
+                    }
+                    if(self.empty(result)){
+                        result= {
+                            text:'',
+                            value:null
+                        }
+                    }
+
+                    return result;
+                }
+            },
+            mounted: function () {
+            },
+            methods:{
+                currentSelect:function(item){
+                    var self=this;
+                    self.currentValue={
+                        text:item[self.textKey],
+                        value:item[self.valueKey]
+                    }
+                    this.changeSelect();
+                    this.$emit('input', item[self.valueKey]);
+                },
+                changeSelect:function(){
+                    this.selectShow=!this.selectShow;
+                }
+            }
+        })
+    </script>
+</th:block>

@@ -1,0 +1,234 @@
+﻿<th:block th:fragment="p-make-sentence" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+        .p-ms {
+            display: flex;
+            margin-top: 30px;
+        }
+
+        .ms-content {
+            display: flex;
+            flex-direction: column;
+            width: 92%;
+            margin-bottom:20px;
+        }
+
+        .ms-content .ms-arranges-row {
+            display: flex;
+            position: relative;
+            padding:10px;
+        }
+
+        .ms-content .ms-arranges-row .ms-left ,.ms-content .ms-opts-row .ms-left{
+            display: flex;
+            justify-content: center;
+            width: 5%;
+        }
+
+        .ms-content .ms-arranges-row .ms-arranges, .ms-content .ms-opts-row .ms-opts {
+            display: flex;
+            align-items: center;
+            width: 95%;
+            min-height: 100px;
+            border: 1px solid #ccc;
+            padding: 0 10px;
+            flex-wrap: wrap;
+        }
+
+        .ms-content .ms-opts-row {
+            display: flex;
+            margin-top: 20px;
+            position: relative;
+            padding:10px;
+        }
+        .ms-content .ms-opts-row .ms-opts,.ms-content .ms-arranges-row .ms-arranges{
+            padding-top:10px;
+
+        }
+
+        .ms-opt {
+            height: 70px;
+            margin:0 10px 10px 0;
+            border-radius: 5px;
+            background-color: rgb(152, 204, 216);
+            padding: 10px;
+            cursor:pointer;
+        }
+        .ms-arranges .ms-opt{
+            background-color: #88c0ad;
+        }
+
+        .ms-opt p {
+            border-radius: 4px;
+            border: 2px dotted white;
+            height: 50px;
+            line-height: 50px;
+            font-size: 20px;
+            color: white;
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+
+        .ms-left img {
+            width: 31px;
+            height: 31px;
+        }
+
+        .ms-right {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 8%;
+            flex-direction: column;
+        }
+        .ms-right div{
+            color:#777;
+            margin-bottom: 10px;
+        }
+
+        .ms-right img {
+            width: 55px;
+            height: 89px;
+        }
+        .ex-over{
+            background-color: rgb(246,238,242);
+        }
+
+    </style>
+    <template id="p-make-sentence-t">
+        <div class="p-ms">
+            <div class="ms-content">
+                <div class="ms-arranges-row">
+                    <div class="wrong-box twink-bd" v-if="wrongMarkShow()"></div>
+                    <span class="wrong-mark twink-opacity" v-if="wrongMarkShow()"><i class="fa fa-times"></i></span>
+                    <div class="ms-left">
+                        <img th:src="@{/img/tree4.png}" alt="">
+                    </div>
+                    <div class="ms-arranges">
+                    </div>
+                </div>
+                <div class="ms-opts-row">
+                    <div class="ms-left">
+                        <img th:src="@{/img/tree3.png}" alt="">
+                    </div>
+                    <div class="ms-opts">
+                        <!--<div class="ms-opt" v-for="opt in practiseOpts">-->
+                            <!--<p>{{opt.option}}</p>-->
+                        <!--</div>-->
+                    </div>
+                </div>
+
+            </div>
+            <div class="ms-right">
+                <div>请拖动</div>
+                <img th:src="@{/img/class_sentence_icon_02.png}" alt="">
+            </div>
+        </div>
+
+    </template>
+    <script>
+        Vue.component('p-make-sentence', {
+            props: ['practiseOpts','practiseId', 'submitted', 'answer','correct'],
+            data: function () {
+                return {
+                    arranges:[],
+                    opts:[],
+                }
+            },
+            template: '#p-make-sentence-t',
+            created: function () {
+                var self=this;
+                hi.bus.$on('practise-redo',function(){
+                    self.$nextTick(function(){
+                        _.each(self.practiseOpts,function(opt){
+                            var answerFind=_.find(self.answer,function(an){
+                                return opt.id==an;
+                            })
+                            if(!answerFind){
+                                $(".ms-opts").append($("#"+opt.id));
+                            }
+                        })
+                    })
+                });
+                hi.bus.$on('practise-reset',function(){
+                   self.init();
+                });
+            },
+            mounted: function () {
+                this.init();
+            },
+            computed: {},
+            methods: {
+                init: function () {
+                    var self = this;
+                    this.arranges = _.sortBy(this.practiseOpts, [function (p) {
+                        return parseInt(p.sort);
+                    }]);
+                    this.opts = _.shuffle(this.practiseOpts);
+                    $('.ms-arranges').css('height','auto');
+                    $('.ms-opts').css('height','auto');
+                    this.$nextTick(function () {
+                        var arranges = $('.ms-arranges');
+                        arranges.html('');
+
+                        var opts = $('.ms-opts');
+                        opts.html('');
+                        _.each(this.opts, function (o, index) {
+                            var optionEle = $('<p>' + o.option + '</p>');;
+                            var optEle = $('<div class="ms-opt can-move" id="' + o.id + '"></div>').append(optionEle);
+                            optEle.on('click',function(){
+                                var eclass=$(this).parent().attr('class');
+                                if(eclass.indexOf('ms-arranges')!=-1){
+                                    $('.ms-opts').append($(this));
+                                }else if(eclass.indexOf('ms-opts')!=-1){
+                                    $('.ms-arranges').append($(this));
+                                }
+                                self.questionAnswered();
+
+                            });
+                            opts.append(optEle);
+                        });
+                        arranges.css('min-height',opts.height());
+                        opts.css('min-height',opts.height());
+                        var dragulaContainer = [];
+                        dragulaContainer.push(arranges[0]);
+                        dragulaContainer.push(opts[0]);
+                        if(hi.drag){
+                            hi.drag.destroy();
+                        }
+                        hi.drag=dragula(dragulaContainer, {
+                            moves: function (el, container, handle) {
+                                if (self.submitted) {
+                                    return false;
+                                }
+                                return el.classList.contains('can-move');
+                            }
+                        }).on('drop', function (el) {
+                            self.questionAnswered();
+                        }).on('over', function (el, container) {
+                            container.className += ' ex-over';
+                        }).on('out', function (el, container) {
+                            container.className = container.className.replace('ex-over', '');
+                        });
+                    })
+
+                },
+                questionAnswered:function(){
+                    var answer=[];
+                    $('.ms-arranges .ms-opt').each(function(){
+                        var id=$(this).attr('id');
+                        answer.push(id);
+                    });
+                    this.$emit("answer",answer);
+                },
+                wrongMarkShow:function(){
+                    return this.submitted&&this.correct=='No';
+                },
+            },
+            watch: {
+                practiseId:function(){
+                    this.init();
+                }
+            }
+        })
+    </script>
+</th:block>

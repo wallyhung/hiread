@@ -1,0 +1,184 @@
+<th:block th:fragment="profile-setting" xmlns:th="http://www.thymeleaf.org">
+    <style></style>
+    <template id="profile-setting-tpl">
+        <div>
+            <div class="learning-title2">个人信息</div>
+            <div class="pt-30 clear-fix">
+                <form class="layui-form layui-form1 pt-r01">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">用户昵称</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="nickname" class="layui-input" v-model="user.nickname"
+                                   lay-verify="nickname">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">家长手机号码</label>
+                        <div class="layui-form-mid layui-word-aux">
+                            <span class="pt-r10" name="mobile">{{user.mobile}}</span> （已绑定）
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">孩子姓名</label>
+                        <div class="layui-input-block">
+                            <input type="text"
+                                   name="studEnglishName"
+                                   class="layui-input"
+                                   v-model="user.studEnglishName">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">孩子性别</label>
+                        <lu-radio :value="user.studSex"
+                                  :options="sexOptions"
+                                  value-key="value"
+                                  text-key="label"
+                                  v-on:click="changeSex">
+                        </lu-radio>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">孩子生日</label>
+                        <lu-datepicker name="studBirthday"
+                                       :value="user.studBirthday"
+                                       v-on:click="changeBirthday">
+                        </lu-datepicker>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">学校类型</label>
+                        <div class="layui-input-block">
+                            <lu-select :options="schoolTypeOptions"
+                                       value-key="value"
+                                       text-key="label"
+                                       :value="user.studSchoolType"
+                                       v-on:input="changeSchoolType">
+                            </lu-select>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button class="layui-btn layui-btn-normal" :class="{'layui-btn-disabled': isFormSubmitting}"
+                                    lay-submit lay-filter="profile-setting">保存
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </template>
+    <script>
+        var layuiForm = layui.form();
+        var layuiLayer = layui.layer;
+        // 定义路由组件
+        var ProfileSetting = {
+            template: '#profile-setting-tpl',
+            data: function () {
+                return {
+                    user: {},
+                    sexOptions: [{
+                        label: '男',
+                        value: '1'
+                    }, {
+                        label: '女',
+                        value: '0'
+                    }],
+                    schoolTypeOptions: [{
+                        label: '学前',
+                        value: '0'
+                    }, {
+                        label: '一年级',
+                        value: '1'
+                    }],
+                    isFormSubmitting: false
+                };
+            },
+            created: function () {
+                var vm = this;
+                vm.getUser();
+            },
+            mounted: function () {
+                this.layuiFormVerify();
+                this.layuiFormSubmit();
+            },
+            methods: {
+                getUser: function () {
+                    var vm = this;
+
+                    hi.ax.get('/user/vipcenter/profile-setting/get').then(function (response) {
+                        var sr = response.data;
+                        if(sr.status == 'success'){
+                            vm.user = sr.entity;
+                        } else {
+                            layuiLayer.open({
+                                content: sr.msg
+                            })
+                        }
+                    })
+                },
+                changeSex: function (value) {
+                    this.user.studSex = value;
+                },
+                changeSchoolType: function (value) {
+                    this.user.studSchoolType = value;
+                },
+                changeBirthday: function (value) {
+                    this.user.studBirthday = value;
+                },
+                layuiFormVerify: function () {
+                    var vm = this;
+
+                    layuiForm.verify({
+                        nickname: function (value) {
+                            if (!value) {
+                                return '用户名不能为空';
+                            }
+                        }
+                    });
+                },
+                layuiFormSubmit: function () {
+                    var vm = this;
+
+                    // 表单提交
+                    layuiForm.on('submit(profile-setting)', function (data) {
+                        // 不使用传入进来的 data，使用 vue 代理的 data
+                        if (vm.isFormSubmitting) {
+                            return false;
+                        }
+                        var user = vm.$data.user;
+                        var userData = {
+                            id: user.id,
+                            nickname: user.nickname,
+                            studEnglishName: user.studEnglishName,
+                            studSex: user.studSex,
+                            studBirthday: user.studBirthday,
+                            studSchoolType: user.studSchoolType
+                        }
+
+                        vm.isFormSubmitting = true;
+                        hi.ax.post('/user/vipcenter/profile-setting/update', userData).then(function (response) {
+                            var data = response.data;
+
+                            var title = '';
+                            var icon = 0;
+                            if(data.status = 'success'){
+                                title = '修改成功';
+                                icon = 1;
+                            } else {
+                                title = '修改失败';
+                                icon = 2;
+                            }
+                            layuiLayer.msg(title, {
+                                offset: '0',
+                                icon: icon,
+                                time: 3000
+                            })
+                            vm.isFormSubmitting = false;
+                        },function (response) {
+                            vm.isFormSubmitting = false;
+                        })
+                        return false;
+                    })
+                }
+            }
+        }
+    </script>
+</th:block>

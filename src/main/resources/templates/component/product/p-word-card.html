@@ -1,0 +1,372 @@
+﻿<th:block th:fragment="p-word-card" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+        .class-wordbig{position: relative; width: 580px; margin: 30px auto 70px;}
+        .class-wordbig .box{width: 513px; height: 652px; border: 1px solid #89bbc6; -webkit-box-shadow: 0 0 10px #b8c2c4; box-shadow: 0 0 10px #b8c2c4;}
+        .class-wordbig .main{position: absolute; top: 50px; left: 50px; margin: 0 auto;}
+        .class-wordbig-positive,.class-wordbig-reverse{height: 640px; -webkit-box-shadow: 0 0 10px #b8c2c4; box-shadow: 0 0 10px #b8c2c4; cursor: pointer;}
+        .class-wordbig-padding{padding: 43px;}
+        .class-wordbig-positive{display: none; width: 0; margin: 0 auto; background-color: #89bbc6; color: #fff;}
+        .class-wordbig-reverse{display: block; width: 513px; margin: 0 auto;  background-color: #fff; color: #333;}
+
+        .class-wordbig-positive .text h3{margin-top: 36px; font-size: 18px;}
+        .class-wordbig-positive .text i{padding-right: 10px;}
+        .class-wordbig-positive .text p{padding-top: 26px; line-height: 26px; font-size: 18px;}
+        .class-wordbig-positive .imgBox{position: relative; overflow: hidden; margin-top: 26px; border-radius: 10px;}
+        .class-wordbig-positive .imgBox p{position: absolute; left: 0; bottom: 0; width: 100%; height: 50px; line-height: 50px; background: rgba(0,0,0,.6); text-align: center; font-size: 34px;}
+        .class-wordbig-reverse .imgBox{margin-top: 80px; text-align: center;}
+        .class-wordbig-reverse .imgBox h3{color: #79abb6; font-size: 36px;}
+        .class-wordbig-reverse .imgBox p{padding: 15px 0; font-size: 18px;}
+        .class-wordbig-reverse .imgBox span{padding-right: 20px; color: #79abb6; font-size: 26px;}
+        .class-wordbig-reverse .imgBox i{padding-left: 10px; color: #79abb6;}
+        .class-wordbig-reverse .text p{padding-top: 40px; line-height: 26px; font-size: 18px;}
+
+
+        .p-wc {
+            position: relative;
+            width: 475px;
+            margin: 10px auto 10px auto;
+        }
+        .p-wc .wc-box {
+            box-sizing: border-box;
+            width: 450px;
+            height: 450px;
+            border: 1px solid #89bbc6;
+            -webkit-box-shadow: 0 0 10px #b8c2c4;
+            box-shadow: 0 0 10px #b8c2c4;
+        }
+        .p-wc .wc-box.face-active{
+            background: rgb(121, 171, 182);
+        }
+        .p-wc .wc-content{
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            margin: 0 auto;
+            box-sizing: border-box;
+            width: 450px;
+            min-height: 450px;
+            -webkit-box-shadow: 0 0 10px #b8c2c4;
+            box-shadow: 0 0 10px #b8c2c4;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            background-color: #fff;
+            color: #333;
+        }
+        .p-wc .wc-content.back-active{
+            background-color:#89bbc6;
+        }
+        .p-wc .wc-content .main{
+            margin:0 auto;
+            padding:20px;
+        }
+        .p-wc .wc-content .main.back-active{
+            background-color: #89bbc6;
+            color: #fff;
+        }
+        .wc-content .icon-row{
+            display: flex;
+            justify-content:flex-end;
+        }
+        .wc-content .icon-row .fav-icon{
+            width:49px;
+            height:49px;
+        }
+        .wc-content .word-row{
+            display: flex;
+            justify-content:center;
+            margin-top:30px;
+        }
+        .wc-content .word-row h3{
+            color: #79abb6;
+            font-size: 36px;
+            font-weight:900;
+        }
+        .wc-content .pronouce-row{
+            display: flex;
+            justify-content:center;
+            margin-top:10px;
+        }
+        .wc-content .pronouce-row h4{
+            font-size: 20px;
+        }
+        .wc-content .pronouce-row i{
+            padding-left: 10px;
+            font-size: 20px;
+            color: #79abb6;
+        }
+        .wc-content .trans-row{
+            display: flex;
+            justify-content:center;
+            margin-top:15px;
+        }
+        .wc-content .trans-row h4{
+            font-size: 20px;
+        }
+        .wc-content .explain-row{
+            display: flex;
+            margin-top:25px;
+            flex-direction: column;
+        }
+        .wc-content .explain-row p{
+            line-height: 26px;
+            font-size: 18px;
+        }
+
+        /*back*/
+        .wc-content .image-row{
+            display: flex;
+            margin-top:10px;
+            position: relative;
+            border-radius: 10px;
+            background-color: white;
+        }
+        .wc-content .image-row img{
+            width:100%;
+            height:100%;
+            border-radius: 10px;
+        }
+        .wc-content .image-row  p {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 50px;
+            line-height: 50px;
+            background: rgba(0,0,0,.6);
+            text-align: center;
+            font-size: 34px;
+            border-bottom-left-radius:10px;
+            border-bottom-right-radius: 10px;
+        }
+        .wc-content .example-row{
+            display: flex;
+            margin-top:10px;
+        }
+        .wc-content .example-row h4{
+            font-size: 20px;
+        }
+        .wc-content .example-row i{
+            padding-right: 10px;
+            font-size: 20px;
+            color: #fff;
+        }
+        .wc-content .main.back-active .explain-row{
+            margin-top:10px;
+        }
+
+        .icon-row .added{
+        }
+        .icon-row .added{
+            background: rgb(252,194,72);
+            border-radius: 10px;
+        }
+    </style>
+    <template id="p-word-card-t">
+        <div class="p-wc" v-if="practise">
+            <div class="wc-box" :class="{'face-active':face,'back-active':!face}"></div>
+                <div class="wc-content" v-on:click="clickContent($event)" :class="{'face-active':face,'back-active':!face}">
+                    <transition
+                            v-on:before-enter="beforeEnter"
+                            v-on:enter="enter"
+                            v-on:leave="leave"
+                            v-bind:css="false"
+                    >
+                        <div class="main face-active" v-show="face">
+                            <div class="icon-row">
+                                <img class="fav-icon" th:src="@{/img/class_wordbig_03.png}" title="点击收藏" v-on:click="toggleUserVocab" :class="{'added':userVocab&&userVocab.deleted=='No'}"/>
+                            </div>
+                            <div class="word-row">
+                                <h3>{{practise.question}}</h3>
+                            </div>
+                            <div class="pronouce-row">
+                                <h4>{{practise.phoneticSymbol}}</h4>
+                                <icon-audio v-show="practise.questionAudio"
+                                            :audio-src="questionAudioSrc"
+                                            :autoplay="face"
+                                            icon-show="true"
+                                            :id="practise.id"
+                                            :pad-play="questionAudioPlay"
+                                            css="{'font-size':'23px','padding-left':'15px','padding-right':'5px','color':'#89bbc6'}"></icon-audio>
+                            </div>
+                            <div class="trans-row">
+                                <h4>{{practise.cardCnExplain}}</h4>
+                            </div>
+                            <div class="explain-row">
+                                <p>{{practise.cardEnExplain}}</p>
+                            </div>
+                        </div>
+                    </transition>
+                    <transition
+                            v-on:before-enter="beforeEnter"
+                            v-on:enter="enter"
+                            v-on:leave="leave"
+                            v-bind:css="false"
+                    >
+                        <div class="main back-active" v-show="!face">
+                            <div class="icon-row">
+                                <img class="fav-icon" th:src="@{/img/class_wordbig_01.png}" title="点击收藏" v-on:click="toggleUserVocab" :class="{'added':userVocab&&userVocab.deleted=='No'}"/>
+                            </div>
+                            <div class="image-row">
+                                <img class="" :src="questionImg"/>
+                                <p>{{practise.question}}</p>
+                            </div>
+                            <div class="example-row">
+                                <icon-audio v-if="practise.cardEnSampleAudio"
+                                            :audio-src="cardEnSampleAudioSrc"
+                                            :autoplay="!face"
+                                            icon-show="true"
+                                            :id="practise.id"
+                                            v-on:audio-ended="onAudioEnd()"
+                                            :pad-play="cardEnSampleAudioPlay"
+                                            css="{'font-size':'23px','padding-right':'15px','color':'#fff'}"></icon-audio>
+                                <h4>例句</h4>
+                            </div>
+                            <div class="explain-row">
+                                <p>{{practise.cardEnSample}}</p>
+                            </div>
+                        </div>
+                    </transition>
+
+
+
+
+                </div>
+        </div>
+    </template>
+    <script>
+        Vue.component('p-word-card', {
+            props: ['practiseId','practise','submitted','answer'],
+            data: function () {
+                return {
+                    face:true,
+                    userVocab:null,
+                    cardEnSampleAudioEnded:false,
+                    cardEnSampleAudioPlay:false,
+                    questionAudioPlay:false
+                }
+            },
+            template: '#p-word-card-t',
+            created: function () {
+            },
+            mounted: function () {
+                this.init();
+            },
+            computed:{
+                questionImg: function () {
+                    var src=hi.root + "sys/file/img?type=img_practise_question_img&id="+this.practise.id+"&&name="+this.practise.questionImg;
+                    return src;
+                },
+                questionAudioSrc: function () {
+                    if(this.practise.questionAudio){
+                        return hi.root + "sys/file/audio?type=audio_practise_question&id=" + this.practise.id;
+                    }
+                    return '';
+                },
+                cardEnSampleAudioSrc: function () {
+                    if(this.practise.questionAudio){
+                        return hi.root + "sys/file/audio?type=audio_practise_card_en_sample_audio&id=" + this.practise.id;
+                    }
+                    return '';
+                }
+            },
+            methods:{
+                init:function(){
+                    var self=this;
+                    self.face=true;
+                    self.cardEnSampleAudioEnded=false;
+                    self.cardEnSampleAudioPlay=false;
+                    self.questionAudioPlay=true;
+                    hi.ax.get('/product/userVocab/userVocab?practiseId='+self.practiseId).then(function(r){
+                        if(r.data.entity){
+                            self.userVocab=r.data.entity;
+                        }else{
+                            self.userVocab=null;
+                        }
+                    });
+                },
+                clickContent:function(e){
+                    var self=this;
+                    var cur=e.target;
+                    if($(cur).hasClass("icon-audio-i")||$(cur).hasClass("fav-icon")){
+                        return;
+                    }
+                    self.face=!self.face;
+                    if(!self.practise.cardEnSampleAudio&&!self.submitted){
+                        self.$emit('submit');
+                    }
+                    if(!self.face&&self.practise.cardEnSampleAudio){//ipad声音无法自动播放处理
+                        self.cardEnSampleAudioPlay=true;
+                        self.questionAudioPlay=false;
+                    }else if(self.face&&self.practise.questionAudio){
+                        self.cardEnSampleAudioPlay=false;
+                        self.questionAudioPlay=true;
+                    }else{
+                        self.cardEnSampleAudioPlay=false;
+                        self.questionAudioPlay=false;
+                    }
+                },
+                beforeEnter: function (el) {
+                    el.style.width = 0;
+                },
+                enter: function (el, done) {
+                    $(el).animate({ width: '450px'}, { duration: 100 },{ complete: done });
+                },
+                leave: function (el, done) {
+                    $(el).animate({ width: '0'}, { duration: 100 },{ complete: done });
+                    $(el).hide();
+                },
+                toggleUserVocab:function(){
+                    if(this.userVocab&&this.userVocab.deleted=='No'){
+                        this.deleteVocab();
+                    }else{
+                        this.addVocab();
+                    }
+                },
+                addVocab:function(){
+                    var self=this;
+                    var fd=new FormData();
+                    fd.append('practiseId',self.practiseId);
+                    hi.ax.post('/product/userVocab/add',fd).then(function(r){
+                        if(r.data.entity){
+                            self.userVocab=r.data.entity;
+                            layer.msg("单词已收藏", {
+                                icon:6,
+                                time:1000
+                            });
+                        }
+                    });
+                },
+                deleteVocab:function(){
+                    var self=this;
+                    if(!self.userVocab){
+                        return;
+                    }
+                    hi.ax.delete('/product/userVocab/delete?userVocabIds='+self.userVocab.id).then(function(r){
+                        if(r.data.status=='success'){
+                            self.userVocab.deleted='Yes';
+                            layer.msg("单词已取消收藏", {
+                                icon:6,
+                                time:1000
+                            });
+                        }
+                    });
+                },
+                onAudioEnd:function(){
+                    var self=this;
+                    self.cardEnSampleAudioEnded=true;
+                    if(!self.submitted){
+                        self.$emit('submit');
+                    }
+                }
+
+
+            },
+            watch: {
+                practiseId:function(){
+                    this.init();
+                }
+            }
+        })
+    </script>
+</th:block>

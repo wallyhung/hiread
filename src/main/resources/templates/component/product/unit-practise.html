@@ -1,0 +1,358 @@
+﻿<th:block th:fragment="unit-practise" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+        .unit-practise .unit-question {
+            color: rgb(105, 105, 105);
+            font-size: 20px;
+        }
+
+        .unit-practise .answer-analysis {
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            margin: 0px 50px 50px 50px;
+            background-color: rgb(229, 229, 229);
+        }
+        .class-main .class-text {
+            padding:15px 40px;
+        }
+        .class-main .class-text.display-center {
+            text-align: center;
+        }
+        .class-main .class-text .practise-title{
+            margin-top:25px;
+            line-height:26px;
+            font-weight:bold;
+            color:#535353;
+            font-size:26px;
+            margin-bottom:25px;
+        }
+        .class-main .class-text .practise-question,.class-main .class-text .question-trans{
+            overflow:hidden;
+        }
+        .class-main .class-text .practise-question p,.class-main .class-text .question-trans p{
+            overflow-wrap: normal;
+            text-overflow: ellipsis;
+            line-height:25px;
+            font-size:18px;
+            padding:0;
+        }
+        .class-main .class-text.display-center .practise-question{
+        }
+        .class-main .class-text .practise-question p{
+            color:#727171;
+        }
+        .class-main .class-text .question-trans p{
+            color:#88c0ad;
+        }
+        .class-main .class-text .class-line{
+            margin-top:25px;
+        }
+        .class-img-top {
+            margin-top:35px;
+            text-align: center;
+        }
+        .class-img-top img {
+            border:1px solid #89bbc6;
+            border-radius: 10px;
+            margin:0 40px;
+        }
+        .class-img-top img.count1 {
+            max-width:500px;
+            max-height: 500px;
+        }
+        .class-img-top img.count2 {
+            max-width:300px;
+            max-height: 300px;
+        }
+        .class-img-top img.count3 {
+            max-width:200px;
+            max-height: 200px;
+        }
+
+        .class-practise{
+            padding-left:40px;
+            padding-right:40px;
+            /*height:100%;*/
+        }
+        .class-practise.h100{
+            padding-left:10px;
+            padding-right:10px;
+            margin-bottom:0;
+        }
+
+        .class-main .class-result {
+            width: auto;
+            margin: 20px 40px 50px 40px;
+            padding:10px 50px;
+            background: #f9f9f9;
+            border: 1px solid #89bbc6;
+            font-size: 20px;
+            color: #6e6e6e;
+        }
+        .class-main .class-result .class-result-title {
+            color:#89bbc6;
+            font-weight: 900;
+        }
+        .class-main .class-jiexi {
+            top: 4px;
+            left: 10px;
+        }
+        .class-main .class-video {
+            margin-top: 5px;
+
+        }
+        .class-main .class-video video{
+            border-radius:10px;
+        }
+        .class-main .class-video .video-js{
+            background-color: #f9f9f9;
+        }
+        .class-main .class-audio .video-js{
+            background-color: #89bbc6;
+        }
+        .class-main .class-video .video-js .vjs-control-bar,.class-main .class-audio .video-js .vjs-control-bar{
+            background-color: #89bbc6;
+        }
+        .translate-img img{
+            width:58px;
+        }
+        .class-main .class-analysis{
+        }
+        .bounce-enter-active {
+            animation: bounce-in .5s;
+        }
+        .bounce-leave-active {
+            animation: bounce-in .5s reverse;
+        }
+        @keyframes bounce-in {
+            0% {
+                transform: scale(0);
+            }
+            50% {
+                transform: scale(1.5);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        #hi-scroll{
+            overflow: scroll;
+        }
+        ::-webkit-scrollbar
+        {
+            width: 2px;
+            height: 2px;
+            background-color: #F5F5F5;
+        }
+    </style>
+    <template id="unit-practise-t">
+        <div class="unit-practise h100" v-on:keyup.enter="enter($event)">
+            <hi-alert></hi-alert>
+            <div style="display:none;">
+                <icon-audio ref="correctAudio" :audio-src="getAudioSrc('correct')" :icon-show="false"></icon-audio>
+                <icon-audio ref="wrongAudio" :audio-src="getAudioSrc('wrong')" :icon-show="false"></icon-audio>
+                <icon-audio ref="matchAudio" :audio-src="getAudioSrc('match')" :icon-show="false"></icon-audio>
+                <icon-audio ref="allAudio" :audio-src="getAudioSrc('all')" :icon-show="false"></icon-audio>
+            </div>
+
+            <div class="class-left-content clear-fix class-main" id="hi-scroll" tabindex="1" :class="{'in-group':practiseGroup!=null}" >
+                <template v-if="practise">
+                    <div class="class-text" :class="{'display-center':practise.displayType=='A'}" v-if="showTop">
+                        <h1 class="practise-title" v-if="practise.title">{{practise.title}}
+                            <icon-audio v-if="practise.questionAudio&&practise.questionType!='G3-2'"
+                                    :audio-src="questionAudioSrc"
+                                    :autoplay="true"
+                                    icon-show="true"
+                                    css="{'font-size':'.8em','padding-left':'15px','padding-right':'5px','color':'#89bbc6'}"></icon-audio>
+                        </h1>
+                        <div class="practise-question" v-if="practise.question">
+                            <p v-for="(line,index) in practise.question.split('\n')">{{line}}</p>
+                        </div>
+                        <transition name="bounce">
+                            <div class="question-trans" v-if="translationShow&&practise.questionTranslation">
+                                <p v-for="(line,index) in practise.questionTranslation.split('\n')">{{line}}</p>
+                            </div>
+                        </transition>
+                        <div class="class-line"></div>
+                        <div class="class-img-top" v-if="practise.questionImg">
+                            <img v-for="name in practise.questionImg.split(';')" :src="questionImgSrc(name)" alt="" :class="questionImgClass">
+                        </div>
+                    </div>
+
+                    <div class="class-practise" :class="{'h100':practise.questionType=='P3'}">
+                        <p-true-or-false v-if="practise.questionType=='G1-1'&&practise"
+                                         :practise="practise"
+                                         :practise-id="practiseId"
+                                         :submitted="submitted"
+                                         :answer="answer"
+                                         :correct="correct"
+                                         v-on:answer="onAnswer"
+                        ></p-true-or-false>
+                        <p-choice-question v-if="practise.questionType=='G2-1'"
+                                           :practise-opts="practiseOpts"
+                                           :submitted="submitted"
+                                           :answer="answer"
+                                           :correct="correct"
+                                           v-on:answer="onAnswer"
+                        ></p-choice-question>
+                        <p-open-question
+                                v-if="practise.questionType=='P1'&&practise"
+                                :practise-id="practiseId"
+                                :practise="practise"
+                                v-on:answer="onAnswer"
+                        ></p-open-question>
+                        <p-clicking-pairs
+                                v-if="practise.questionType=='P3'&&practise"
+                                :practise="practise"
+                                :practise-id="practiseId"
+                                :practise-opts="practiseOpts"
+                                :submitted="submitted"
+                                v-on:submit="submit"
+                                v-on:play-audio="playAudio"
+                        ></p-clicking-pairs>
+                        <p-fill-blank v-if="practise.questionType=='G3-1'"
+                                           :practise-opts="practiseOpts"
+                                           :practise-id="practise.id"
+                                           :practise="practise"
+                                           :submitted="submitted"
+                                           :answer="answer"
+                                           :correct="correct"
+                                            type="sentence"
+                                           v-on:answer="onAnswer"
+                        ></p-fill-blank>
+                        <p-fill-blank v-if="practise.questionType=='G3-2'"
+                                      :practise-opts="practiseOpts"
+                                      :practise-id="practise.id"
+                                      :practise="practise"
+                                      :submitted="submitted"
+                                      :answer="answer"
+                                      :correct="correct"
+                                      type="word"
+                                      v-on:answer="onAnswer"
+                        ></p-fill-blank>
+                        <p-timeline v-if="practise.questionType=='G6-1'"
+                                    :practise-opts="practiseOpts"
+                                    :practise-id="practise.id"
+                                    :submitted="submitted"
+                                    :answer="answer"
+                                    :correct="correct"
+                                    v-on:answer="onAnswer"
+                                    v-on:play-audio="playAudio"
+                        ></p-timeline>
+                        <p-make-sentence v-if="practise.questionType=='G4-1'"
+                                      :practise-opts="practiseOpts"
+                                         :practise-id="practise.id"
+                                      :submitted="submitted"
+                                      :answer="answer"
+                                         :correct="correct"
+                                      v-on:answer="onAnswer"
+                        ></p-make-sentence>
+                        <p-move-tabs v-if="practise.questionType=='P4'"
+                                         :practise-opts="practiseOpts"
+                                         :practise-id="practise.id"
+                                         :submitted="submitted"
+                                         :answer="answer"
+                                         v-on:submit="submit"
+                                         v-on:play-audio="playAudio"
+                        ></p-move-tabs>
+                        <p-word-card v-if="practise.questionType=='P2'"
+                                     :practise="practise"
+                                     :practise-id="practise.id"
+                                     :submitted="submitted"
+                                     :answer="answer"
+                                     v-on:submit="submit"
+                        ></p-word-card>
+                    </div>
+
+                    <div v-show="submitted&&(correct=='Yes'||(correct=='No'&&practise.questionType=='G3-2'))&&practise.questionType!='P1'&&practise.questionType!='P2'&&practise.questionType!='P3'&&practise.questionType!='P'">
+                            <div class="class-result">
+                                <div class="class-result-title" v-if="submitted&&correct=='Yes'">
+                                    <img th:src="@{/img/class_btn_check.png}" alt="" class="class-symbol">
+                                    <span>回答正确</span>
+                                </div>
+                                <div class="class-result-title" v-if="submitted&&correct=='No'">
+                                    <img th:src="@{/img/class_btn_wrong.png}" alt="" class="class-symbol">
+                                    <span>回答错误</span>
+                                </div>
+                                <div class="row" style="position: relative" v-show="correct=='Yes'||practise.questionType=='G3-2'">
+                                    <p class="class-jiexi pull-left">问题解析:</p>
+                                    <div class="class-analysis pull-left">
+                                        <ul>
+                                            <li v-if="practise.analysisType=='text'&&practise.analysis">
+                                                <p v-for="(line,index) in practise.analysis.split('\n')">{{line}}</p>
+                                            </li>
+                                            <li v-if="practise.analysisType=='audio'">
+                                                <div class="class-audio">
+                                                    <normal-audio
+                                                            v-on:video-ended="analysisEnded"
+                                                            :video-src="analysisAudioSrc"
+                                                            :autoplay="false"
+                                                            type="audio"
+                                                            width="300"
+                                                    ></normal-audio>
+                                                </div>
+
+                                            </li>
+                                            <li v-if="practise.analysisType=='video'">
+                                                <div class="class-video">
+                                                    <normal-video
+                                                            v-on:video-ended="analysisEnded"
+                                                            :video-src="analysisVideoSrc"
+                                                            :autoplay="false"
+                                                            type="video"
+                                                            width="600"
+                                                    ></normal-video>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                    </div>
+                </template>
+                <template v-else>
+                    loading
+                </template>
+            </div>
+
+            <div class="class-footer">
+                    <div class="footer-left">
+                        <div class="class-logo">
+                            <img th:src="@{/img/logo.png}" alt="logo">
+                        </div>
+                    </div>
+                    <div class="footer-center">
+                        <page :page="page" v-on:change-to-page="changeToPage" v-if="practiseGroup&&practiseGroup.length>1"></page>
+                        <div class="button">
+                            <a v-if="type=='video'" class="btn btn-default" v-on:click="cancelVideoGami">返回视频</a>
+                            <a class="btn btn-danger" v-on:click="reset" v-if="!submitted&&(practise.questionType=='P3'||practise.questionType=='G6-1'||practise.questionType=='G4-1'||practise.questionType=='P4')">重置</a>
+                            <a class="btn btn-danger" v-on:click="submit" ref="submitBtn" v-show="!submitted&&practise.questionType!='P2'&&practise.questionType!='P3'&&practise.questionType!='P4'">提交</a>
+                            <a class="btn btn-danger" v-on:click="redo" ref="redoBtn" v-if="submitted&&correct=='No'&&practise.questionType!='P3'&&practise.questionType!='P4'">再试一下</a>
+                            <a class="btn btn-danger" v-on:click="nextPractise" ref="nextPractiseBtn" v-if="type=='video'&&submitted&&correct=='Yes'&&practiseGroup&&!isLastPractise">下一题</a>
+                            <a class="btn btn-danger" v-on:click="nextPractise" ref="nextPractiseBtn" v-if="type!='video'&&submitted&&correct=='Yes'&&!isLastPractise">
+                                <span v-if="practise.questionType=='P2'">继续</span>
+                                <span v-else>下一题</span>
+                            </a>
+                            <a class="btn btn-danger" v-on:click="continueVideo" ref="continueVideoBtn" v-if="type=='video'&&submitted&&correct=='Yes'&&isLastPractise">继续</a>
+                            <!--<a class="btn btn-danger" v-on:click="finishPractise" ref="finishPractiseBtn" v-if="type!='video'&&submitted&&correct=='Yes'&&isLastPractise">完成</a>-->
+                        </div>
+                    </div>
+                    <div class="footer-right">
+                        <div class="translate-img">
+                            <a href="javascript:;" class="class-btn-translate"  v-on:click="translationToggle" :class="{'activated':translationShow}"
+                               v-if="practise&&practise.questionTranslation&&practise.questionType!='P3'">
+                                <img th:src="@{/img/class_btn_translate.png}" alt="">
+                            </a>
+                            <a href="javascript:;" class="class-btn-reminder" v-on:click="help" v-if="practise&&(practise.help||practise.questionType=='P3')">
+                                <img th:src="@{/img/class_btn_reminder.png}" alt="">
+                            </a>
+                        </div>
+                    </div>
+            </div>
+        </div>
+
+
+    </template>
+    <script th:src="@{/app/component/product/unit-practise.js}"></script>
+</th:block>

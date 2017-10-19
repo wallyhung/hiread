@@ -1,0 +1,30 @@
+.video-js .vjs-big-play-button {
+ height: 3em;
+ border-radius: 50%;
+ border:none;
+}
+.video-js .vjs-big-play-button:before{
+ position: absolute;
+ left: 0;
+ width: 100%;
+ height: 100%;
+ content: "";
+ background: url(../img/class_btn_play.png) no-repeat center;
+}
+.vjs-error .vjs-error-display:before{
+ content:'';
+}
+.vjs-error .vjs-error-display .vjs-modal-dialog-content{
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ background: black;
+}
+.vjs-error .vjs-error-display .vjs-modal-dialog-content .refresh-btn{
+ color:#eee;
+ text-decoration: underline;
+ margin-left:15px;
+}
+.vjs-error .vjs-error-display .vjs-modal-dialog-content .refresh-btn:hover{
+ color:#fff;
+}

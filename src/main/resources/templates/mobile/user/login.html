@@ -1,0 +1,17 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<th:block th:include="common/head :: common"></th:block>
+</head>
+
+<body>
+<div id="loginForm" v-cloak>
+	<div>mobile:<input v-model="user.mobile"/></div>
+	<div>password:<input v-model="user.password" type="password"/></div>
+	<button v-on:click="submit">login</button>
+</div>
+
+
+<script th:src="@{/controller/user/login.js}"></script>
+</body>
+</html>

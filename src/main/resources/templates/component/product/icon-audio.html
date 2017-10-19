@@ -1,0 +1,115 @@
+﻿<th:block th:fragment="icon-audio" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+        .icon-audio .fa{
+            cursor:pointer;
+            color:rgb(115,115,115);
+        }
+    </style>
+    <template id="icon-audio-t">
+        <span class="icon-audio">
+            <audio ref="audio" controls v-show="barShow" preload="false" :id="id"></audio>
+            <i ref="icon" class="fa icon-audio-i" :class="{'fa-volume-off':paused,'fa-volume-up':!paused}" v-on:click="toggle" v-show="iconShow"></i>
+        </span>
+    </template>
+    <script>
+        Vue.component('icon-audio', {
+            props: ['audioSrc','autoplay','barShow','css','iconShow','id','padPlay'],
+            data: function () {
+                return {
+                    audio:null,
+                    paused:true,
+                    duration:0,
+                    ended:false
+                }
+            },
+            template: '#icon-audio-t',
+            created: function () {
+            },
+            mounted: function () {
+                this.init();
+            },
+            methods:{
+                init:function(){
+                    var self=this;
+                    this.audio=this.$refs.audio;
+                    this.paused=true;
+                    this.duration=0;
+                    this.ended=false;
+
+                    if(this.audioSrc){
+                        this.audio.src=this.audioSrc;
+
+                    }
+                    if(this.css){
+                        $(this.$refs.icon).css(eval('(' + this.css + ')'));
+                    }
+//                    this.audio.addEventListener('timeupdate',function(){
+//                        if(self.duration>3){
+//                            var currentTime=Math.ceil(self.audio.currentTime);
+//                            if(self.duration-currentTime<=3){
+//                                self.$emit('audio-ended');
+//                            }
+//                        }
+//                    },false);
+                    this.audio.addEventListener('canplaythrough',function(){
+                        try{
+                            self.duration=Math.floor(self.audio.duration);
+                            self.$emit('audio-canplaythrough',self.duration);
+                            if(self.autoplay){
+                                self.audio.play();
+                                self.paused=false;
+                            }
+
+                        }catch(e){
+                            self.duration=0;
+                        }
+                    },false);
+                    this.audio.addEventListener('ended',function(){
+                        if(!self.ended){
+                            self.$emit('audio-ended')
+                        }
+                        self.paused=true;
+                        self.ended=true;
+
+                    },false);
+                    this.audio.addEventListener('play',function(){
+                        self.$emit('audio-play')
+                    },false);
+                    this.audio.addEventListener('pause',function(){
+                        self.$emit('audio-paused')
+                    },false);
+                    hi.bus.$on("audio-pause",function(){
+                        if(!self.audio.paused){
+                            self.audio.pause();
+                            self.paused=true;
+
+                        }
+
+                    });
+                },
+                toggle:function(){
+                    if(this.paused){
+                        this.audio.play();
+                        this.paused=false;
+                    }else{
+                        this.audio.pause();
+                        this.paused=true;
+                    }
+                }
+            },
+            watch: {
+                'audioSrc':function(){
+                    this.init();
+                },
+                'autoplay':function(v){
+                    this.init();
+                },
+                'padPlay':function(v){
+                    if(v){
+                        this.audio.play();
+                    }
+                }
+            }
+        })
+    </script>
+</th:block>

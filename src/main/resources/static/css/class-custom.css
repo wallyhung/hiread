@@ -1,0 +1,230 @@
+/*头部*/
+.class-left {
+    padding: 0 10px 0 10px;
+    width: 100%;
+    height:100%;
+}
+.class .class-left {
+    width:calc(100% - 60px);
+}
+.class-left .class-left-title {
+    padding-top: 5px;
+    padding-bottom:5px;
+    display: flex;
+    justify-content: space-between;
+}
+.class-left .title-left{
+    display: flex;
+}
+.class-left .title-right{
+    display: flex;
+    align-items: center;
+
+}
+.class-left .class-btn {
+    cursor: pointer;
+    text-decoration: none;
+    padding: 12px 16px;
+    font-size:14px;
+}
+/*内容*/
+.class-left-content {
+    height: calc(100% - 60px);
+}
+.unit-practise .class-left-content{
+    height: calc(100% - 155px);
+}
+.class-main .class-video{
+    height:auto;
+}
+/*
+右侧tab
+ */
+
+.quick_links .linktab{
+    padding: 6px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+.quick_links_wrap, .mui-mbar-tabs {
+    z-index: 999;
+    width: 0;
+}
+
+.quick_links_panel .sectionShow{
+    background-color:#D62D40;
+}
+.quick_links_panel .gamiShow{
+    background-color:#89bbc6;
+}
+.quick_links_panel .hintShow{
+    background-color:#34b0b0;
+}
+.quick_links_panel .audioShow{
+    background-color:#f6cd84;
+}
+.quick_link_mian .quick_links_pop{
+    overflow: scroll;
+    max-height:100%;
+}
+@keyframes twinkling-opacity{
+    0%{
+        opacity:0;
+    }
+    50%{
+        opacity:1;
+    }
+    100%{
+        opacity:0;
+    }
+}
+.twink-opacity{
+    animation: twinkling-opacity 1s 2 ease-in-out;
+}
+@-webkit-keyframes twinkling-bg{
+    0%{
+        background:#e1e1e1;
+    }
+    50%{
+        background: #F7C2BB;
+    }
+    100%{
+        background: #e1e1e1;
+    }
+}
+.twink-bg{
+    animation: twinkling-bg 1s 2 ease-in-out;
+}
+@-webkit-keyframes twinkling-bd{
+    0%{
+        border:4px solid rgb(137,201,151);
+    }
+    50%{
+        border: 4px solid #EF8476;
+    }
+    100%{
+        border:4px solid rgb(137,201,151);
+    }
+}
+.twink-bd{
+    animation: twinkling-bd 1s 2 ease-in-out;
+}
+.wrong-box{
+    position:absolute ;
+    top:0;
+    left:0;
+    width: 100%;
+    height: 100%;
+    border:4px solid rgb(137,201,151);
+    border-radius:10px;
+}
+.wrong-mark{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width:40px;
+    height:40px;
+    font-size:40px;
+    color:#EF8476;
+    position: absolute;
+    top:0;
+    right:0;
+    opacity: 0;
+    z-index:99;
+}
+
+
+.class-menu1 h4, .class-menu2 h4, .class-menu3 h4, .class-menu4 h4 {
+    padding: 10px 45px 10px 10px;
+}
+.panel-body {
+    padding: 5px 10px;
+}
+/*右侧菜单-词汇*/
+.class-menu3 .hint-content{
+    padding-top:10px;
+
+}
+.class-menu3 .hint-content p{
+    font-size:15px;
+    line-height: 20px;
+}
+/*右侧菜单-音频*/
+.class-menu4 .panel-body  p{
+    margin-bottom: 10px;
+    font-size:15px;
+}
+.class-menu4 .video-js{
+    background-color: #fff;
+}
+.class-menu4 .video-js .vjs-control-bar,.class-menu4 .vjs-play-control:before{
+    background-color: #f6cd84;
+    border-radius:10px;
+}
+/*底部*/
+.class-footer{
+    display: flex;
+}
+.footer-left{
+    display: flex;
+    width: 25%;
+    justify-content: center;
+    align-items: center;
+}
+.footer-left .class-logo {
+    margin-top: 0;
+}
+.footer-center{
+    display: flex;
+    width: 50%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.footer-right{
+    display: flex;
+    width: 25%;
+    justify-content: center;
+    align-items: center;
+}
+.footer-right .translate-img {
+    margin-top: 0;
+}
+.class-footer .translate-img img{
+    margin-left: 0px;
+}
+.class-footer .translate-img .class-btn-reminder img {
+    margin-left: 20px;
+}
+.class-footer .pagination {
+    margin: 0;
+}
+.class-footer .button {
+    margin-top: 7px;
+}
+
+.class-footer .btn {
+    width: 132px;
+    height: 38px;
+    margin-right: 6px;
+    padding: 0;
+    line-height: 38px;
+    font-size: 18px;
+}
+
+.class-footer {
+    padding: 5px 0;
+    height: 100px;
+}
+
+.page .pagination>li a{
+    cursor:pointer;
+}
+
+/*.class-selectImg .active{*/
+    /*background: url(../img/class_selectImg_on_2.png) no-repeat;*/
+/*}*/
+/*星星效果*/
+.class-star-box{display: none; position:absolute;right:10px;top:130px; width:363px; height:65px; background: url(../img/star.png)  no-repeat center; }
+.class-star-box .class-star{ position:relative; width:100%; height:100%;}
+.class-star-box .class-star .number{ position:absolute; left:175px;top:25px; font-size:36px; font-weight:bold; color:#f6b032; }

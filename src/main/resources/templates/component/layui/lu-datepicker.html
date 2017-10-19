@@ -1,0 +1,46 @@
+<th:block th:fragment="lu-datepicker"
+          xmlns:th="http://www.thymeleaf.org"
+          xmlns:v-on="http://www.w3.org/1999/xhtml">
+    <style>
+
+    </style>
+    <template id="lu-datepicker-tpl">
+        <div class="layui-input-inline">
+            <input type="text"
+                   :name="name"
+                   :value="currentValue"
+                   class="layui-input"
+                   lay-verify="date"
+                   :placeholder="placeholder"
+                   autocomplete="off"
+                   v-on:click="changeDate($event)">
+        </div>
+    </template>
+    <script>
+        Vue.component('lu-datepicker', {
+            props: ['value', 'name', 'placeholder'],
+            mixins: [hi.mixin],
+            data: function () {
+                return {}
+            },
+            template: '#lu-datepicker-tpl',
+            computed: {
+                currentValue: function () {
+                    return this.value;
+                }
+            },
+            methods: {
+                changeDate: function (e) {
+                    var vm = this;
+                    layui.laydate({
+                        elem: e.currentTarget,
+                        choose: function (date) {
+                            vm.currentValue = date;
+                            vm.$emit('click', date);
+                        }
+                    });
+                }
+            }
+        })
+    </script>
+</th:block>

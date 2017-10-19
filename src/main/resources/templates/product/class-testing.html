@@ -1,0 +1,54 @@
+﻿<th:block th:fragment="class-testing" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+        a{
+            text-decoration: underline;
+        }
+        select,input{
+            border:1px solid grey;
+        }
+    </style>
+    <template id="class-testing-t">
+        <div class="class-testing">
+            <div class="learning-title2">权威测试</div>
+            <div class="pt-30 clear-fix">
+                <button class="btn" v-on:click="toQuestionnaire">去调查问卷</button>
+            </div>
+            <div class="pt-30 clear-fix">
+                    <label for="">Select a level:</label>
+                    <select v-model="level">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="">根据调查问卷分数</option>
+                    </select>
+                    <button class="btn" v-on:click="toReadingLevelTest">去水平测试</button>
+            </div>
+
+        </div>
+    </template>
+    <script>
+        var classTesting={
+            data: function () {
+                return {
+                    level:1
+                }
+            },
+            template: '#class-testing-t',
+            created:function(){
+            },
+            methods: {
+                toReadingLevelTest:function(){
+                    location.href=hi.root+'user/testing/readingLevel?level='+this.level;
+                },
+                toQuestionnaire:function(){
+                    location.href=hi.root+'user/questionnaire';
+                }
+            }
+        }
+
+    </script>
+</th:block>

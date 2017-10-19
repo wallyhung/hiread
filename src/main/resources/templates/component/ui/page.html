@@ -1,0 +1,114 @@
+﻿<th:block th:fragment="page" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+    </style>
+    <template id="page-t">
+        <nav class="text-center page" v-if="pageInfo&&pageInfo.entityCount>0">
+            <ul class="pagination clearfix ">
+                <li v-if="pageInfo.currentPage>1" v-on:click="changeToPage(pageInfo.currentPage-1)">
+                    <a href="javascript:"><i class="fa fa-angle-left"></i></a>
+                </li>
+                <li v-if="pageInfo.firstPage" v-on:click="changeToPage(pageInfo.firstPage.index)">
+                    <a href="javascript:">{{pageInfo.firstPage.index}}</a>
+                </li>
+                <li v-if="pageInfo.preRow" v-on:click="changeToPage(pageInfo.preRow.preRowSelectedIndex)">
+                    <a href="javascript:">...</a>
+                </li>
+                <li v-for="page in pageInfo.currentRowPages" v-on:click="changeToPage(page.index)" :class="{'active':page.index==pageInfo.currentPage}">
+                    <a href="javascript:">{{page.index}}</a>
+                </li>
+                <li v-if="pageInfo.nextRow" v-on:click="changeToPage(pageInfo.nextRow.nextRowSelectedIndex)">
+                    <a href="javascript:">...</a>
+                </li>
+                <li v-if="pageInfo.lastPage" v-on:click="changeToPage(pageInfo.lastPage.index)">
+                    <a href="javascript:">{{pageInfo.lastPage.index}}</a>
+                </li>
+                <li v-if="pageInfo.currentPage<pageInfo.pageCount" v-on:click="changeToPage(pageInfo.currentPage+1)">
+                    <a href="javascript:"><i class="fa fa-angle-right"></i></a>
+                </li>
+            </ul>
+        </nav>
+    </template>
+    <script>
+        Vue.component('page', {
+            props: ['page'],
+            data: function () {
+                return {
+                }
+            },
+            template: '#page-t',
+            created: function () {
+            },
+            mounted: function () {
+            },
+            computed:{
+              pageInfo:function(){
+                  var pageInfo=this.page;
+                  var pageCount=pageInfo.pageCount;
+                  var entityCount=pageInfo.entityCount;
+                  var currentPage=pageInfo.currentPage;
+                  var maxPagePerRow=pageInfo.maxPagePerRow;
+                  var pageRowCount=pageInfo.pageRowCount;
+                  var currentPageRow=pageInfo.currentPageRow;
+
+                  var pages=[];
+                  for(var i=1;i<=pageCount;i++){
+                      var page={index:i,selected:false};
+                      if(i==currentPage){
+                          page.selected=true;
+                      }
+                      pages.push(page);
+                  }
+                  pageInfo.pages=pages;
+
+                  //当前页行
+                  var currentRowPages=[];
+                  var currentRowStartIndex=1+(currentPageRow-1)*maxPagePerRow;
+                  var currentRowEndIndex=currentPageRow*maxPagePerRow>pageCount?pageCount:currentPageRow*maxPagePerRow;
+                  for(var i=currentRowStartIndex;i<=currentRowEndIndex;i++){
+                      currentRowPages.push(pages[i-1]);
+                  }
+                  pageInfo.currentRowPages=currentRowPages;
+
+                  if(pageRowCount>1){
+                      //下一页行和尾页
+                      if(currentPageRow<pageRowCount){
+                          pageInfo.nextRow={nextRowSelectedIndex:currentRowEndIndex+1};
+//                          if(entityCount-pageCount*maxPagePerRow>1){
+//                              var lastPage=pages[pages.length-1];
+//                              pageInfo.lastPage={index:lastPage.index};
+//                          }
+                          var lastPage=pages[pages.length-1];
+                          pageInfo.lastPage={index:lastPage.index};
+
+                      }
+                      //上一页行和首页
+                      if(currentPageRow>1){
+                          pageInfo.preRow={preRowSelectedIndex:currentRowStartIndex-1};
+                          var firstPage=pages[0];
+                          pageInfo.firstPage={index:firstPage.index};
+                      }
+
+                  }
+                  return pageInfo;
+              }
+            },
+            methods:{
+                changeToPage:function(pageIndex){
+                    var self=this;
+                    pageIndex=parseInt(pageIndex);
+                    if(!/(^[1-9]\d*$)/.test(pageIndex)){
+                        pageIndex=1;
+                    }
+                    if(pageIndex>self.pageInfo.pageCount){
+                        pageIndex=self.pageInfo.pageCount;
+                    }
+                    self.pageInfo.currentPage=pageIndex;
+                    self.$emit('change-to-page',pageIndex);
+
+                }
+            },
+            watch: {
+            }
+        })
+    </script>
+</th:block>

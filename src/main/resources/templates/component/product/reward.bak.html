@@ -1,0 +1,242 @@
+﻿<th:block th:fragment="reward" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+        .reward{
+            display: flex;
+            width:200px;
+
+        }
+        .study-point-panel{
+            margin-right:50px;
+        }
+        /*金币*/
+        .clipped-box{display: none; position: absolute; top: 0px; right: 0px; width: 200px; height: 300px;z-index:99;}
+        .clipped-number{display: none; position: absolute; bottom: 0px; left: 120px; width: 50px; height: 50px;font-size: 12px; color:red;}
+        .clipped-box img{position: absolute; top: 200px; left: 0; -webkit-transition: -webkit-transform 0.8s ease-in, background 0.3s ease-in;
+            transition: transform 0.8s ease-in;}
+        .gold-img{
+            width:20px;
+            height:15px;
+            margin-top: -3px;
+            transition: all;
+        }
+        .point-count{
+            margin-left:10px;
+        }
+        .class-star-box{
+            display: block;
+            position: absolute;
+            right: 10px;
+            top: 130px;
+            width: 363px;
+            height: 65px;
+            z-index:999;
+        }
+    </style>
+    <template id="reward-t">
+        <div class="reward">
+            <div style="display:none;">
+                <icon-audio ref="2Audio" :audio-src="getAudioSrc('2')" :icon-show="false"></icon-audio>
+                <icon-audio ref="3Audio" :audio-src="getAudioSrc('3')" :icon-show="false"></icon-audio>
+                <icon-audio ref="4Audio" :audio-src="getAudioSrc('4')" :icon-show="false"></icon-audio>
+                <icon-audio ref="5Audio" :audio-src="getAudioSrc('5')" :icon-show="false"></icon-audio>
+                <icon-audio ref="6Audio" :audio-src="getAudioSrc('6')" :icon-show="false"></icon-audio>
+                <icon-audio ref="7Audio" :audio-src="getAudioSrc('7')" :icon-show="false"></icon-audio>
+                <icon-audio ref="8Audio" :audio-src="getAudioSrc('8')" :icon-show="false"></icon-audio>
+                <icon-audio ref="9Audio" :audio-src="getAudioSrc('9')" :icon-show="false"></icon-audio>
+                <icon-audio ref="10Audio" :audio-src="getAudioSrc('10')" :icon-show="false"></icon-audio>
+            </div>
+            <div class="study-point-panel">
+                <span>金币数:<span class="point-count">{{studyPoint}}</span></span>
+                <img class="gold-img" th:src="@{/img/goldimg/jb5.png}">
+            </div>
+            <!--<div class="accurate-panel">-->
+                <!--<span>连对数:<span class="point-count">{{studyPoint}}</span></span>-->
+                <!--<img class="gold-img" th:src="@{/img/goldimg/jb5.png}">-->
+            <!--</div>-->
+
+            <div class="clipped-box">
+            </div>
+            <transition
+                    v-on:enter="enter"
+                    v-bind:css="false"
+            >
+                <div class="class-star-box" v-if="accurateNumShow">
+                    <div class="class-star">
+                        <div class="number">{{accurateNum}}</div>
+                    </div>
+                </div>
+            </transition>
+
+        </div>
+    </template>
+    <script>
+        Vue.component('reward', {
+            props: [],
+            data: function () {
+                return {
+                    studyPoint:0,
+                    accurateNum:0,
+                    accurateNumShow:false
+                }
+            },
+            template: '#reward-t',
+            created: function () {
+                var self=this;
+                self.init();
+
+                hi.bus.$on('reward',function(type,param){
+                    if(type=='studyPoint'){
+                        self.rewardStudyPoint();
+                    }else if(type=='accurateNum'){
+                        if(param>1){
+                            self.accurateNum=param;
+                            self.accurateNumShow=true;
+
+                            if(param<10){
+                                self.playAudio(param);
+                            }else{
+                                self.playAudio(10);
+                            }
+                        }
+
+
+                    }
+                });
+            },
+            mounted: function () {
+            },
+            methods:{
+                init:function(){
+                    var self=this;
+                    hi.ax.get('/user/login/refreshLoginUser',{}).then(function (r) {
+                        var user=r.data.entity;
+                        if(user&&user.studyPoint){
+                            self.studyPoint=parseInt(user.studyPoint);
+                        }
+                    });
+                },
+                rewardStudyPoint:function(){
+                    var self=this;
+                    hi.ax.get('/user/login/refreshLoginUser',{}).then(function (r) {
+                        var user=r.data.entity;
+                        if(user&&user.studyPoint){
+                            var studyPoint=parseInt(user.studyPoint);
+                            if(studyPoint>self.studyPoint){
+                                var inter=setInterval(function(){
+                                    self.studyPoint++;
+                                    if(self.studyPoint==studyPoint){
+                                        clearInterval(inter);
+                                    }
+                                },100);
+                            }
+                            self.goldEffect();
+                        }
+                    });
+                },
+                goldEffect:function(){
+                    genClips();
+                    changeNum();
+                    //加载金币图片
+                    function genClips() {
+                        var amount = 5;
+                        var width = 200 / amount;
+                        var height = 200 / amount;
+                        var y = 0;
+                        var index = 1;
+                        for (var z = 0; z <= (amount * width); z = z + width) {
+                            $('<img class="clipped" src="'+hi.root+'img/goldimg/jb' + index + '.png" />').appendTo($('.clipped-box'));
+                            if (z === (amount * width) - width) {
+                                y = y + height;
+                                z = -width;
+                            };
+                            if (index >= 5) {
+                                index = 1;
+                            };
+                            index++;
+                            if (y === (amount * height)) {
+                                z = 9999999;
+                            };
+                        };
+                    };
+                    //金币动画
+                    function changeNum() {
+                        $('.clipped-box').show();
+                        $('.clipped-box img').each(function () {        //索引图片变换角度
+                            var v = rand(120, 90),
+                                angle = rand(80, 89),
+                                theta = (angle * Math.PI) / 180,
+                                g = -9.8;
+                            var self = $(this);
+                            var t = 0,
+                                z, r, nx, ny, number,
+                                totalt = 10;
+                            var negate = [1, -1, 0],
+                                direction = negate[Math.floor(Math.random() * negate.length)];
+                            var randDeg = rand(-5, 10),
+                                randScale = rand(0.9, 1.1),
+                                randDeg2 = rand(30, 5);
+                            // And apply those
+                            $(this).css({
+                                'transform': 'scale(' + randScale + ') skew(' + randDeg + 'deg) rotateZ(' + randDeg2 + 'deg)'
+                            });
+
+                            // Set an interval
+                            z = setInterval(function () {
+                                var ux = (Math.cos(theta) * v) * direction;
+                                var uy = (Math.sin(theta) * v) - ((-g) * t);
+                                nx = (ux * t);
+                                ny = (uy * t) + (0.25 * (g) * Math.pow(t, 2));
+                                number = ny - 50;
+                                if (ny < -40) {
+                                    ny = -40;
+                                };
+                                $(self).css({
+                                    'top': (ny) + 'px',
+                                    'left': (nx) + 'px'
+                                });
+
+
+                                t = t + 0.10;
+
+                                if (t > totalt) {
+                                    $(".clipped-box").html("").hide();
+
+                                    clearInterval(z);
+                                }
+                            }, 10);
+                        });
+
+                    };
+                    //随机数
+                    function rand(min, max) {
+                        return Math.floor(Math.random() * (max - min + 1)) + min;
+                    };
+                },
+                beforeEnter: function (el) {
+                    $(el).css({
+                        top: '130px'
+                    });
+                },
+                enter:function(el, done){
+                    var self=this;
+                    $(el).animate({ top: '40px' }, 1000, function () {
+                        $(el).fadeOut(1000, function () {
+                            self.accurateNumShow=false;
+                        });
+                    });
+                },
+                getAudioSrc: function (type) {
+                    return hi.root + "audio/"+type+".mp3";
+                },
+                playAudio:function(type){
+                    var self=this;
+                    self.$refs[type+'Audio'].$refs.audio.play();
+                }
+
+
+            },
+            watch: {
+            }
+        })
+    </script>
+</th:block>

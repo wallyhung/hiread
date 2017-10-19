@@ -1,0 +1,72 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<th:block th:include="common/head :: common-head"></th:block>
+</head>
+<body>
+<div id="login" v-cloak class="h100">
+	<hi-header></hi-header>
+	<div class="container login-wp">
+		<div class="login-left">
+			<div class="register-wrap" id="register-wrap">
+				<div class="register" id="register">
+					<div class="register-top" id="reg-top">
+						<h2 class="normal" id="normal" v-on:click="onNormalClick" v-bind:class="{active : type.normal.active}">普通登录</h2>
+						<h2 class="nopassword" id="nopw" v-on:click="onWxClick" v-bind:class="{active : type.wx.active}">微信登录</h2>
+					</div>
+
+					<!--普通登录-->
+					<div class="register-con" id="rc" v-show="type.normal.active">
+						<form v-on:submit.prevent="submit">
+							<ul>
+								<li id="rc-inner-num">
+									<i class="fa fa-minus-circle"></i>
+									<span>请输入手机号码</span>
+								</li>
+								<li id="rc-inner-virity">
+									<i class="fa fa-minus-circle"></i>
+									<span>请输入密码</span>
+								</li>
+								<li id="rc-innerError">
+									<i class="fa fa-minus-circle"></i>
+									<span>您输入的用户名或密码不正确</span>
+								</li>
+								<li class="form-group">
+									<label>登录名:</label>
+									<input type="text" name="mobile" class="form-control" placeholder="手机号码" v-model.trim="formData.mobile"/>
+									<span class="fa fa-check success" style="display:none;color:green;position:relative;left:-25px;top:5px;"></span>
+								</li>
+								<li class="form-group">
+									<label>登录密码:</label>
+									<a th:href="@{/user/reset/password/step1}" class="fr">忘记密码？</a>
+									<input type="password" name="password" id="pass1" class="form-control" placeholder="密码" v-model="formData.password"/>
+								</li>
+								<li>
+									<button class="submit" type="submit" id="login-btn">立即登录</button>
+								</li>
+								<li>
+									<a href="/hiread/user/register/step1" class="">新用户注册</a>
+								</li>
+								<li class="read">
+									<label>
+										<input type="checkbox" class="ck" name="check" value="1" checked="checked">我已阅读并同意 <a href="javascript:">《Hi Read网站服务协议》</a>
+									</label>
+								</li>
+							</ul>
+						</form>
+					</div>
+					<!--手机无密码登录-->
+					<div class="login-con" id="lc" v-show="type.wx.active" style="text-align: center;">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<hi-footer></hi-footer>
+</div>
+<th:block th:include="common/head :: common"></th:block>
+<script th:src="@{/js/wechat/open/wx-login.js}"></script>
+<script th:src="@{/controller/user/login.js}"></script>
+<link rel="stylesheet" th:href="@{/css/user/login.css}">
+</body>
+</html>

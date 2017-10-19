@@ -1,0 +1,39 @@
+﻿<th:block th:fragment="menu-left" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+    </style>
+    <template id="menu-left-t">
+        <div class="side-menu">
+            <h4>{{title}}</h4>
+            <ul class="learning-nav">
+                <li v-for="r in routes" v-if="r.label">
+                    <a :href="'#'+r.path" abbr="learning-class" :class="{'on':$route.path==r.path||linksContain(r.links,$route.path)}">
+                        <i class="fa" :class="r.icon"></i>{{r.label}}
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </template>
+    <script>
+        Vue.component('menu-left', {
+            props: ['routes','title'],
+            data: function () {
+                return {
+                }
+            },
+            template: '#menu-left-t',
+            created: function () {
+            },
+            mounted: function () {
+            },
+            methods:{
+                linksContain:function(links,path){
+                    return _.some(links,function(l){
+                        return l==path;
+                    })
+                }
+            },
+            watch: {
+            }
+        })
+    </script>
+</th:block>

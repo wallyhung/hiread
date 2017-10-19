@@ -1,0 +1,44 @@
+<th:block th:fragment="lu-radio"
+          xmlns:th="http://www.thymeleaf.org"
+          xmlns:v-on="http://www.w3.org/1999/xhtml"
+          xmlns:v-bind="http://www.w3.org/1999/xhtml">
+    <style>
+        .layui-form-radio i:hover, .layui-form-radioed i {
+            color: #1E9FFF;
+        }
+    </style>
+    <template id="lu-radio-tpl">
+        <div class="layui-input-block">
+            <div ref="option" class="layui-unselect layui-form-radio"
+                 v-bind:class="{'layui-form-radioed': option[valueKey] == currentValue}"
+                 v-for="option in options"
+                 v-bind:data-value="option[valueKey]"
+                 v-on:click="updateValue(option[valueKey], $event)">
+                <i class="layui-anim layui-icon" v-html="option[valueKey] == currentValue ? '&#xe643;' : '&#xe63f;'"></i>
+                <span>{{option[textKey]}}</span>
+            </div>
+            <input type="hidden" :value="currentValue">
+        </div>
+    </template>
+    <script>
+        Vue.component('lu-radio', {
+            props: ['options', 'valueKey', 'textKey', 'value'],
+            mixins: [hi.mixin],
+            data: function () {
+                return {}
+            },
+            template: '#lu-radio-tpl',
+            computed: {
+                currentValue: function () {
+                    return this.value;
+                }
+            },
+            methods: {
+                updateValue: function (value, e) {
+                    this.currentValue = value;
+                    this.$emit('click', value);
+                }
+            }
+        })
+    </script>
+</th:block>

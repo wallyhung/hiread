@@ -1,0 +1,94 @@
+<th:block th:fragment="shopping-cart-payment-success" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+        .coupon-info{
+            margin-top:30px;
+        }
+        .coupon-info .go{
+            color:#DA3716;
+        }
+    </style>
+    <template id="shopping-cart-payment-success-t">
+        <div class="container cart-wp1">
+            <div class="register_step register_step2">
+                <ul>
+                    <li>
+                        <div class="step_img">1</div>
+                        <div class="step_text_no">我的购物车</div>
+                    </li>
+                    <li>
+                        <div class="register_dotted"></div>
+                    </li>
+                    <li>
+                        <div class="step_img">2</div>
+                        <div class="step_text_no">填写核对订单信息</div>
+                    </li>
+                    <li>
+                        <div class="register_dotted"></div>
+                    </li>
+                    <li>
+                        <div class="step_img step_img_color">3</div>
+                        <div class="step_text_ok">订单支付</div>
+                    </li>
+                </ul>
+            </div>
+            <div class="cart-wp clear-fix">
+                <div class="order-title">完成支付</div>
+                <div class="text-center pt-30">
+                    <span class="payment-icon1"><i class="fa fa-check-circle"></i></span>
+                    <span class="payment-font1"><span class="payment-font2">订单支付成功</span><br/><span class="size-18 color-666">订单号：{{prodOrder.orderNo}}</span></span>
+                    <div class="pt-15">
+                        <!--<a href class="layui-btn layui-btn-primary">查看订单</a>-->
+                        <a class="layui-btn layui-btn-danger" th:href="@{/product/classCenter#/user-products}">开始上课</a>
+                    </div>
+                    <div class="coupon-info" v-if="coupon">
+                    您已获得{{coupon.amount}}元现金券! <a class="go" th:href="@{/user/vipcenter#/my-coupon}">点击查看</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </template>
+    <script>
+        var shoppingCartPaymentSuccess= {
+            data: function () {
+                return {
+                    prodOrder:{},
+                    coupon:null
+                }
+            },
+            template: '#shopping-cart-payment-success-t',
+            mixins: [hi.mixin],
+            created: function () {
+                var self=this;
+                var orderId=self.$route.query.orderId;
+                hi.ax.get('/order/shoppingCartOrder/prodOrder?orderId='+orderId).then(function(r){
+                    if(r.data.status=='fail'){
+                        hi.alert(r.data.msg);
+                        return;
+                    }
+                    self.prodOrder=r.data.entity;
+                    return Promise.resolve(r);
+                }).then(function(){
+                    hi.ax.get('/order/shoppingCartPayment/success/giveCoupon?orderId='+orderId).then(function(r){
+                        if(r.data.status=='fail'){
+                            hi.alert(r.data.msg);
+                            return;
+                        }
+                        if(r.data.entity){
+                            self.coupon=r.data.entity;
+                        }
+                    });
+                });
+            },
+            mounted:function(){
+            },
+            computed: {
+            },
+            methods: {
+            },
+            watch: {
+            }
+        }
+    </script>
+</th:block>

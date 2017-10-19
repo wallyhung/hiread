@@ -1,0 +1,165 @@
+<th:block th:fragment="shopping-cart" xmlns:th="http://www.w3.org/1999/xhtml">
+    <link rel="stylesheet" th:href="@{/app/order/shopping-cart.css}">
+    <template id="shopping-cart-t">
+        <div class="container cart-wp1">
+            <div class="register_step register_step2">
+                <ul>
+                    <li>
+                        <div class="step_img step_img_color">1</div>
+                        <div class="step_text_ok">我的购物车</div>
+                    </li>
+                    <li>
+                        <div class="register_dotted"></div>
+                    </li>
+                    <li>
+                        <div class="step_img">2</div>
+                        <div class="step_text_no">填写核对订单信息</div>
+                    </li>
+                    <li>
+                        <div class="register_dotted"></div>
+                    </li>
+                    <li>
+                        <div class="step_img">3</div>
+                        <div class="step_text_no">订单支付</div>
+                    </li>
+                </ul>
+            </div>
+            <div class="cart-wp clear-fix">
+                <!--<div class="cart-title"><i class="fa fa-shopping-cart"></i>我的购物车</div>-->
+                <div class="layui-form">
+                    <table class="layui-table cart-table" lay-skin="line">
+                        <thead>
+                        <tr>
+                            <th width="45%"><span class="cart-pt">商品名称</span></th>
+                            <th width="17.5%">单价</th>
+                            <th width="17.5%">组合优惠价</th>
+                            <th width="20%"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="c in cartList">
+                            <td>
+                                <span class="cart-pt"></span>
+                                <lu-checkbox :value="c.checked" v-on:input="check(c)"></lu-checkbox>
+                                <label class="cart-pt1">
+                                    <span class="cart-img"><img :src="getProdIconSrc(c.productId)" alt=""></span>
+                                    <span class="cart-center">{{c.product.prodName}}<br/>{{c.product.bookName}}</span>
+                                </label>
+                            </td>
+                            <td >
+                                <div v-if="c.product.videoDiscountPriceN === 0">
+                                    ￥<span class="price-red">{{numeral(c.product.videoCoursePriceN).format('0.00')}}</span>
+                                </div>
+                                <div v-else>
+                                    <div>￥<span class="price-red">{{numeral(c.product.videoDiscountPriceN).format('0.00')}}</span></div>
+                                    <span class="font-d1" v-if="c.product.videoDiscountPrice!=='0.00'">￥{{numeral(c.product.videoCoursePriceN).format('0.00')}}</span>
+                                </div>
+                            </td>
+                            <td >
+                                <div v-if="!empty(setup)">￥<span class="price-red">{{numeral(c.compoundPrice).format('0.00')}}</span></div>
+                            </td>
+                            <td><span class="cart-close order-add-s" v-on:click="deleteCart(c.id)"><i
+                                    class="fa fa-times-circle"></i></span></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" id="bottom-td-1">
+                                <div class="cart-bottom cart-opt">
+                                    <div class="bottom-left">
+
+                                        <lu-checkbox :value="allChecked" name="cart1" v-on:input="checkAll"></lu-checkbox>
+                                        <label style="margin-left:10px;">全选</label>
+                                        <span class="cart-select-info">共 <span
+                                                class="cart-color2">{{cartList.length}}</span> 件商品，已选择 <span
+                                                class="cart-color2">{{cartSelectedList.length}}</span>  件商品</span>
+                                    </div>
+
+                                    <div class="bottom-right">
+                                        <div class="user-coupon">
+                                            <span class="br-title">使用现金券:</span>
+                                            <span class="dropdown" v-if="!empty(user.coupons)">
+                                            <button id="dLabel" class="down-btn" type="button" data-toggle="dropdown"
+                                                    aria-haspopup="true" aria-expanded="false">
+                                                <span v-if="empty(couponSelected)">选择现金券</span>
+                                                <span v-else >￥<span class="price-red">{{couponSelected.amount}}</span></span>
+                                                <span class="caret"></span>
+                                            </button>
+                                            <div class="dropdown-menu down-menu1" aria-labelledby="dLabel">
+                                                <a href="javascript:" class="dropdown-item"
+                                                   v-on:click="selectCoupon({})" style="justify-content:flex-start;">不使用现金券</a>
+                                                <a class="dropdown-item" href="javascript:"
+                                                   v-for="coupon in user.coupons" v-on:click="selectCoupon(coupon)"
+                                                   v-if="!hasSelected(coupon.id)">
+                                                    <span><i class="fa fa fa-money"></i><span>￥{{coupon.amount}}</span></span>
+                                                    <span v-if="coupon.endDate">{{coupon.endDate+'到期'}}</span>
+                                                </a>
+                                            </div>
+                                        </span>
+                                            <span v-else>无可用现金券</span>
+                                        </div>
+
+                                        <div class="user-point-info">
+                                            <span class="br-title">使用积分:</span>
+                                            <input type="text" v-model="usePoint" v-if="user.userPointsSum"
+                                                   class="price-red">
+                                            <span v-else>无可用积分</span>
+                                        </div>
+
+                                        <div class="user-point-info" v-if="user.userPointsSum">
+                                            <span class="br-title">剩余积分:</span>
+                                            <span>{{pointLeft}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" id="bottom-td-2">
+                                <div class="cart-bottom clear-fix">
+                                    <div class="price-info">
+                                        <div class="bottom-left price-details">
+                                            <div class="price-details-row">其中:</div>
+                                            <div class="price-details-row">
+                                                <div>折扣优惠: ￥<span
+                                                        class="price-red">{{numeral(diffPriceSum).format('0.00')}}</span>
+                                                </div>
+                                                <div>现金券抵扣: ￥<span
+                                                        class="price-red">{{numeral(couponPrice).format('0.00')}}</span>
+                                                </div>
+                                            </div>
+                                            <div class="price-details-row">
+                                                <div>组合优惠: ￥<span class="price-red">{{numeral(compoundDiffPriceSum).format('0.00')}}</span>
+                                                </div>
+                                                <div>积分抵扣: ￥<span class="price-red">{{numeral(usePointPrice).format('0.00')}}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="bottom-right">
+                                            <div class="price-sum">
+                                                <div class="saved">
+                                                    <div>已节省:</div>
+                                                    <div>￥<span class="price-red">{{numeral(totalSave).format('0.00')}}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="sum">
+                                                    <div>实付款:</div>
+                                                    <div>￥<span class="price-red">{{numeral(totalPrice).format('0.00')}}</span></div>
+                                                </div>
+                                                <div class="cart-submit">
+                                                    <a href="javascript:" class="cart-btn btn"
+                                                       :class="{'disabled':submitting}" v-on:click="submit">前往结算</a>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </template>
+    <script th:src="@{/app/order/shopping-cart.js}"></script>
+</th:block>

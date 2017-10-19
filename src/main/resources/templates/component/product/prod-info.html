@@ -1,0 +1,193 @@
+﻿<th:block th:fragment="prod-info" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+        .product-header-block .block-l img{
+            height:100%;
+        }
+        .product-header-block .block-r{
+        }
+        .product-header-block .block-t .title{
+            font-size:2em;
+            font-weight: 500;
+        }
+        .product-header-block .block-t .book-name{
+            font-size:1.4em;
+            font-weight: 500;
+            margin-top:5px;
+            margin-bottom:5px;
+        }
+        .product-header-block .block-t .campain{
+            height:20px;
+        }
+        .product-header-block .block-price,.product-header-block .block-info{
+            color:gray
+        }
+        .product-header-block .block-price .has-discount,.product-header-block .block-price .no-discount{
+            display: flex;
+        }
+        .product-header-block .block-price .price-number{
+            font-size:2em;
+            color:#d62640;
+            margin-left:10px;
+
+        }
+        .product-header-block .block-price .price-line-through{
+            text-decoration: line-through;
+            color:gray;
+            font-size:1em;
+
+        }
+        .product-header-block .block-price .user-discount{
+            margin-top:5px;
+        }
+        .product-header-block .block-price .user-discount .price{
+            color:orange;
+        }
+        .product-header-block .block-price .user-discount .userPoints{
+            margin-left:20px;
+        }
+        .product-header-block .block-info{
+            display: flex;
+            flex-direction: column;
+            margin-top:20px;
+        }
+        .product-header-block .block-info .info-row{
+            display: flex;
+            margin-bottom: 5px;
+        }
+        .product-header-block .block-info .info-row .col{
+            width:33%;
+        }
+    </style>
+    <template id="prod-info-t">
+        <div class="prod-info course-header-item product-header-block clear-fix explore-header-item">
+            <div class="header-main clear-fix">
+                <div class="block-l">
+                    <a :href="getProductHref(p.id)">
+                        <img :src="getProdIconSrc(p.id)" v-if="p.id"/>
+                    </a>
+                    <!--<div class="tags tag-on-go">-->
+                    <!--<span>正在开课</span>-->
+                    <!--</div>-->
+                </div>
+                <div class="block-r">
+                    <div class="block-t clear-fix">
+                        <h2 class="title"><a :href="getProductHref(p.id)">{{p.prodName}}</a></h2>
+                        <div class="book-name">书名: {{p.bookName}}</div>
+                        <div class="campain"></div>
+                    </div>
+                    <div class="block-price">
+                        <div v-if="p.videoDiscountPriceN!==0" class="has-discount">
+                            <span class="price-title">价格:</span>
+                            <span class="price-number">￥{{numeral(p.videoDiscountPriceN).format('0.00')}}</span>
+                            <span class="price-title" style="margin-left:15px;">原价:</span>
+                            <span class="price-number price-line-through">￥{{numeral(p.videoCoursePriceN).format('0.00')}}</span>
+                        </div>
+                        <div v-else class="no-discount">
+                            <span class="price-title">价格:</span>
+                            <span class="price-number">￥{{numeral(p.videoCoursePriceN).format('0.00')}}</span>
+                        </div>
+                        <div class="user-discount" v-if="user">
+                            <span v-if="user.coupons&&user.coupons.length>0" class="coupon">最高可用现金券: <span class="price">￥{{user.coupons[0].amount}}</span> </span>
+                            <span v-else class="coupon">没有可用现金券</span>
+                            <span v-if="user.userPoints&&user.userPoints.length" class="userPoints">最多可用积分抵扣:
+                                <span class="price" v-if="user.userPointsSumRmb>p.videoCoursePriceN">￥{{numeral(p.videoCoursePriceN).format('0.00')}}</span>
+                                <span class="price" v-else>￥{{numeral(user.userPointsSumRmb).format('0.00')}}</span>
+                            </span>
+                            <span v-else class="userPoints">没有可用积分</span>
+                        </div>
+                    </div>
+                    <div class="block-info">
+                        <div class="info-row">
+                            <div class="col">
+                                <span class="info-t">蓝斯指数:</span>
+                                <span class="info-c">{{p.exponent}}</span>
+                            </div>
+                            <div class="col">
+                                <span class="info-t">ATOS值:</span>
+                                <span class="info-c">{{p.atos}}</span>
+                            </div>
+                            <div class="col">
+                                <span class="info-t">HiRead级别:</span>
+                                <span class="info-c">{{p.hireadRank}}</span>
+                            </div>
+                        </div>
+                        <div class="info-row">
+                            <div class="col">
+                                <span class="info-t">图书类别:</span>
+                                <span class="info-c">{{p.bookType}}</span>
+                            </div>
+                            <div class="col">
+                                <span class="info-t">推荐年龄:</span>
+                                <span class="info-c">{{p.recommendAge}}</span>
+                            </div>
+                        </div>
+                        <div class="info-row">
+                            <div class="col">
+                                <span class="info-t">总字数:</span>
+                                <span class="info-c">{{p.wordNum}}</span>
+                            </div>
+                            <div class="col">
+                                <span class="info-t">重点单词:</span>
+                                <span class="info-c">{{p.vocabularyNum}}</span>
+                            </div>
+                            <div class="col">
+                                <span class="info-t">关键阅读技巧:</span>
+                                <span class="info-c">{{p.readingSkill}}</span>
+                            </div>
+                        </div>
+                        <div class="info-row">
+                            <div class="col">
+                                <span class="info-t">课时数:</span>
+                                <span class="info-c">{{p.classHour}}<span v-if="p.classHour">节课</span></span>
+                            </div>
+                        </div>
+                        <div class="info-row">
+                            <div class="col">
+                                <span class="info-t">有效期:</span>
+                                <span class="info-c">自开始学习课件日12个月</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="pt-10 btn-pr" v-if="type==='products'">
+                    <router-link class="btn btn-warning" :to="'/product?productId='+p.id">查看课程</router-link>
+                </div>
+                <div class="pt-10 btn-pr" v-if="type==='product'">
+                    <btn-adds-to-cart :products="[p]"></btn-adds-to-cart>
+                    <a class="btn btn-warning2" href="class.html">试听课程</a>
+                </div>
+                <!--<div class="pt-10 btn-pr" v-if="type==='product'">-->
+                    <!--<a class="btn btn-warning add-car" href="javascript:" v-on:click="addProdToCart($event)" :class="{'disabled':prodInCart}">加入购物车</a>-->
+                    <!--<a class="btn btn-warning2" href="class.html">试听课程</a>-->
+                <!--</div>-->
+            </div>
+        </div>
+    </template>
+    <script>
+        Vue.component('prod-info', {
+            mixins:[hi.mixin],
+            props: ['p','user','type'],
+            data: function () {
+                return {
+                }
+            },
+            template: '#prod-info-t',
+            created: function () {
+            },
+            mounted: function () {
+            },
+            methods:{
+                getProdIconSrc:function(pid){
+                    return hi.root + "sys/file/img?type=img_product&id=" + pid;
+                },
+                getProductHref:function(pid){
+                    return hi.root + "product/product?productId=" + pid;
+                }
+
+            },
+            watch: {
+            }
+        })
+    </script>
+</th:block>

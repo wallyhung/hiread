@@ -1,0 +1,70 @@
+div[v-cloak]{
+    display: none;
+}
+.h100{
+    height:100%;
+}
+.color-green{
+    color:green;
+}
+.color-red{
+    color:red;
+}
+@font-face {
+    font-family: 'iconfont';  /* project id 315180 */
+    src: url('//at.alicdn.com/t/font_tmp2j12zi6qrggb9.eot');
+    src: url('//at.alicdn.com/t/font_tmp2j12zi6qrggb9.eot?#iefix') format('embedded-opentype'),
+    url('//at.alicdn.com/t/font_tmp2j12zi6qrggb9.woff') format('woff'),
+    url('//at.alicdn.com/t/font_tmp2j12zi6qrggb9.ttf') format('truetype'),
+    url('//at.alicdn.com/t/font_tmp2j12zi6qrggb9.svg#iconfont') format('svg');
+}
+.iconfont {
+    font-family: "iconfont" !important;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.icon-trans:before {
+    content: "\e768";
+}
+.icon-help:before {
+    content: "\e660";
+}
+.icon-back:before {
+    content: "\e64e";
+}
+.reading-top-audio li.first:after{
+    background: url(../img/reading_arrow2.png) no-repeat;
+}
+
+/*自适应*/
+/*头部*/
+.study-center-link-menu{
+    display:none;
+}
+@media ( max-width: 1200px ) {
+    .nav>li.study-center-link {
+        display: none;
+    }
+    .study-center-link-menu{
+        display:block;
+    }
+    .dropdown-menu{
+        min-width:100px;
+        top:80px;
+    }
+
+    .nav1 {
+         padding-left: 0px;
+    }
+
+}
+@media screen and (min-width: 970px){
+    .nav1>li>a {
+        padding: 36px 25px;
+    }
+}
+/*菜单*/
+.side-menu li a{
+    padding:15px 5px 15px 5px
+}

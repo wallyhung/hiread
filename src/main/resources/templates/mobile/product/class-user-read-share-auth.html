@@ -1,0 +1,75 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="common/head :: common-head"></th:block>
+</head>
+<body>
+<div id="class-user-read-share-auth" class="h100" v-cloak>
+
+</div>
+<th:block th:include="common/head :: common"></th:block>
+<script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+<script>
+    var classUserReadShareAuth = new Vue({
+        el: '#class-user-read-share-auth',
+        data: {
+            userRead:null,
+            user:null
+        },
+        created: function () {
+            var self = this;
+            var userReadId = hi.queryString.userReadId;
+            var sign=hi.queryString.sign;
+            if(!userReadId||!sign){
+                hi.alert("参数缺失");
+                return;
+            }
+            //获取userRead并验证合法性
+            var fd=new FormData();
+            fd.append('userReadId',userReadId);
+            fd.append('sign',sign);
+            hi.ax.post('product/readShare/auth/userRead',fd).then(function(r){
+                if(r.data.status=="fail"){
+                    hi.alert(r.data.msg);
+                    return Promise.reject(r);
+                }
+                var userRead=r.data.entity;
+                self.userRead=userRead;
+                return Promise.resolve(r);
+            }).then(function(){
+                //判断是否已登录
+                return hi.ax.get('user/login/refreshLoginUser').then(function (r) {
+                    //已登录验证是否是同一个人
+                    if(r.data.status=="success"){
+                        var user=r.data.entity;
+                        if(user.id!=self.userRead.userId){
+                            hi.alert("您没有权限");
+                            return Promise.reject();
+                        }
+                        self.user=user;
+                        return Promise.resolve();
+                    }else{
+                        self.user=null;
+                        return Promise.resolve;
+                    }
+                });
+            }).then(function(){
+                var url = location.href.split('#')[0];
+                hi.wxService.configJssdk(encodeURIComponent(url)).then(function(){
+                    console.log('jssdk config finish');
+                });
+            });
+        },
+        mounted: function () {
+        },
+        computed: {
+        },
+        methods: {
+        }
+
+    });
+</script>
+<style>
+</style>
+</body>
+</html>

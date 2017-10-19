@@ -1,0 +1,292 @@
+﻿<th:block th:fragment="unit-read" xmlns:th="http://www.w3.org/1999/xhtml">
+    <link rel="stylesheet" th:href="@{/css/calendar.css}">
+    <style>
+        .hide {
+            display: none;
+        }
+
+        .reading-top-box{
+            display: flex;
+            height:auto;
+        }
+        .reading-top-main{
+            width:100%;
+            padding: 30px 6px 30px 26px;
+        }
+        .reading-top-main .text p{
+            text-indent: 0;
+            line-height: 20px;
+            font-size:15px;
+
+        }
+        .reading-top-main .text{
+            padding:15px 0px;
+        }
+        .reading-top-main .text span{
+           margin-bottom:5px;
+        }
+        .reading-top-main .fa-navicon:nth-of-type(2){
+            top:248px;
+        }
+        @media(max-width: 1200px){
+            .reading-top-main .fa-navicon:nth-of-type(2) {
+                display: none;
+            }
+            .reading-top-main{
+                width:400px;
+            }
+            .reading-top-audio i{
+                width: 62px;
+                height: 60px;
+                line-height: 60px;
+            }
+        }
+
+        .reading-date{
+            position: relative;
+            width: auto;
+            border:none;
+            background-color:rgb(246,248,250) ;
+            padding:10px 0;
+        }
+        #qrcode {
+            padding: 30px;
+        }
+        i.recording {
+            background: red;
+            background: -webkit-radial-gradient(center, ellipse cover, #ff0000 0%, white 75%, white 100%, #7db9e8 100%);
+            background: -moz-radial-gradient(center, ellipse cover, #ff0000 0%, white 75%, white 100%, #7db9e8 100%);
+            background: radial-gradient(center, ellipse cover, #ff0000 0%, white 75%, white 100%, #7db9e8 100%);
+        }
+        .unit-read ul{
+        }
+        .reading-top-audio li.disable,.reading-top-audio li.disable i.submit{
+            color:rgb(149,149,149);
+        }
+        .reading-top-audio li.disable i{
+            cursor:default;
+        }
+
+        .reading-top-audio i.submit{
+            color:#3a7e9c;
+        }
+        .reading-audio-box .loaded{
+            width:100%;
+        }
+        .reading-audio-box .audio-main-left{
+            width:50px;
+            height:40px;
+        }
+        .reading-audio-box .audio-main-left .fa{
+            font-size:25px;
+            line-height: 40px;
+            margin:0;
+        }
+        .reading-audio-box .audio-main-right{
+            margin-left:59px;
+            margin-right:55px;
+        }
+        .reading-audio-box .audio-main-end {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 50px;
+            height:40px;
+            text-align: center;
+            color: #3a7e9c;
+            font-size:15px;
+            line-height: 40px;
+        }
+        .unit-read ul li:first-child{
+            transition:all 2s;
+        }
+        .reading-top-audio i{
+            text-shadow:none;
+        }
+        .reading-top-audio p{
+            padding-top: 10px;
+            padding-bottom:10px;
+        }
+        .calendar-main{
+            padding:5px;
+
+        }
+        /*.calendar-main .title h3{*/
+            /*padding-left: 20px;*/
+            /*font-size: 14px;*/
+            /*font-weight: bold;*/
+            /*color:#3a7e9c;*/
+            /*margin-bottom:20px;*/
+        /*}*/
+        .calendar-main .calendar{
+            padding-top:10px;
+            border:1px solid #f1f1f1;
+            border-right: none;
+            background-color: rgb(246,248,250);
+        }
+        .calendar td.disabled{
+            visibility:hidden;
+        }
+        .reading-main .btn{
+            color:#fff;
+        }
+    </style>
+    <script th:src="@{/js/calendar.js}"></script>
+    <template id="unit-read-t">
+        <div class="unit-read">
+            <div class="task-content">
+                <div class="reading-top-box" v-if="readPractise">
+                    <div class="reading-top-main">
+                        <div id="audios-container">
+                            <audio controls :src="getReadPractiseAudioSrc()" id="readPractiseAudio"
+                                   v-if="readPractise" class="hide"></audio>
+                            <audio controls :src="audio.objUrl" id="tryAudio" v-if="audio" v-on:ended="tryEnded"
+                                   class="hide"></audio>
+                        </div>
+
+                        <div class="icon">
+                            <i class="fa fa-navicon"></i>
+                            <i class="fa fa-navicon"></i>
+                        </div>
+                        <div class="title">
+                            <h3>今日推荐：</h3>
+                            <p>
+                                <span>第{{readPractise.chapter}}章,</span>
+                                <span>第{{readPractise.page}}页,</span>
+                                <span>第{{readPractise.paragraph}}段</span>
+                                <span class="read-times" v-if="!empty(readPractise.userReads)">(以前已朗读{{readPractise.userReads.length}}次)</span>
+                                <a href="javascript:;" class="pull-right" v-on:click="changeReadPractise">换一段</a>
+                            </p>
+                        </div>
+                        <h3 class="explain">请按顺序完成 ：朗读示范 > 录音 > 试听录音 > 满意可提交 /不满意请重新录音</h3>
+                        <ul class="reading-top-audio">
+                            <li class="first" v-if="readPractise.audio">
+                                <i class="fa"
+                                   :class="{'fa-volume-down':!readPractising,'fa-volume-up':readPractising}"
+                                   v-on:click="toggleReadPractising"></i>
+                                <p v-if="!readPractising">朗读示范</p>
+                                <p v-if="readPractising">停止朗读</p>
+                            </li>
+                            <li>
+                                <i class="fa fa-microphone" :class="{recording:recording}"
+                                   v-on:click="toggleRecording"></i>
+                                <p v-if="!recording">开始录音</p>
+                                <p v-if="recording">结束录音</p>
+                            </li>
+                            <li :class="{'disable':!audio}">
+                                <i class="fa"
+                                   :class="{'fa-play-circle-o':!tryPlaying,'fa-pause-circle':tryPlaying}"
+                                   v-on:click="toggleTryPlaying"></i>
+                                <p v-if="!tryPlaying">试听朗读</p>
+                                <p v-if="tryPlaying">停止试听</p>
+                            </li>
+                            <li class="last" :class="{'disable':recording||tryPlaying||uploading||audio==null||!tryPlayed}">
+                                <i class="submit" v-on:click="upload">提交</i>
+                                <p>提交朗读</p>
+                            </li>
+                        </ul>
+                        <div class="text">
+                            <h3>原文：</h3>
+                            <p>
+                                <span v-for="line in readPractise.text.split('\n')">{{line}}<br></span>
+                            </p>
+
+                        </div>
+                        <!--<a href="javascript:;" class="btn btn-default">提交今日朗读</a>-->
+                    </div>
+                    <div class="calendar-main">
+                        <div class="title">
+                            <h3></h3>
+                        </div>
+                        <vue-calendar :events="calendarEvents"
+                                      :lunar="false"
+                                      :weeks="['日', '一', '二', '三', '四', '五', '六']"
+                                      :months="['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']"
+                                      v-on:select="selectCalendar"></vue-calendar>
+                        <div class="reading-date">
+                            <div class="btn-box">
+                                <span><i class="fa fa-circle-o"></i>：已朗读</span>
+                                <span><i class="fa fa-circle"></i>：未读老师评语</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <ul v-if="currentDayUserReads">
+                    <li class="clearfix" v-for="(ur,index) in currentDayUserReads">
+                        <div class="task-time pull-left">
+                            <p>{{ur.dateCreatedTime.split(' ')[0]}}</p>
+                            <p>{{ur.dateCreatedTime.split(' ')[1]}}</p>
+                        </div>
+                        <div class="task-content-right pull-left">
+                            <div class="reading-content">
+                                <div class="reading-main">
+                                    <h3 class="title">朗读段落：<span>第{{ur.readPractise.chapter}}章，第{{ur.readPractise.page}}页，第{{ur.readPractise.paragraph}}段</span></h3>
+                                    <div class="clearfix">
+                                        <div class="reading-audio-box pull-left">
+                                            <div class="audio-main">
+                                                <div class="audio-main-left">
+                                                    <audio controls :src="ur.src" class="userReadAudio hide" :id="'ur'+index"
+                                                           v-on:ended="userReadEnded(ur)"></audio>
+                                                    <i class="fa" v-on:click="toggleUserReadAudio(ur,index)"
+                                                       :class="{'fa-play-circle-o':!ur.playing,'fa-pause-circle':ur.playing}"></i>
+                                                </div>
+                                                <div class="audio-main-right">
+                                                    <div class="audio-item loaded"></div>
+                                                    <div class="audio-item play"></div>
+                                                    <div class="audio-item slider"></div>
+                                                </div>
+                                                <div class="audio-main-end">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <a href="javascript:;" class="btn btn-primary btn-sm pull-right" v-on:click="showUserReadQrcode(ur)">分享</a>
+                                    </div>
+                                    <!--<div class="bottom-text clearfix">-->
+                                        <!--<h3 class="pull-left">原文：</h3>-->
+                                        <!--<p class="pull-left">Jack and Annie find a magic tree house that takes them to place and time of the dinosaurs. They encounter different kinds of dinosaurs including a Tyrannosaurs rex and find a gold medallion with the letter M engraved on it...</p>-->
+                                    <!--</div>-->
+                                </div>
+                                <div class="reading-bottom" style="display:none;">
+                                    <div class="score-img">
+                                        <img th:src="@{/img/task-icon-teacher-com.png}">
+                                    </div>
+                                    <div class="title">
+                                        <img th:src="@{/img/username_logo.jpg}">
+                                        <span>Comments</span>
+                                    </div>
+                                    <div class="reading-audio-box">
+                                        <div class="audio-main">
+                                            <div class="audio-main-left">
+                                                <i class="fa fa-play"></i>STOP
+                                            </div>
+                                            <div class="audio-main-right">
+                                                <div class="audio-item loaded"></div>
+                                                <div class="audio-item play"></div>
+                                                <div class="audio-item slider"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="text">
+                                        <p><span>L.2.2b</span>Use commas in greetings and closings of letters.</p>
+                                        <p><span>W.3.1c </span>Use linking words and phrases (e.g., because, therefore, since, for example) to connect opinion and
+                                            pay more attention on these two standards when you answer the questions next time, it would be much better.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+                </ul>
+                <div id="qrcode"></div>
+            </div>
+        </div>
+    </template>
+
+    <script th:src="@{/js/mp3-recorder/lame.all.js}"></script>
+    <script th:src="@{/js/mp3-recorder/recorder-worker.js}"></script>
+    <script th:src="@{/js/mp3-recorder/recorder.js}"></script>
+    <script th:src="@{/js/qrcode/qrcode.min.js}"></script>
+    <script th:src="@{/app/component/product/unit-read.js}"></script>
+</th:block>

@@ -1,0 +1,64 @@
+﻿<th:block th:fragment="p-open-question" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+        .form-textarea {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e5e5e5;
+            font-size: 18px;
+            color: #999;
+            resize: none;
+        }
+        .done-msg{
+            text-align: center;
+            font-size:18px;
+            margin:30px;
+        }
+        .class-practise{
+            margin-bottom: 50px;
+        }
+    </style>
+    <template id="p-open-question-t">
+        <div>
+            <textarea v-if="!practise.practiseDone" class="form-textarea" rows="6" placeholder="input your answer here..."  v-model="answer"></textarea>
+            <div class="done-msg" v-if="practise.practiseDone">该练习已完成,您可以在"我的课程--线上作业评价"中查看</div>
+        </div>
+    </template>
+    <script>
+        Vue.component('p-open-question', {
+            props: ['practise','practiseId'],
+            data: function () {
+                return {
+                    answer:''
+                }
+            },
+            template: '#p-open-question-t',
+            created: function () {
+            },
+            mounted: function () {
+            },
+            computed:{
+            },
+            methods:{
+                init:function(){
+                    this.answer='';
+                }
+            },
+            watch: {
+                practiseId:function(){
+                    this.init();
+                },
+                answer:function(){
+                    var answer=decodeURIComponent(this.answer);
+                    var result="";
+                    _.each(answer.split('\n'),function(line){
+                        if(line){
+                            result+='<p>'+line+'</p>';
+                        }
+                    });
+                    this.$emit('answer',[result]);
+                }
+            }
+        })
+    </script>
+</th:block>

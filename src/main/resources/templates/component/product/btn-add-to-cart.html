@@ -1,0 +1,61 @@
+﻿<th:block th:fragment="btn-add-to-cart" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+    </style>
+    <template id="btn-add-to-cart-t">
+        <a class="btn-add-to-cart btn btn-warning add-car" href="javascript:" v-on:click="addProdToCart($event)" :class="{'disabled':prodInCart}">加入购物车</a>
+    </template>
+    <script>
+        Vue.component('btn-add-to-cart', {
+            props: ['product'],
+            data: function () {
+                return {
+                    cartList:[]
+                }
+            },
+            template: '#btn-add-to-cart-t',
+            created: function () {
+                var self=this;
+                hi.ax.get('/order/shoppingCart/list').then(function(r){
+                    if(r.data.entity){
+                        self.cartList=r.data.entity;
+                    }
+                });
+
+                hi.bus.$on('added-to-cart',function(pid){
+                    if(pid&&pid==self.product.id){
+                        hi.ax.get('/order/shoppingCart/list').then(function(r){
+                            if(r.data.entity){
+                                self.cartList=r.data.entity;
+                            }
+                        });
+                    }
+                });
+
+            },
+            mounted: function () {
+            },
+            computed:{
+                prodInCart:function(){
+                    var self=this;
+                    if(self.product){
+                        var inCart=_.some(self.cartList,function(c){
+                            return c.productId==self.product.id;
+                        })
+                        return inCart;
+                    }
+                    return false;
+                }
+            },
+            methods:{
+                addProdToCart:function(event){
+                    if(!this.prodInCart){
+                        hi.bus.$emit('add-to-cart',this.product.id,event);
+                    }
+                }
+
+            },
+            watch: {
+            }
+        })
+    </script>
+</th:block>

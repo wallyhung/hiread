@@ -1,0 +1,298 @@
+﻿<th:block th:fragment="p-fill-blank" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+
+        .class-sentence {
+            width: 70%;
+        }
+        .class-sentence span {
+            display: inline;
+        }
+        .class-sentence .opt-seperate{
+            width:10px;
+            display: inline-block;
+        }
+        .blank input:nth-child(1){
+            margin-left:0;
+        }
+        .blank input{
+            text-align: center;
+        }
+        .class-filling {
+            margin: 30px 0;
+            padding:10px;
+            position:relative;
+        }
+        .class-filling .fill-type-word{
+            text-align: center;
+        }
+        .class-filling .fill-type-sentence{
+            text-align: left;
+        }
+        .class-filling .blank{
+            color:#89bbc6;
+        }
+        .class-filling .blank input {
+            border: none;
+            border-bottom: 2px solid #89bbc6;
+            background:none;
+            width:20px;
+            height:26px;
+            line-height:26px ;
+
+        }
+        .class-filling .blank span{
+            width:20px;
+            height:26px;
+            line-height:26px ;
+            text-align: center;
+            display: inline-block;
+            margin-left:6px;
+        }
+
+        .class-filling .fill-type-word .blank input{
+            width:35px;
+            height:46px;
+            font-size:35px;
+        }
+        .class-filling .fill-type-word .blank span{
+            width:35px;
+            height:46px;
+            line-height:46px ;
+            font-size:35px;
+        }
+
+
+    </style>
+    <template id="p-fill-blank-t">
+        <div class="class-sentence">
+            <div class="class-filling" >
+                <div class="wrong-box twink-bd" v-if="wrongMarkShow()"></div>
+                <span class="wrong-mark twink-opacity" v-if="wrongMarkShow()"><i class="fa fa-times"></i></span>
+                <ul class="main">
+                    <li :class="fillType">
+                        <icon-audio v-if="practise.questionAudio&&type=='word'"
+                                    :audio-src="questionAudioSrc"
+                                    :autoplay="true"
+                                    icon-show="true"
+                                    css="{'font-size':'1.2em','padding-right':'15px','color':'#89bbc6'}"></icon-audio>
+                        <template v-for="opt in opts">
+                            <span class="" v-if="opt.isBlank=='No'">{{opt.data}}</span>
+                            <span class="blank" v-if="opt.isBlank=='Yes'">
+                                <template v-for="(letter,index) in opt.data">
+                                    <input
+                                            :id="'letter-'+letter.id"
+                                            type="text"
+                                            maxlength="1"
+                                            size="1"
+                                            autocapitalize="none"
+                                            class="class-sentence-input"
+                                            v-if="!letter.display"
+                                            :value="letter.userInput"
+                                            v-on:input="inputLetter($event,letter)"
+                                            v-on:keyup.delete="deleteLetter($event,letter)"
+                                            v-on:keyup.left="leftLetter($event,letter)"
+                                            v-on:keyup.right="rightLetter($event,letter)">
+                                    <span v-else>{{letter.value}}</span>
+                                </template>
+                            </span>
+                            <span class="opt-seperate"></span>
+                        </template>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </template>
+    <script>
+        Vue.component('p-fill-blank', {
+            props: ['practise','practiseOpts','practiseId','submitted','answer','correct','type'],
+            data: function () {
+                return {
+                    opts:[],
+                    slots:[],
+                }
+            },
+            template: '#p-fill-blank-t',
+            created: function () {
+                var self=this;
+                hi.bus.$on('practise-redo',function(){
+                    if(self.fillType=='fill-type-word'){
+                        self.init();
+                    }else{
+                        $('#letter-'+self.slots[0].id).focus();
+                    }
+
+                });
+            },
+            mounted: function () {
+                this.init();
+            },
+            computed:{
+                fillType:function(){
+                    var type='';
+                    if(this.type=='word'){
+                        type= 'fill-type-word';
+                    }else{
+                        type= 'fill-type-sentence';
+                    }
+                    return type;
+                },
+                userInputEmptyId:function(){
+                    var self=this;
+                    var userInputFocusId=0;
+                    for(var i=0;i<self.opts.length;i++){
+                        if(self.opts[i].isBlank=='Yes'){
+                            for(var j=0;j<self.opts[i].data.length;j++){
+                                if(!self.opts[i].data[j].display){
+                                    var input=self.opts[i].data[j].userInput;
+                                    if(input==""){
+                                        var id=self.opts[i].data[j].id;
+                                        userInputFocusId=id;
+                                        return userInputFocusId;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    return userInputFocusId;
+                },
+                questionAudioSrc: function () {
+                    if(this.practise.questionAudio){
+                        return hi.root + "sys/file/audio?type=audio_practise_question&id=" + this.practiseId;
+                    }
+                    return '';
+                }
+            },
+            methods:{
+                init:function(){
+                    var self=this;
+                    self.opts=[];
+                    self.slots=[];
+                    var id=1;
+                    _.each(self.practiseOpts,function(opt){
+                        opt.option=opt.option.trim();
+                        var temp={isBlank:opt.isBlank};
+                        if(opt.isBlank=='Yes'){
+                            var letters=[];
+                            for(var i=0;i<opt.option.length;i++){
+                                var l=opt.option[i];
+                                var letter={id:id++,value:l,userInput:'',display:false};
+                                if(opt.displayNum&&_.find(opt.displayNum.split(";"),function(v){return (i+1)+""==v})){
+                                    letter.display=true;
+                                }else{
+                                    self.slots.push(letter);
+                                }
+                                letters.push(letter);
+                            }
+                            temp.data=letters;
+                        }else{
+                            temp.data=opt.option;
+                        }
+                        self.opts.push(temp);
+                    });
+                    if(self.slots.length>0){
+                        this.$nextTick(function(){
+                            $('#letter-'+self.slots[0].id).focus();
+                        });
+                    }
+                },
+                inputLetter:function(e,letter){
+                    var self=this;
+                    var v=e.currentTarget.value;
+                    if(v.length!=1){
+                        return;
+                    }
+                    letter.userInput=v;
+                    var letterIndex=_.findIndex(self.slots,{'id':letter.id});
+                    if(letterIndex!=self.slots.length-1){
+                        for(var i=letterIndex; i<self.slots.length;i++){
+                            var slot=self.slots[i];
+                            if(slot.userInput==''){
+                                $('#letter-'+slot.id).focus();
+                                break;
+                            }
+                        }
+                    }
+                    self.$emit('answer',self.opts);
+
+                },
+                deleteLetter:function(e,letter){
+                    var self=this;
+                    if(letter.userInput!=''){
+                        letter.userInput='';
+                    }else{
+                        letter.userInput='';
+                        var letterIndex=_.findIndex(self.slots,{'id':letter.id});
+                        if(letterIndex!=0){
+                            var letterBefore=self.slots[letterIndex-1];
+                            letterBefore.userInput='';
+                            $('#letter-'+letterBefore.id).focus();
+                        }
+                    }
+                    self.$emit('answer',self.opts);
+
+                },
+                leftLetter:function(e,letter){
+                    var self=this;
+                    var letterIndex=_.findIndex(self.slots,{'id':letter.id});
+                    if(letterIndex!=0){
+                        var letterBefore=self.slots[letterIndex-1];
+                        $('#letter-'+letterBefore.id).focus();
+                    }
+                },
+                rightLetter:function(e,letter){
+                    var self=this;
+                    var letterIndex=_.findIndex(self.slots,{'id':letter.id});
+                    if(letterIndex!=self.slots.length-1){
+                        var letterAfter=self.slots[letterIndex+1];
+                        $('#letter-'+letterAfter.id).focus();
+                        self.setCaretAtEnd($('#letter-'+letterAfter.id)[0]);
+                    }
+                },
+                setCaretAtEnd:function (elem) {
+                    var elemLen = elem.value.length;
+                    // For IE Only
+                    if (document.selection) {
+                        // Set focus
+                        elem.focus();
+                        // Use IE Ranges
+                        var oSel = document.selection.createRange();
+                        // Reset position to 0 & then set at end
+                        oSel.moveStart('character', -elemLen);
+                        oSel.moveStart('character', elemLen);
+                        oSel.moveEnd('character', 0);
+                        oSel.select();
+                    }
+                    else if (elem.selectionStart || elem.selectionStart == '0') {
+                        // Firefox/Chrome
+                        elem.selectionStart = elemLen;
+                        elem.selectionEnd = elemLen;
+                        elem.focus();
+                    } // if
+                },
+                questionAnswered:function(){
+                    var answer=[];
+
+                    this.$emit("answer",answer);
+                },
+                wrongMarkShow:function(){
+                    return this.submitted&&this.correct=='No';
+                },
+
+            },
+            watch: {
+                practiseId:function(){
+                    var self=this;
+                    if(!this.submitted){
+                        self.init();
+
+                    }
+                },
+//                answer:function(v){
+//                    if(v==null){
+//                        this.init();
+//                    }
+//                }
+            }
+        })
+    </script>
+</th:block>

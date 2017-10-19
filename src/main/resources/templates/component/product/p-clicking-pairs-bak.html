@@ -1,0 +1,396 @@
+﻿<th:block th:fragment="p-clicking-pairs" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+        .p-cp{
+            display: flex;
+            flex-direction: row;
+            padding:10px;
+            height:100%;
+        }
+        .p-cp-left{
+            display: flex;
+            width:70%;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+        }
+        .p-cp-container{
+            display:flex;
+            flex-direction: column;
+            width:100%;
+        }
+        .p-cp-row{
+            display: flex;
+            flex-direction: row;
+            margin-top:5px;
+            width:100%;
+            justify-content: center;
+        }
+        .p-cp-column{
+            display: flex;
+            width:160px;
+            height:160px;
+            margin-left:5px;
+            position: relative;
+            justify-content: center;
+        }
+        .p-cp-column .column-value{
+            width:100%;
+            height:100%;
+            margin: 0 auto;
+            border: 4px solid #eade9b;
+            box-sizing:border-box;
+            border-radius: 20px;
+            background-color: #f0f0f0;
+            font-size: 30px;
+            color: #8d8d8d;
+            text-align: center;
+            line-height: 160px;
+            display: none;
+        }
+        .p-cp-column .column-value img{
+            width:152px;
+            border-radius: 20px;
+            display: block;
+        }
+        .p-cp-right{
+            display: flex;
+            width:30%;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+        }
+        .remember-title{
+            font-size:24px;
+            margin-bottom: 30px;
+        }
+        .remember-time-left{
+            font-size:50px;
+        }
+        .remember-success{
+            font-size:50px;
+            color:rgb(235,198,124);
+        }
+        .restartBtn {
+            display: inline-block;
+            width: 232px;
+            height: 134px;
+        }
+        .fade-enter{
+            width:100px;
+        }
+        .fade-enter-active{
+            transition:width 10s ease;
+        }
+        .fade-leave-active{
+            transition:width 10s ease;
+        }
+        .fade-leave-to{
+            width:100px;
+        }
+    </style>
+    <template id="p-clicking-pairs-t">
+        <div class="p-cp">
+            <div class="p-cp-left">
+                <div class="p-cp-container">
+                    <div class="p-cp-row" v-for="(row,i) in matrix">
+                        <div class="p-cp-column" :id="'column-'+(row.length*i+j)"  v-for="(pair,j) in row" v-on:click="togglePair(pair,$event)">
+                                <img class="column-img" :src="backImg(row.length*i+j)">
+                                <div class="column-value">
+                                    <span v-if="pair.type=='text'">{{pair.value}}</span>
+                                    <img v-if="pair.type=='img'" :src="faceImg(pair)"></img>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-cp-right">
+                <template v-if="timeLeft>0&&(status=='begin'||status=='freeze')">
+                    <p class="remember-title">请记住左侧配对的位置</p>
+                    <h3 class="remember-time-left" v-if="timeLeft>0">{{timeLeft}}s</h3>
+                </template>
+                <template v-if="timeLeft==0&&(status=='begin'||status=='freeze')">
+                    <p class="remember-title">请在左侧点击进行配对</p>
+                    <a href="javascript:;" class="restartBtn" id="restartBtn" v-if="timeLeft==0" v-on:click="refreshPairs">
+                        <img th:src="@{/img/images/class_diminshing_starton.png}" alt="">
+                    </a>
+                </template>
+                <template v-if="timeLeft==0&&status=='finish'">
+                    <p class="remember-success">匹配成功！</p>
+                </template>
+            </div>
+        </div>
+
+
+    </template>
+    <script>
+        Vue.component('p-clicking-pairs', {
+            props: ['practise','practiseOpts','practiseId'],
+            data: function () {
+                return {
+                    optsBefore:null,
+                    pairs:[],
+                    matrix:[],
+                    matchingPairs:[],
+                    randomPairs:[],
+                    timeLeft:0,
+                    status:'init',
+                    to:null,
+                    inter:null
+                }
+            },
+            template: '#p-clicking-pairs-t',
+            created: function () {
+                var self=this;
+                self.init();
+                hi.bus.$on('help',self.help);
+            },
+            mounted: function () {
+            },
+            computed:{
+                matchingPairNum:function(){
+                    return this.practise.matchingPairNum;
+                },
+                rowNum:function(){
+                    return parseInt(this.matchingPairNum.split("_")[0]);
+                },
+                columnNum:function(){
+                    return parseInt(this.matchingPairNum.split("_")[1]);
+                },
+                allValueShow:function(){
+                    return _.every(this.pairs,{valueShow:true});
+                },
+                allSuccess:function(){
+                    if(this.pairs&&this.pairs.length>0){
+                        return _.every(this.pairs,{success:true});
+                    }
+                    return false;
+                }
+            },
+            methods:{
+                init:function(){
+                    var self=this;
+                    self.pairs=[];
+                    self.matrix=[];
+                    self.matchingPairs=[];
+                    self.randomPairs=[];
+                    self.timeLeft=0;
+                    var pairs=[];
+                    var id=0;
+                    for(var i=0;i<(self.rowNum*self.columnNum)/2;i++){
+                        var opt=this.practiseOpts[i];
+                        var pair1={};
+                        pair1.id=id++;
+                        pair1.optId=opt.id;
+                        pair1.value=opt.pair1;
+                        pair1.type=opt.pair1Type;
+                        pair1.img=opt.pair1Img;
+                        pair1.valueShow=false;
+                        pair1.success=false;
+                        pair1.part='pair1';
+                        var pair2={};
+                        pair2.id=id++;
+                        pair2.optId=opt.id;
+                        pair2.value=opt.pair2;
+                        pair2.type=opt.pair2Type;
+                        pair2.img=opt.pair2Img;
+                        pair2.valueShow=false;
+                        pair2.success=false;
+                        pair2.part='pair2';
+                        pairs.push(pair1);
+                        pairs.push(pair2);
+                    }
+                    pairs=_.shuffle(pairs);
+                    var matrix=[];
+                    var pairsArr=[];
+                    for(var i=0;i<this.rowNum;i++){
+                        var row=[];
+                        for(var j=0;j<this.columnNum;j++){
+                            var p=pairs.pop();
+                            row.push(p);
+                            pairsArr.push(p);
+                        }
+                        matrix.push(row);
+
+                    }
+                    this.pairs=pairsArr;
+                    this.matrix=matrix;
+                    this.$nextTick(function(){
+                        for(var i=0;i<self.pairs.length;i++){
+                            var pair=self.pairs[i];
+                            pair.back=$("#column-"+i).find('.column-img');
+                            pair.face=$("#column-"+i).find('.column-value');
+                        }
+                        if(this.rowNum==4){
+                            $('.p-cp-column').css('height','120px');
+                            $('.p-cp-column .column-value').css('line-height','120px');
+                            $('.p-cp-column .column-value img').css('height','112px');
+                        }
+                        setTimeout(function(){
+                            self.status='begin';
+                            _.each(self.pairs,function(p){
+                                p.valueShow=true;
+                                self.flip(p);
+                            });
+                            self.timeLeft=self.rowNum==4?10:5;
+                            var inter=setInterval(function(){
+                                self.timeLeft--;
+                                if(self.timeLeft==0){
+                                    clearInterval(inter);
+                                    _.each(self.pairs,function(p){
+                                        p.valueShow=false;
+                                        self.flip(p);
+                                    });
+                                }
+                            },1000);
+
+                        },self.status=='init'?2000:200);
+
+                    });
+                },
+                refreshPairs:function(){
+                    var self=this;
+                    if(self.timeLeft>0||self.status!='begin'){
+                        return;
+                    }
+                    self.init();
+                },
+                togglePair:function(pair,e){
+                    var self=this;
+                    if(self.timeLeft>0||self.status!='begin'){
+                        return;
+                    }
+                    if(pair.success){//已配对则返回
+                        return;
+                    }
+                    if(this.matchingPairsFull()){//如果配对中则返回
+                        return;
+                    }
+
+                    if(this.findMatchingPair(pair)){//如果配对中存在则删除
+                        this.removeMatchingPair(pair);
+                    }else{
+                        this.matchingPairs.push(pair);//不存在则放入
+                    }
+
+                    pair.valueShow=!pair.valueShow;
+                    this.flip(pair);
+                    if(this.matchingPairsFull()){
+                        var pair1=this.matchingPairs[0];
+                        var pair2=this.matchingPairs[1];
+                        if(pair1.optId!=pair2.optId){
+                            pair1.valueShow=false;
+                            pair2.valueShow=false;
+                            self.status='freeze';
+                            setTimeout(function(){
+                                self.flip(pair1);
+                                self.flip(pair2);
+                                self.matchingPairs=[];
+                                self.status='begin';
+                            },1200);
+                        }else{
+                            pair1.success=true;
+                            pair2.success=true;
+                            self.matchingPairs=[];
+                        }
+                    }
+                },
+                matchingPairsFull:function(){
+                    return this.matchingPairs.length==2;
+                },
+                findMatchingPair:function(pair){
+                   return _.find(this.matchingPairs,{'id':pair.id});
+                },
+                removeMatchingPair:function(pair){
+                    _.remove(this.matchingPairs,{'id':pair.id});
+                },
+                flip:function(pair){
+                    var back=pair.back;
+                    var face=pair.face;
+                    if(pair.valueShow){
+                        back.stop().animate({'width':0},200,function(){
+                            back.hide();
+                            face.show();
+                            face.animate({'width':'160px'},200);
+                        });
+                    }else{
+                        face.stop().animate({'width':0},200,function(){
+                            face.hide();
+                            back.show();
+                            back.animate({'width':'160px'},200);
+                        });
+                    }
+
+                },
+                help:function(){
+                    var self=this;
+                    if(self.timeLeft>0||self.status!='begin'){
+                        return;
+                    }
+                    if(self.allValueShow){
+                        return;
+                    }
+                    var lastRandomPairs=self.randomPairs;
+                    self.randomPairs=[];
+                    var filtered=_.filter(self.pairs,{'valueShow':false});
+                    var randomIndex=_.random(0,filtered.length-1);
+                    var randomPair1=filtered[randomIndex];
+                    randomPair1.valueShow=true;
+                    self.randomPairs.push(randomPair1);
+                    var randomPair2=_.find(filtered,{optId:randomPair1.optId,valueShow:false});
+                    if(randomPair2){
+                        self.randomPairs.push(randomPair2);
+                    }
+                    _.each(self.randomPairs,function(p){
+                        p.valueShow=true;
+                        p.success=true;
+                        self.flip(p);
+                    });
+                    _.each(lastRandomPairs,function(p){
+                        p.valueShow=false;
+                        p.success=false;
+                        self.flip(p);
+                    });
+                    self.$emit('help');
+
+
+                },
+                backImg: function (index) {
+                    var i=index+1+"";
+                    i=i.length==1?("0"+i):i;
+                    var imgName=this.rowNum+"_"+this.columnNum+"_"+i+".png";
+                    var src=hi.root + "img/images/"+imgName;
+                    return src;
+                },
+                faceImg: function (pair) {
+                    var src=hi.root + "sys/file/img?type=img_practise_opt_"+pair.part+"_img&id="+pair.optId;
+                    return src;
+                },
+                finish:function(){
+                    var self=this;
+                    setTimeout(function(){
+                        self.status='finish';
+                        self.$emit('submit');
+                    },500);
+
+                }
+            },
+            watch: {
+                allSuccess:function(){
+                    this.finish();
+                },
+                practiseId:function(){
+                    var self=this;
+                    self.status='init';
+                    _.each(self.pairs,function(p){
+                        p.valueShow=false;
+                        self.flip(p);
+                    });
+                    $(".remember-success").hide();
+                    this.init();
+
+                }
+            }
+        })
+    </script>
+</th:block>

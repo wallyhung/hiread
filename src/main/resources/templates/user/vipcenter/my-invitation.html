@@ -1,0 +1,91 @@
+<th:block th:fragment="my-invitation" xmlns:th="http://www.thymeleaf.org">
+    <style>
+        .invitation-title {
+            height: 38px;
+            line-height:38px;
+        }
+
+        .btn-invitation {
+            background-color: #0078d6;
+            float: right;
+        }
+        .fa-share-alt {
+            padding-right: 10px;
+        }
+    </style>
+    <template id="my-invitation-tpl">
+        <div>
+            <div class="learning-title2">邀请好友</div>
+            <div class="pt-30 clear-fix">
+                <div class="invitation-title">
+                    <span>您已成功邀请 <span style="color: #ffc72a;">{{invitation.total}}</span> 位好友</span>
+                    <button class="layui-btn btn-invitation"><i class="fa fa-share-alt"></i>发起邀请</button>
+                </div>
+                <div class="layui-form">
+                    <table class="layui-table layui-table1" lay-even="" lay-skin="nob">
+                        <thead>
+                        <tr>
+                            <th>我的好友</th>
+                            <th>注册时间</th>
+                            <th>贡献积分</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="item in invitation.items">
+                            <td><span class="yj-img"><img :src="item.user.avatar"></span>{{item.user.nickname}}</td>
+                            <td valign="middle">{{item.user.registerDate}}</td>
+                            <td valign="middle">{{item.point}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </template>
+    <script>
+        // 定义路由组件
+        var MyInvitation = {
+            data: function () {
+                return {
+                    invitation: {
+                        total: 0,
+                        items: []
+                    }
+                }
+            },
+            template: '#my-invitation-tpl',
+            created: function () {
+                this.getInvitation();
+            },
+            methods: {
+                /**
+                 * 获取好友
+                 */
+                getInvitation: function () {
+                    var vm = this;
+
+                    hi.ax.get('/user/vipcenter/my-invitation/get')
+                        .then(function (response) {
+                            var sr = response.data;
+                            if(sr.status == 'success'){
+                                vm.invitation= sr.entity;
+                            } else {
+                                layuiLayer.open({
+                                    content: '出错了'
+                                })
+                            }
+                        })
+                        .catch(function (error) {
+                            if (error.response) {
+                                console.log(error.response.status);
+                            } else if (error.request) {
+                                console.log(error.request);
+                            } else {
+                                console.log(error.message);
+                            }
+                        })
+                }
+            }
+        }
+    </script>
+</th:block>

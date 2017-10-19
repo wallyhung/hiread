@@ -1,0 +1,45 @@
+﻿<!--依赖regionService-->
+<th:block th:fragment="select-city" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+    </style>
+    <template id="select-city-t">
+        <lu-select :options="cities"
+                   value-key="id"
+                   text-key="name"
+                   placeholder="市"
+                   verify="required"
+                   :value="value"
+                   v-on:input="input" ></lu-select>
+    </template>
+    <script>
+        Vue.component('select-city', {
+            props:['value','provinceId'],
+            template: '#select-city-t',
+            computed:{
+                cities:function(){
+                    if(this.provinceId){
+                        return this.provinceCities[this.provinceId];
+                    }else{
+                        return [];
+                    }
+                }
+            },
+            created: function () {
+            },
+            mounted: function () {
+            },
+            methods:{
+                input:function(v){
+                    this.$emit('input',v);
+                }
+            },
+            watch: {
+            },
+            data: function () {
+                return {
+                    provinceCities: hi.regionService.provinceCities
+                }
+            }
+        })
+    </script>
+</th:block>

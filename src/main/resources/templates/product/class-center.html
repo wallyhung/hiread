@@ -1,0 +1,114 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="common/head :: common-head"></th:block>
+    <style>
+        .side-menu{
+            min-height:500px;
+        }
+        #class-center .class-center-container{
+            margin-bottom: 100px;
+        }
+    </style>
+</head>
+<body>
+<div id="class-center" v-cloak class="h100">
+    <hi-header></hi-header>
+    <reward :panel-display="false"></reward>
+    <div class="container class-center-container">
+        <div class="row">
+            <div class="col-md-2">
+                <menu-left :routes="routes" title="学习中心"></menu-left>
+            </div>
+            <div class="col-md-10">
+                <!-- 路由出口 -->
+                <!-- 路由匹配到的组件将渲染在这里 -->
+                <transition name="fade">
+                    <router-view></router-view>
+                </transition>
+            </div>
+        </div>
+    </div>
+    <hi-footer></hi-footer>
+
+
+</div>
+<th:block th:include="common/head :: common"></th:block>
+
+<th:block th:include="component/user/menu-left :: menu-left"></th:block>
+<th:block th:include="component/product/unit-read :: unit-read"></th:block>
+<th:block th:include="component/ui/vue-calendar :: vue-calendar"></th:block>
+<th:block th:include="component/layui/lu-select :: lu-select"></th:block>
+<th:block th:include="component/product/online-comment :: online-comment"></th:block>
+<th:block th:include="component/ui/page :: page"></th:block>
+<th:block th:include="component/ui/page2 :: page2"></th:block>
+<th:block th:include="component/product/class-badge-rank-table :: class-badge-rank-table"></th:block>
+<th:block th:include="product/class-user-products :: class-user-products"></th:block>
+<th:block th:include="product/class-user-product :: class-user-product"></th:block>
+<th:block th:include="product/class-report :: class-report"></th:block>
+<th:block th:include="product/class-testing :: class-testing"></th:block>
+<th:block th:include="product/class-vocab :: class-vocab"></th:block>
+<th:block th:include="product/class-badge :: class-badge"></th:block>
+<th:block th:include="component/product/reward :: reward"></th:block>
+<script th:src="@{/js/calendar.js}"></script>
+<script>
+    const routes = [
+        {
+            path: '/user-products',
+            component: classUserProducts,
+            label: '我的课程',
+            icon:'fa-book',
+            links:['/user-product']
+        },
+        {
+            path: '/user-product',
+            component: classUserProduct,
+            label: '',
+            icon:'',
+
+        },
+//        {
+//            path: '/report',
+//            component: classReport,
+//            label: '学习报告',
+//            icon:'fa-file-text-o'
+//        },
+        {
+            path: '/vocab',
+            component: classVocab,
+            label: '我的单词本',
+            icon:'fa-file-text-o'
+        },
+        {
+            path: '/testing',
+            component: classTesting,
+            label: '权威测试',
+            icon:'fa-calendar-check-o'
+        },
+        {
+            path: '/badge',
+            component: classBadge,
+            label: '荣誉馆',
+            icon:'fa-trophy'
+        }
+    ];
+    const router = new VueRouter({
+        routes: routes
+    });
+    router.afterEach(function(r){
+        $("body").scrollTop(0);
+    })
+
+    var appClassCenter = new Vue({
+        el: '#class-center',
+        router: router,
+        data: {
+            routes: routes
+        }
+
+    });
+</script>
+<style>
+</style>
+</body>
+</html>

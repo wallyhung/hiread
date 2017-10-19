@@ -1,0 +1,122 @@
+﻿<!--依赖regionService-->
+<th:block th:fragment="hi-sidebar" xmlns:th="http://www.w3.org/1999/xhtml">
+	<style>
+	</style>
+	<template id="hi-sidebar-t">
+		<div class="cndns-right" id="sidebar">
+			<div class="cndns-right-meau meau-contact">
+				<a href="javascript:" class="cndns-right-btn">
+					<span class="demo-icon"><img th:src="@{/images/ico4.png}" alt="" style="width: 30px;margin-top:-15px;"></span>
+					<p>用户<br>中心</p>
+				</a>
+			</div>
+			<div class="cndns-right-meau meau-contact">
+				<a href="javascript:" class="cndns-right-btn">
+					<span class="demo-icon"><img th:src="@{/images/ico2.png}" alt="" style="width: 30px;margin-top:-11px;opacity:.55;"></span>
+					<p>学习<br>中心</p>
+				</a>
+			</div>
+			<div class="cndns-right-meau meau-contact">
+				<a href="javascript:" class="cndns-right-btn">
+					<span class="demo-icon"><img th:src="@{/images/ico0.png}" alt=""  style="width: 22px;margin-top:-10px;opacity:.55;"></span>
+					<p>消息<br>中心</p>
+				</a>
+			</div>
+			<div class="cndns-right-meau meau-car">
+				<a th:href="@{/order/shoppingCart/process#/shopping-cart}" class="cndns-right-btn" :class="{'cndns-right-btn0':cartList.length==0}">
+					<span class="demo-icon">&#xe900;</span>
+					<sup class="badge1" id="badge">{{cartList.length}}</sup>
+				</a>
+			</div>
+			<div class="cndns-right-meau meau-code">
+				<a href="javascript:" class="cndns-right-btn">
+					<span class="demo-icon">&#xe903;</span>
+					<p>移动<br>课堂</p>
+				</a>
+				<div class="cndns-right-box">
+					<div class="box-border">
+						<div class="sev-t">
+							<img th:src="@{/images/hi-qrcode.jpg}" />
+							<i>关注官方微信</i>
+						</div>
+						<span class="arrow-right"></span>
+					</div>
+				</div>
+			</div>
+			<div class="cndns-right-meau meau-contact">
+				<a href="javascript:" class="cndns-right-btn">
+					<span class="demo-icon"><img th:src="@{/images/ico3.png}" alt="" style="width: 30px;margin-top:-15px;"></span>
+					<p>邀请<br>同学</p>
+				</a>
+			</div>
+			<div class="cndns-right-meau meau-top" id="top-back">
+				<a href="javascript:" class="cndns-right-btn" onclick="topBack()">
+					<span class="demo-icon">&#xe904;</span>
+					<i>顶部</i>
+				</a>
+			</div>
+		</div>
+	</template>
+	<script>
+        Vue.component('hi-sidebar', {
+            template: '#hi-sidebar-t',
+            data: function () {
+                return {
+                    cartList:[]
+                }
+            },
+            created:function(){
+                var self=this;
+                hi.ax.get('/order/shoppingCart/list')
+                    .then(function (r) {
+                        if (r.data.status == 'fail') {
+                            hi.alert(r.data.msg);
+                            return;
+                        }
+                        var cartList=r.data.entity;
+                        if(cartList){
+                            self.cartList=cartList;
+                        }
+                    });
+
+                hi.bus.$on('add-to-cart',function(pid,e){
+                    var formData = new FormData();
+                    formData.append('productId', pid);
+                    hi.ax.post('/order/shoppingCart/add', formData)
+                        .then(function (r) {
+                            if (r.data.status == 'fail') {
+                                hi.alert(r.data.msg);
+                                return;
+                            }
+                            var cartList=r.data.entity;
+                            self.cartList=cartList;
+
+                            var flyer = $('<i class="fa fa-shopping-cart" style="font-size: 30px; color: red;"></i>');
+                            flyer.fly({
+                                start: {
+                                    left: e.clientX,
+                                    top: e.clientY
+                                },
+                                end: {
+                                    left: $("#badge").offset().left,
+                                    top: $("#badge").offset().top-$("body").scrollTop(),
+                                    width: 15,
+                                    height: 15
+                                },
+                                onEnd: function () {
+                                    flyer.hide('fast');
+                                }
+                            });
+                            hi.bus.$emit('added-to-cart',pid);
+                        });
+
+
+
+                });
+            },
+            methods: {
+
+            }
+        })
+	</script>
+</th:block>

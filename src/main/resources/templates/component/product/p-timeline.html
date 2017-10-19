@@ -1,0 +1,372 @@
+﻿<th:block th:fragment="p-timeline" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+        .p-timeline{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .tl-row{
+            display: flex;
+            justify-content: space-around;
+        }
+        .tl-row .tl-column{
+            display: flex;
+            width:14%;
+        }
+        .tl-row.explain{
+            color:gray;
+        }
+        .tl-row.explain i{
+            color:black;
+            font-size: 1.2em;
+        }
+        .tl-row.arranges,.tl-row.opts,.tl-row.explain{
+            margin-bottom: 20px;
+        }
+        /*.tl-row.indexes{*/
+            /*margin-bottom: 5px;*/
+        /*}*/
+        /*.tl-row.indexes .tl-index{*/
+            /*background: #48D279;*/
+            /*color: #fff;*/
+            /*font-size: 18px;*/
+            /*font-weight: bold;*/
+            /*width: 30px;*/
+            /*height: 30px;*/
+            /*line-height: 30px;*/
+            /*-webkit-border-radius: 20px;*/
+            /*-moz-border-radius: 20px;*/
+            /*border-radius: 20px;*/
+            /*display: inline-block;*/
+            /*text-align: center;*/
+        /*}*/
+        .tl-row.indexes .tl-column{
+            justify-content: center;
+            padding: 0 20px;
+            margin-bottom: -10px;
+            z-index:3;
+        }
+        .tl-row.indexes .main-title{
+            background-color: #6b542c;
+            width:100%;
+            color:white;
+            height: 34px;
+            line-height: 34px;
+            border-radius: 6px;
+            font-size: 18px;
+            text-align: center;
+        }
+
+
+        .tl-row .tl-column{
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size:22px;
+            border-radius: 5px;
+            padding:10px;
+        }
+        .tl-row.arranges .tl-column{
+            color:white;
+        }
+        .tl-row.arranges .tl-column:after {
+            content: ' ';
+            height: 0;
+            position: absolute;
+            width: 0;
+            border: 20px solid transparent;
+            top: 50%;
+            right: -40px;
+            margin-top: -20px;
+        }
+        .tl-row.arranges .tl-column.arg1{
+            background-color: #0180d1;
+        }
+        .tl-row.arranges .tl-column.arg1:after {
+            border-left-color: #0180d1;
+        }
+        .tl-row.arranges .tl-column.arg2{
+            background-color: #89bbc6;
+        }
+        .tl-row.arranges .tl-column.arg2:after {
+            border-left-color: #89bbc6;
+        }
+        .tl-row.arranges .tl-column.arg3{
+            background-color: #f6cd84;
+        }
+        .tl-row.arranges .tl-column.arg3:after {
+            border-left-color: #f6cd84;
+        }
+        .tl-row.arranges .tl-column.arg4{
+            background-color: #e24956;
+        }
+        .tl-row.arranges .tl-column.arg4:after {
+            border-left-color: #e24956;
+        }
+        .tl-row.arranges .tl-column.arg5{
+            background-color: #34b0b0;
+        }
+        .tl-row.arranges .tl-column.arg5:after {
+            border-left-color: #34b0b0;
+        }
+        .tl-row.arranges .tl-column.arg6{
+            background-color: rgb(170,95,134);
+        }
+        .tl-row.arranges .tl-column.arg6:after {
+            border-left-color: rgb(170,95,134);
+        }
+        .tl-row.arranges .tl-column.arg7{
+            background-color: #48D279;
+        }
+        .tl-row.arranges .tl-column.arg7:after {
+            border-left-color: #48D279;
+        }
+        .tl-row.arranges .tl-column:last-child:after,.tl-row.arranges .tl-column.count7:after {
+            border:none;
+        }
+
+        .tl-row.arranges .column-bg{
+            position: absolute;
+            top:0;
+            left:0;
+            z-index:0;
+            width:100%;
+            height:100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding:10px;
+        }
+        .tl-row.arranges .column-content{
+            z-index:1;
+            background-color:white;
+        }
+
+
+
+        .column-content{
+            width: 100%;
+            height:100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color:white;
+            color:#626262;
+            font-size:22px;
+            text-align: center;
+        }
+        .tl-row.opts .tl-column .column-content{
+            background-color:#dfdfdf;
+        }
+        .tl-row.opts .tl-column{
+            background-color:#dfdfdf;
+            color:#626262;
+        }
+        .tl-row.opts .tl-row .column-content img{
+
+        }
+        .tl-row .tl-row .column-content div{
+            width:100%;
+            height:100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+        }
+        .p-timeline .all-success{
+            font-size:50px;
+            color:rgb(235,198,124);
+            text-align: center;
+            margin:30px 0;
+        }
+        .top-container{
+            position: relative;
+        }
+    </style>
+    <template id="p-timeline-t">
+        <div class="p-timeline">
+            <template v-if="correct=='No'">
+                <div class="top-container">
+                    <div class="wrong-box twink-bg" v-if="wrongMarkShow()"></div>
+                    <span class="wrong-mark twink-opacity" v-if="wrongMarkShow()"><i class="fa fa-times"></i></span>
+                    <div class="tl-row indexes">
+                        <div class="tl-column" v-for="(o,index) in arranges">
+                            <!--<span class="tl-index">{{index+1}}</span>-->
+                            <div class="main-title">{{index+1}}</div>
+                        </div>
+                    </div>
+                    <div class="tl-row arranges">
+                    </div>
+                </div>
+
+                <div class="tl-row explain">
+                    <div>请拖动下边的内容到上边 <i class="fa fa-hand-o-up"></i></div>
+                </div>
+                <div class="tl-row opts">
+                </div>
+            </template>
+            <div v-else class="all-success" >恭喜你全部匹配成功!</div>
+        </div>
+    </template>
+    <script>
+        Vue.component('p-timeline', {
+            props: ['practiseOpts','practiseId','submitted','answer','correct'],
+            data: function () {
+                return {
+                    arranges:[],
+                    opts:[],
+                }
+            },
+            template: '#p-timeline-t',
+            created: function () {
+                var self=this;
+                hi.bus.$on('practise-redo',function(){
+                    if(self.answer&&self.answer.length>0){
+                        var correctAnswers=_.sortBy(self.practiseOpts, [function(p) { return parseInt(p.sort); }]);
+                        for(var i=0;i<self.answer.length;i++){
+                            var optId=self.answer[i];
+                            if(correctAnswers[i].id!=optId){
+                                $("#optColumn-"+optId).append($("#"+optId));
+                            }
+                        }
+                    }
+
+                });
+                hi.bus.$on('practise-reset',function(){
+                    self.init();
+                });
+            },
+            mounted: function () {
+                this.init();
+            },
+            computed:{
+            },
+            methods:{
+                init:function(){
+                    var self=this;
+                    _.each(this.practiseOpts,function(o){
+                        if(o.pair1Type=='img'){
+                            o.pair1ImgSrc=hi.root + "sys/file/img?type=img_practise_opt_pair1_img&id=" + o.id;
+                        }
+                        if(o.pair2Type=='img'){
+                            o.pair2ImgSrc=hi.root + "sys/file/img?type=img_practise_opt_pair2_img&id=" + o.id;
+                        }
+                    });
+                    this.arranges=_.sortBy(this.practiseOpts, [function(p) { return parseInt(p.sort); }]);
+                    this.opts=_.shuffle(this.practiseOpts);
+
+                    this.$nextTick(function(){
+                        var arranges=$('.tl-row.arranges');
+                        arranges.html('');
+                        _.each(this.arranges,function(o,index){
+                            var bg=$('<div class="column-bg">'+o.pair1+'</div>');
+                            var column=$('<div class="tl-column arg'+(index+1)+'"></div>');
+                            if(self.arranges.length==7){
+                                column.addClass('count7');
+                            }
+                            column.append(bg);
+                            arranges.append(column);
+                        });
+
+                        var opts=$('.tl-row.opts');
+                        opts.html('');
+                        _.each(this.opts,function(o,index){
+                            var c=null;
+                            if(o.pair2Type=='text'){
+                                c=$('<div>'+o.pair2+'</div>');
+                            }else if(o.pair2Type=='img'){
+                                c=$('<img src="'+o.pair2ImgSrc+'"/>');
+                            }
+                            var cc=$('<div class="column-content can-move" id="'+o.id+'"></div>').append(c);
+                            var column=$('<div class="tl-column opt'+(index+1)+'" id="optColumn-'+o.id+'">');
+                            column.append(cc);
+                            opts.append(column);
+                        });
+
+                        $(".tl-row.arranges .tl-column,.tl-row.opts .tl-column").each(function(){
+                            $(this).height($(this).width());
+                        });
+                        var dragulaContainer=[];
+                        for(var i=0;i<this.practiseOpts.length;i++){
+                            var arg=document.querySelector('.arg'+(i+1));
+                            var opt=document.querySelector('.opt'+(i+1));
+                            dragulaContainer.push(arg);
+                            dragulaContainer.push(opt);
+                        }
+                        if(hi.drag){
+                            hi.drag.destroy();
+                        }
+                        hi.drag=dragula(dragulaContainer,{
+                            moves: function (el, container, handle) {
+                                if(self.submitted){
+                                    return false;
+                                }
+                                return el.classList.contains('can-move');
+                            },
+                            accepts:function(el, target, source, sibling){
+//                                var children=$(target).children();
+//                                var containsCanMove=false;
+//                                children.each(function(){
+//                                    if($(this).hasClass('can-move')){
+//                                        containsCanMove=true;
+//                                    }
+//                                });
+//
+//                                if(containsCanMove){
+//                                    return false;
+//                                }
+                                return true;
+                            }
+                        }).on('drop',function(el,target, source, sibling){
+                            $('.column-content').show();
+                            var overItem=$(target).find('.column-content[id!='+$(el).attr('id')+']');
+                            if(overItem.length){
+                                $(source).append(overItem);
+                            }
+
+                            self.$emit('play-audio','match');
+                            self.questionAnswered();
+                        }).on('over',function(el,target, source){
+                            var overItem=$(target).find('.column-content[id!='+$(el).attr('id')+']');
+                            if(overItem.length){
+                                overItem.hide();
+                            }
+                        }).on('cancel',function(el,target, source){
+                            $('.column-content').show();
+                        }).on('out',function(el,target, source){
+                            $('.column-content').show();
+                        });
+                    })
+
+                },
+                questionAnswered:function(){
+                    var answer=[];
+                    $('.tl-row.arranges .tl-column').each(function(){
+                        var o=$(this).find('.can-move');
+                        if(o.length){
+                            answer.push(o.attr('id'));
+                        }else{
+                            answer.push('');
+                        }
+                    });
+                    this.$emit("answer",answer);
+                },
+                wrongMarkShow:function(){
+                    return this.submitted&&this.correct=='No';
+                },
+            },
+            watch: {
+                practiseId:function(){
+                    this.init();
+                },
+                correct:function(v){
+                    if(v=='Yes'){
+                        this.$emit('play-audio','all');
+                    }
+                }
+            }
+        })
+    </script>
+</th:block>

@@ -1,0 +1,72 @@
+﻿<!--依赖regionService-->
+<th:block th:fragment="hi-footer" xmlns:th="http://www.w3.org/1999/xhtml">
+	<style>
+	</style>
+	<template id="hi-footer-t">
+		<div class="ym-footer" id="footer">
+			<div class="main">
+				<div class="container">
+					<div class="row">
+						<div class="col-xs-3">
+							<div class="logo-slogan">
+								<img class="logo" th:src="@{/img/logo.png}" >
+								<div class="slogan">爱上阅读，学会思考</div>
+							</div>
+						</div>
+						<div class="col-xs-7">
+							<div class="contact">
+								<a class="item" href="javascript:">
+									<i class="fa fa-whatsapp"></i>
+									<span class="name">客服</span>
+								</a>
+								<a class="item" href="javascript:">
+									<i class="fa fa-weixin"></i>
+									<span class="name">微信</span>
+								</a>
+								<a class="item" href="javascript:">
+									<i class="fa fa-envelope"></i>
+									<span class="name">HiRead@HiRead.com</span>
+								</a>
+							</div>
+						</div>
+						<div class="col-xs-2">
+							<div class="qr-code">
+								<div class="item">
+									<img class="img-responsive" th:src="@{/img/wx.png}" alt="服务号">
+									<div class="name">移动课堂</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<nav class="footer-nav">
+				<div class="list">
+					<a class="item" th:href="@{/}">首页</a>
+					<a class="item" href="javascript:">经典课程</a>
+					<a class="item" href="javascript:">课程优势</a>
+					<a class="item" href="javascript:">为什么读原版</a>
+					<a class="item" href="javascript:">机构合作</a>
+				</div>
+			</nav>
+			<div class="bottom">
+				<div class="container-fluid">
+					<div class="row">
+						<div class="copy">
+							© 2013-2017 Hi Read All Rights Reserved
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</template>
+	<script>
+        Vue.component('hi-footer', {
+            template: '#hi-footer-t',
+            data: function () {
+                return {
+                }
+            }
+        })
+	</script>
+</th:block>

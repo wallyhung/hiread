@@ -1,0 +1,484 @@
+﻿<th:block th:fragment="unit-read" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+        .hide{
+            display: none;
+        }
+        .rp-title {
+            font-size: 1.2em;
+        }
+
+        .rp-title .recommend {
+            font-size:1.2em;
+            font-weight: 900;
+        }
+        .rp-title .read-times{
+            margin-left:20px;
+            color:gray;;
+            font-size:.9em;
+        }
+        .rp-title .change-read-practise{
+            margin-left:20px;
+        }
+        .rp-title .change-read-practise a{
+            border:1px solid rgb(74, 183, 232);
+            padding:0 5px 0 5px;
+            color:rgb(74, 183, 232);
+            font-size:.9em;
+
+        }
+
+        .rp-read-content {
+            margin-top:2px;
+            padding: 15px;
+            background: rgb(248, 248, 248);
+        }
+
+        .rp-opts {
+            display: flex;
+            justify-content: center;
+        }
+
+        .rp-opts .center {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .rp-opts .center .record-opt {
+            margin-top: 10px;
+            font-size: 1.2em;
+        }
+
+        .rp-opts .center .record-opt .record-opts {
+            display: flex;
+            justify-content: space-between;
+
+        }
+        .rp-opts .center .record-opt .record-opts .opt{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color:rgb(138, 138, 138);
+
+        }
+        .rp-opts .center .record-opt .record-opts .opt .icon{
+            font-size:4em;
+            cursor:pointer;
+            color:rgb(74, 183, 232);
+        }
+        .rp-opts .center .record-opt .record-opts .opt.disable .icon{
+            cursor:default;
+            color:rgb(200,200,200);
+        }
+        .rp-opts .center .record-opt .record-opts .opt .icon i.recording {
+            width:1em;
+            background: red;
+            background: -webkit-radial-gradient(center, ellipse cover, #ff0000 0%, white 75%, white 100%, #7db9e8 100%);
+            background: -moz-radial-gradient(center, ellipse cover, #ff0000 0%, white 75%, white 100%, #7db9e8 100%);
+            background: radial-gradient(center, ellipse cover, #ff0000 0%, white 75%, white 100%, #7db9e8 100%);
+        }
+
+
+        .rp-opts .center .submit-opt .unit-read-btn {
+            color: white;
+            padding: 5px 15px 5px 15px;
+            background: rgb(74, 183, 232);
+            font-size: 1.4em;
+            margin: .5em;
+            border-radius: .3em;
+        }
+
+        .rp-opts .center .submit-opt .unit-read-btn.disable {
+            background-color: rgb(200,200,200);
+        }
+
+
+        .user-reads table{
+            width: 100%;
+        }
+        .user-reads .table-title{
+            font-size:1.4em;
+            font-weight: 900;
+        }
+        .user-reads table .fa{
+            font-size:1.7em;
+            cursor:pointer;
+            color:rgb(74, 183, 232);
+        }
+        .user-reads #qrcode{
+            padding:30px;
+        }
+
+
+    </style>
+    <template id="unit-read-t">
+        <div class="unit-read">
+            <div class="read-practise" v-if="readPractise">
+                <div class="rp-title">
+                    <span class="recommend">今日推荐:</span>
+                    <span>第{{readPractise.chapter}}章,</span>
+                    <span>第{{readPractise.page}}页,</span>
+                    <span>第{{readPractise.paragraph}}段</span>
+                    <span class="read-times" v-if="!empty(readPractise.userReads)">以前已朗读{{readPractise.userReads.length}}次</span>
+                    <span class="change-read-practise"><a href="javascript:" v-on:click="changeReadPractise">换一段</a></span>
+                </div>
+                <div class="rp-read-content">
+                    <p v-for="line in readPractise.text.split('\n')">{{line}}<br></p>
+                </div>
+                <div class="rp-opts">
+                    <div class="center">
+                        <div class="record-opt">
+                            <div id="audios-container">
+                                <audio controls :src="getReadPractiseAudioSrc()" id="readPractiseAudio" v-if="readPractise" class="hide"></audio>
+                                <audio controls :src="audio.objUrl" id="tryAudio" v-if="audio" v-on:ended="tryEnded" class="hide"></audio>
+                            </div>
+                            <div>
+
+                                <div class="record-opts">
+                                    <div class="opt" style="width: 30%" :class="{'disable':!readPractise.audio}">
+                                        <div class="icon">
+                                            <i class="fa" :class="{'fa-volume-off':!readPractising,'fa-volume-up':readPractising}" v-on:click="toggleReadPractising"></i>
+                                        </div>
+                                        <div class="">
+                                            朗读示范
+                                        </div>
+                                    </div>
+                                    <div class="opt" style="width: 40%">
+                                        <div class="icon">
+                                            <i class="fa fa-microphone" :class="{recording:recording}" v-on:click="toggleRecording"></i>
+                                        </div>
+                                        <div class="">
+                                            开始录音
+                                        </div>
+                                    </div>
+                                    <div class="opt" style="width: 30%" :class="{'disable':!audio}">
+                                        <div class="icon">
+                                            <i class="fa" :class="{'fa-play-circle-o':!tryPlaying,'fa-pause-circle':tryPlaying}" v-on:click="toggleTryPlaying"></i>
+                                        </div>
+                                        <div class="">
+                                            试听我的朗读
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="submit-opt">
+                            <button style="width: 40%" class="unit-read-btn" v-on:click="upload" :disabled="recording||audio==null" :class="{'disable':recording||audio==null}">
+                                提交今日朗读
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="user-reads" v-if="userReads">
+                    <div class="table-title">最近3天:</div>
+                    <table class="table table-striped table-hover">
+                        <tr>
+                            <th width="20%">日期</th>
+                            <th width="30%">朗读段落</th>
+                            <th width="20%">提交时间</th>
+                            <th width="10%">播放</th>
+                            <th width="10%">分享</th>
+                        </tr>
+                        <tr v-for="(ur,index) in userReads">
+                            <td>{{ur.nDaysBefore}}</td>
+                            <td>
+                                <span>第{{ur.readPractise.chapter}}章,</span>
+                                <span>第{{ur.readPractise.page}}页,</span>
+                                <span>第{{ur.readPractise.paragraph}}段</span>
+                            </td>
+                            <td>{{ur.dateCreatedTime}}</td>
+                            <td>
+                                <audio controls :src="ur.src" class="userReadAudio hide" :id="'ur'+index" v-on:ended="userReadEnded(ur)"></audio>
+                                <i class="fa" v-on:click="toggleUserReadAudio(ur,index)" :class="{'fa-play-circle-o':!ur.playing,'fa-pause-circle':ur.playing}"></i>
+                            </td>
+                            <td><i class="fa fa-share-alt-square" v-on:click="showUserReadQrcode(ur)"></i></td>
+                        </tr>
+                    </table>
+                    <div id="qrcode"></div>
+                </div>
+            </div>
+            <div class="user-read">
+                <div class="ur-title"></div>
+                <div class="ur-list"></div>
+            </div>
+        </div>
+    </template>
+
+    <script src="https://cdn.WebRTC-Experiment.com/MediaStreamRecorder.js"></script>
+    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+    <script th:src="@{/js/qrcode/qrcode.min.js}"></script>
+    <script>
+        var mediaRecorder;
+        Vue.component('unit-read', {
+            props: ['userProduct'],
+            mixins:[hi.mixin],
+            data: function () {
+                return {
+                    readPractises:null,
+                    readPractise: null,
+                    readPractiseIndex:0,
+                    mediaConstraints: {audio: true},
+                    recording: false,
+                    audio:null,
+                    tryPlaying:false,
+                    readPractising:false,
+                    userReads:null,
+                    recorderInterval:null,
+                    recorderTime:0
+                }
+            },
+            template: '#unit-read-t',
+            computed: {},
+            created: function () {
+                this.fetchUserPractises();
+            },
+            mounted: function () {
+            },
+            methods: {
+                fetchUserPractises:function(){
+                    var self = this;
+                    hi.ax.get('/product/readPractise/readPractises?userProductId=' + self.userProduct.id).then(function (r) {
+                        if (r.data.status == 'fail') {
+                            hi.alert(r.data.msg);
+                            return;
+                        }
+                        var readPractises=r.data.entity;
+                        if(!self.empty(readPractises)){
+                            var sorted=_.sortBy(readPractises, [function(rp) {
+                                if(self.empty(rp.userReads)){
+                                    return 0;
+                                }
+                                return rp.userReads.length;
+                            },function(rp){
+                                var charpter=0;
+                                try{
+                                    chapter=parseInt(rp.chapter);
+                                }catch(e){ chapter=0;}
+                                return charpter;
+                            },,function(rp){
+                                var page=0;
+                                try{
+                                    page=parseInt(rp.page);
+                                }catch(e){ page=0;}
+                                return page;
+                            },,function(rp){
+                                var paragraph=0;
+                                try{
+                                    paragraph=parseInt(rp.paragraph);
+                                }catch(e){ paragraph=0;}
+                                return paragraph;
+                            }]);
+                            self.readPractises=sorted;
+                            self.readPractise=sorted[self.readPractiseIndex];
+                            self.fetchUserReads();
+                        }
+                    });
+
+                },
+                changeReadPractise:function(){
+                    var i=0;
+                    if(this.readPractiseIndex<this.readPractises.length-1){
+                        i=this.readPractiseIndex+1;
+                    }
+                    this.readPractiseIndex=i;
+                    this.readPractise=this.readPractises[i];
+
+                },
+                //提交录音
+                upload: function () {
+                    var self = this;
+                    var audio = this.audio;
+                    var file = new File([audio.blob], audio.name, {
+                        type: 'audio/wav'
+                    });
+
+                    var fd = new FormData();
+                    fd.append('readPractiseId', self.readPractise.id);
+                    hi.ax.post('/product/readPractise/userRead', fd).then(function (r) {
+                        if (r.data.status == 'fail') {
+                            hi.alert(r.data.msg);
+                            return Promise.reject(r);
+                        }
+                        return Promise.resolve(r);
+                    }).then(function (r) {
+                        var userRead = r.data.entity;
+                        fd = new FormData();
+                        fd.append("file", file);
+                        fd.append("type", "audio_user_read");
+                        fd.append("id", userRead.id);
+                        hi.ax.post('sys/file/audio', fd).then(function (r) {
+                            if (r.data.status == 'fail') {
+                                hi.alert(r.data.msg);
+                                return Promise.reject(r);
+                            }
+                            self.audio=null;
+                            if(self.empty(self.readPractise.userReads)){
+                                self.readPractise.userReads=[];
+                            }
+                            self.readPractise.userReads.push(userRead);
+                            self.fetchUserReads();
+                        });
+                    });
+
+                },
+                //录音，结束录音
+                toggleRecording: function () {
+                    var self=this;
+                    if (this.recording) {
+                        mediaRecorder.stop();
+                        mediaRecorder.stream.stop();
+                        this.recording = false;
+                        mediaRecorder.save();
+                    } else {
+                        if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+                            hi.alert("请您使用谷歌、火狐等现代浏览器进行录音。<br><a href='http://www.firefox.com.cn/' style='color:blue;' target='_blank'>点击下载最新浏览器</a>");
+                            return;
+                        }
+                        navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
+                            mediaRecorder = new MediaStreamRecorder(stream);
+                            mediaRecorder.stream = stream;
+                            mediaRecorder.audioChannels = 1;
+                            mediaRecorder.ondataavailable = function(blob) {
+                                var audio = {};
+                                audio.blob = blob;
+                                audio.objUrl = URL.createObjectURL(blob);
+                                audio.name = self.readPractise.chapter+self.readPractise.paragraph+self.readPractise.page + ".mp3";
+                                self.audio=audio;
+                            };
+                            var timeInterval = 5000;
+                            mediaRecorder.start(timeInterval);
+                            self.recording;
+                        });
+                    }
+                },
+                onMediaSuccess: function (stream) {
+                    var that = this;
+                    this.mediaRecorder = new MediaStreamRecorder(stream);
+                    this.mediaRecorder.stream = stream;
+                    this.mediaRecorder.audioChannels = 1;
+                    this.mediaRecorder.recorderType = StereoAudioRecorder;
+                    this.mediaRecorder.mimeType = 'audio/wav';
+                    this.mediaRecorder.ondataavailable = function (blob) {
+                        var audio = {};
+                        audio.blob = blob;
+                        audio.objUrl = URL.createObjectURL(blob);
+                        audio.name = that.readPractise.chapter+that.readPractise.paragraph+that.readPractise.page + ".wav";
+                        that.audio=audio;
+                    };
+                    var timeInterval = 600 * 1000;
+                    this.mediaRecorder.start(timeInterval);
+                },
+                onMediaError: function (e) {
+                    console.error('media error', e);
+                },
+                //试听，结束试听
+                toggleTryPlaying:function(){
+                    if(!this.audio){
+                        return;
+                    }
+                    var tryAudio=document.querySelector("#tryAudio");
+                    if(this.tryPlaying){
+                        tryAudio.pause();
+                        this.tryPlaying=false;
+                    }else{
+                        tryAudio.play();
+                        this.tryPlaying=true;
+                    }
+                },
+                tryEnded:function(){
+                    this.tryPlaying=false;
+                },
+                //示范朗读
+                toggleReadPractising:function(){
+                    if(!this.readPractise.audio){
+                        return;
+                    }
+                    var readPractiseAudio=document.querySelector("#readPractiseAudio");
+                    if(this.readPractising){
+                        readPractiseAudio.pause();
+                        this.readPractising=false;
+                    }else{
+                        readPractiseAudio.play();
+                        this.readPractising=true;
+                    }
+                },
+                getReadPractiseAudioSrc:function(){
+                    return hi.root+'sys/file/audio?type=audio_read_practise&id='+this.readPractise.id;
+                },
+                //用户朗读列表
+                fetchUserReads:function(){
+                    var self=this;
+                    hi.ax.get('product/readPractise/userReads?productId='+self.userProduct.productId).then(function(r){
+                        if(r.data.status=='fail'){
+                            hi.alert(r.data.msg);
+                            return;
+                        }
+                        var reads=r.data.entity;
+                        _.each(reads,function(r){
+                            r.playing=false;
+                            r.src=hi.root+'sys/file/audio?type=audio_user_read&id='+r.id;
+                        });
+                        self.userReads=reads;
+                    });
+                },
+                //用户朗读播放
+                toggleUserReadAudio:function (ur,index) {
+                    var audio=document.querySelector("#ur"+index);
+                    if(ur.playing){
+                        audio.pause();
+                        ur.playing=false;
+                    }else{
+                        audio.play();
+                        ur.playing=true;
+                    }
+                },
+                userReadEnded:function(ur){
+                    ur.playing=false;
+                },
+                //用户朗读分享二维码
+                showUserReadQrcode:function (ur) {
+                    var fd=new FormData();
+                    fd.append("userReadId",ur.id);
+                    hi.ax.post('/product/readPractise/userReadShare',fd).then(function(r){
+                        if(r.data.status=='fail'){
+                            hi.alert(r.data.msg);
+                            return Promise.reject(r);
+                        }
+                        return Promise.resolve(r);
+                    }).then(function(r){
+                        var userRead=r.data.entity;
+                        hi.ax.get('/sys/config/url/base').then(function(r){
+                            var url_base=r.data.entity;
+                            var codeUrl=url_base+'product/readShare/auth?userReadId='+userRead.userReadId+"&sign="+userRead.sign;
+                            console.log(codeUrl);
+                            $("#qrcode").html("");
+                            $("#qrcode").css('display','block');
+                            var qrcode = new QRCode(document.getElementById("qrcode"), {
+                                width : 330,
+                                height : 330
+                            });
+                            qrcode.makeCode(codeUrl);
+                            layer.open({
+                                title:'请用手机微信扫描二维码',
+                                type: 1,
+                                content: $('#qrcode'),
+                                cancel: function(index, layero){
+                                    $("#qrcode").html("");
+                                    $("#qrcode").css('display','none');
+                                    layer.close(index);
+                                }
+                            });
+                        })
+
+                    });
+
+
+
+
+                }
+            }
+        })
+    </script>
+</th:block>

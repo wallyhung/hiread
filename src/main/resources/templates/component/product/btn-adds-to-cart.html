@@ -1,0 +1,82 @@
+﻿<th:block th:fragment="btn-adds-to-cart" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+    </style>
+    <template id="btn-adds-to-cart-t">
+        <a class="btn-adds-to-cart btn btn-warning add-car" href="javascript:" v-on:click="addToCart($event)" >加入购物车</a>
+    </template>
+    <script>
+        Vue.component('btn-adds-to-cart', {
+            props: ['products','multiple'],
+            mixins:[hi.mixin],
+            data: function () {
+                return {
+                    cartList:[]
+                }
+            },
+            template: '#btn-adds-to-cart-t',
+            created: function () {
+                var self=this;
+                hi.ax.get('/order/shoppingCart/list').then(function(r){
+                    if(r.data.entity){
+                        self.cartList=r.data.entity;
+                    }
+                });
+
+                hi.bus.$on('added-to-cart',function(pid){
+                    var hasProd=_.some(self.products,function(p){
+                        return p.id==pid;
+                    })
+                    if(pid&&hasProd){
+                        hi.ax.get('/order/shoppingCart/list').then(function(r){
+                            if(r.data.entity){
+                                self.cartList=r.data.entity;
+                            }
+                        });
+                    }
+                });
+
+            },
+            mounted: function () {
+            },
+            computed:{
+                inCart:function(){
+                    var self=this;
+                    if(self.products&&self.products.length>0){
+                        return _.every(self.products,function(p){
+                            return self.prodInCart(p.id);
+                        });
+                    }else{
+                        return false;
+                    }
+                }
+            },
+            methods:{
+                addToCart:function(event){
+                    var self=this;
+                    if(self.inCart){
+                        hi.alert("所选商品在购物车中已存在");
+                        return;
+                    }
+                    if(self.products&&self.products.length>0){
+                        _.each(this.products,function(p){
+                            if(!self.prodInCart(p.id)){
+                                hi.bus.$emit('add-to-cart',p.id,event);
+                            }
+                        });
+
+                    }
+                },
+                prodInCart:function(prodId){
+                    var self=this;
+                    var prodInCart=_.some(self.cartList,function(c){
+                        return c.productId==prodId;
+                    })
+                    return prodInCart;
+                }
+
+            },
+            watch: {
+            }
+        })
+    </script>
+</th:block>

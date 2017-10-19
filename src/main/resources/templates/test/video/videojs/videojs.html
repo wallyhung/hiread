@@ -1,0 +1,99 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <title>vue</title>
+    <meta charset="utf-8">
+    <meta name="keywords" content="vue">
+	<meta name="description" content="vue">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta http-equiv="Cache-control" content="no-cache">
+	<link rel="shortcut icon" th:href="@{/imgs/favicon.ico}" type="image/x-icon"> 
+	<link th:if="${#arrays.contains(@environment.getActiveProfiles(),'development')}" th:href="@{/test/video/videojs/css/video-js.css}" rel="stylesheet">
+	<!-- lib js -->
+    <script th:if="${#arrays.contains(@environment.getActiveProfiles(),'development')}" th:src="@{/js/vue/vue.js(r=${version})}"></script>
+	<script th:if="${#arrays.contains(@environment.getActiveProfiles(),'development')}" th:src="@{/test/video/videojs/js/videojs-ie8.min.js(r=${version})}"></script>
+    <script th:if="${#arrays.contains(@environment.getActiveProfiles(),'development')}" th:src="@{/test/video/videojs/js/jquery-2.1.1.min.js(r=${version})}"></script>
+</head>
+
+<body>
+<video id="my-video" class="video-js" width="640" height="264"
+       poster="/imgs/j1.jpeg" data-setup="{}">
+    <p class="vjs-no-js">
+        To view this video please enable JavaScript, and consider upgrading to a web browser that
+        <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+    </p>
+</video>
+<div>
+    <button id="disposeBtn">dispose</button>
+    <button id="infoBtn">info</button>
+    <button id="lowerVolume">lower volume</button>
+    <button id="fullScreen">full screen</button>
+    <button id="play">play</button>
+    <button id="pause">pause</button>
+    <div><button id="currentTime">set current time :</button><input name="currentTime"/>secs</div>
+</div>
+<ul class="info">
+    <li>duration:<span id="durationInfo"></span></li>
+    <li>remainingTime:<span id="remainingTime"></span></li>
+    <li>numberOfRanges:<span id="numberOfRanges"></span></li>
+    <li>firstRangeStart:<span id="firstRangeStart"></span></li>
+    <li>firstRangeEnd:<span id="firstRangeEnd"></span></li>
+    <li>bufferedPercent:<span id="bufferedPercent"></span></li>
+</ul>
+
+<script th:if="${#arrays.contains(@environment.getActiveProfiles(),'development')}" th:src="@{/test/video/videojs/js/video.js(r=${version})}"></script>
+<script>
+    //global defaults
+    videojs.options.autoplay = false;
+    //init
+    var player=videojs('my-video', {
+        controls: true,
+        preload: 'auto'
+    },function() {
+        this.addClass('my-example');
+    });
+
+
+    player.on('ended', function() {
+        this.dispose();
+    });
+    player.ready(function() {
+        player.src("http://vjs.zencdn.net/v/oceans.mp4");
+        setInterval(function(){
+            $("#durationInfo").text(player.duration());
+            $("#remainingTime").text(player.remainingTime());
+            var bufferedTimeRange = player.buffered();
+            $("#numberOfRanges").text(bufferedTimeRange.length);
+            $("#firstRangeStart").text(bufferedTimeRange.start(0));
+            $("#firstRangeEnd").text(bufferedTimeRange.end(0));
+            $("#bufferedPercent").text(player.bufferedPercent());
+        }, 250);
+        $("#disposeBtn").click(function(){
+            player.dispose();
+        });
+        $("#lowerVolume").click(function(){
+            var howLoudIsIt = player.volume();
+            console.log("volume:"+howLoudIsIt);
+            player.volume(0.5);
+        });
+        $("#fullScreen").click(function(){
+            console.log(player.isFullscreen());
+            player.requestFullscreen();
+        });
+        $("#play").click(function(){
+            player.play();
+        });
+        $("#pause").click(function(){
+            console.log(player.paused());
+            player.pause();
+        });
+        $("#currentTime").click(function(){
+            var t=$("input[name=currentTime]").val();
+            console.log(player.currentTime());
+            player.currentTime(parseInt(t));
+        });
+    });
+
+</script>
+</body>
+</html>

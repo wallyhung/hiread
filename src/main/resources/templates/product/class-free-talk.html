@@ -1,0 +1,271 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="common/head :: common-head"></th:block>
+</head>
+<body>
+<div id="class-free-talk" v-cloak class="h100">
+    <reward :panel-display="false"></reward>
+    <div class="class-left">
+        <div class="class-left-title">
+            <div class="title-left">
+                <a v-on:click="backToUserProduct" class="class-btn class-btn2"><img th:src="@{/img/class_back.png}">
+                    返回课程</a>
+                <span class="class-title-text1 fl" v-if="product">{{product.bookName}} » {{type=='preTestFreeTalk'?'Pre Course Free Talk':'Post Course Free Talk'}}</span>
+            </div>
+        </div>
+        <div class="class-left-content" v-if="product">
+            <div class="class-freemain scroll" data-p='listen'>
+                <div class="top-container">
+                    <div class="class-freemain-top" v-if="type=='preTestFreeTalk'&&product.preFreeTalkRequirement">
+                        <h3>Pre Course Free Talk</h3>
+                        <div v-html="product.preFreeTalkRequirement"></div>
+                    </div>
+                    <div class="class-freemain-top" v-if="type=='postTestFreeTalk'&&product.postFreeTalkRequirement">
+                        <h3>Post Course Free Talk</h3>
+                        <div v-html="product.postFreeTalkRequirement"></div>
+                    </div>
+                </div>
+                <div class="class-freemain-center">
+                    <div id="audios-container">
+                        <audio controls :src="audio.objUrl" id="tryAudio" v-if="audio" v-on:ended="tryEnded" class="hide"></audio>
+                    </div>
+                    <ul>
+                        <li :class="{'disable':tryPlaying||uploading}">
+                            <div class="circular-box">
+                                <div class="circular1"></div>
+                                <div class="circular2" v-on:click="toggleRecording">
+                                    <i class="fa fa-microphone" :class="{recording:recording}"></i>
+                                    <div v-if="!recording">开始录音</div>
+                                    <div v-if="recording">结束录音</div>
+                                </div>
+                            </div>
+                        </li>
+                        <li :class="{'disable':!audio||uploading}">
+                            <div class="circular-box">
+                                <div class="circular1"></div>
+                                <div class="circular2" v-on:click="toggleTryPlaying">
+                                    <i class="fa" :class="{'fa-play-circle-o':!tryPlaying,'fa-pause-circle':tryPlaying}" ></i>
+                                    <div v-if="!tryPlaying">试听朗读</div>
+                                    <div v-if="tryPlaying">停止试听</div>
+
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="class-freemain-bottom">
+                    <div class="submit-opt">
+                        <img th:src="@{/img/class_freetalk_submit.png}" v-on:click="upload" :class="{'disable':recording||tryPlaying||audio==null||!tryPlayed}">
+                        <!--<button class="unit-read-btn" v-on:click="upload" :disabled="recording||audio==null" :class="{'disable':recording||audio==null}">-->
+                            <!--提交录音-->
+                        <!--</button>-->
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<th:block th:include="common/head :: common"></th:block>
+<th:block th:include="common/head :: videojs"></th:block>
+<link rel="stylesheet" th:href="@{/css/class2.css}">
+<link rel="stylesheet" th:href="@{/css/class-custom.css}">
+<style>
+    .class-left-content {
+        height: calc(100% - 70px);
+        display: flex;
+        flex-direction: column;
+        padding:5px 30px 5px 30px;
+    }
+    .captions{
+        height:40%;
+        border:1px solid gray;
+        padding:10px;
+        overflow-y: scroll;
+        padding:0 60px 10px 60px;
+    }
+    .captions .chapter-info{
+        font-size: 1.5em;
+        font-weight: 900;
+    }
+    .content{
+        height:60%;
+        border:1px solid gray;
+        border-top:none;
+        padding:60px;
+    }
+    .rp-opts {
+        display: flex;
+        justify-content: center;
+    }
+
+    .rp-opts .center {
+        width: 50%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .rp-opts .center .record-opt {
+        margin-top: 10px;
+        font-size: 1.2em;
+    }
+
+    .rp-opts .center .record-opt .record-opts {
+        display: flex;
+        justify-content: space-between;
+
+    }
+    .rp-opts .center .record-opt .record-opts .opt{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color:rgb(138, 138, 138);
+
+    }
+    .rp-opts .center .record-opt .record-opts .opt .icon{
+        font-size:7em;
+        cursor:pointer;
+        color:rgb(74, 183, 232);
+    }
+    .rp-opts .center .record-opt .record-opts .opt.disable .icon{
+        cursor:default;
+        color:rgb(200,200,200);
+    }
+    .rp-opts .center .record-opt .record-opts .opt .icon i.recording {
+        width:1em;
+        background: red;
+        background: -webkit-radial-gradient(center, ellipse cover, #ff0000 0%, white 75%, white 100%, #7db9e8 100%);
+        background: -moz-radial-gradient(center, ellipse cover, #ff0000 0%, white 75%, white 100%, #7db9e8 100%);
+        background: radial-gradient(center, ellipse cover, #ff0000 0%, white 75%, white 100%, #7db9e8 100%);
+    }
+
+
+    .rp-opts .center .submit-opt .unit-read-btn {
+        color: white;
+        padding: 15px 15px 15px 15px;
+        background: rgb(74, 183, 232);
+        font-size: 2em;
+        margin: .5em;
+        border-radius: .3em;
+        margin-top:1.2em;
+    }
+
+    .rp-opts .center .submit-opt .unit-read-btn.disable {
+        background-color: rgb(200,200,200);
+    }
+
+
+    /*.class-freemain-top p{*/
+        /*height:60px;*/
+        /*overflow: hidden;*/
+    /*}*/
+
+    .class-freemain{
+        height:100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .class-freemain-top{
+        padding-top:30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .top-container{
+        height:190px;
+        overflow: hidden;
+    }
+    .class-freemain-top h3{
+        padding-bottom:5px;
+    }
+    .class-freemain-top div{
+        display: flex;
+        flex-direction: column;
+        width:100%;
+        justify-content: center;
+        align-items: center;
+
+
+    }
+    .class-freemain-top p{
+        width:70%;
+        text-align: left;
+        line-height: 20px;
+    }
+    .class-freemain-center{
+        width:100%;
+        margin-top:100px;
+        display: flex;
+        justify-content: center;
+    }
+    .class-freemain-center ul{
+        display: flex;
+        justify-content: space-around;
+        width:80%;
+
+    }
+    .class-freemain-center li{
+        margin-right:0px;
+
+    }
+    .class-freemain-bottom{
+        display: flex;
+        justify-content: center;
+        position: relative;
+        bottom:0;
+        right:0;
+    }
+    .class-freemain-center .circular2{
+        line-height:inherit;
+        cursor:pointer;
+    }
+    .class-freemain-center .circular2 i{
+        line-height:80px;
+        font-size:70px;
+        margin-top:20px;
+    }
+    .class-freemain-center .circular2 i.recording {
+        width:1em;
+        background: red;
+        background: -webkit-radial-gradient(center, ellipse cover, #ff0000 0%, rgb(248,248,248) 75%, rgb(248,248,248) 100%, rgb(248,248,248) 100%);
+        background: -moz-radial-gradient(center, ellipse cover, #ff0000 0%, rgb(248,248,248) 75%, rgb(248,248,248) 100%, rgb(248,248,248) 100%);
+        background: radial-gradient(center, ellipse cover, #ff0000 0%, rgb(248,248,248) 75%, rgb(248,248,248) 100%, rgb(248,248,248) 100%);
+    }
+    .class-freemain-center .circular2 div{
+        line-height:30px;
+        font-size:20px;
+    }
+    .class-freemain-center li.disable .circular1{
+        background-color:rgb(200,200,200);
+    }
+    .class-freemain-center li.disable .circular2{
+        cursor:default;
+        color:rgb(200,200,200);
+    }
+
+    .submit-opt img.disable {
+        cursor:default;
+    }
+    .submit-opt img{
+        cursor:pointer;
+    }
+
+</style>
+<th:block th:include="component/product/unit-video :: unit-video"></th:block>
+<th:block th:include="component/product/unit-practise :: unit-practise"></th:block>
+<th:block th:include="common/head :: practises"></th:block>
+<th:block th:include="component/product/icon-audio :: icon-audio"></th:block>
+<th:block th:include="component/product/normal-video :: normal-video"></th:block>
+<th:block th:include="component/product/reward :: reward"></th:block>
+<script th:src="@{/js/mp3-recorder/lame.all.js}"></script>
+<script th:src="@{/js/mp3-recorder/recorder-worker.js}"></script>
+<script th:src="@{/js/mp3-recorder/recorder.js}"></script>
+<script th:src="@{/controller/product/class-free-talk.js}"></script>
+</body>
+</html>

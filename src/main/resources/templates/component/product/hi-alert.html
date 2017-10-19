@@ -1,0 +1,74 @@
+﻿<th:block th:fragment="hi-alert" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+        /*弹窗*/
+        .hi-mask{position: fixed; left: 0; top: 0; width: 100%; height: 100%; background: #000;opacity: 0.5; z-index: 100;}
+        .hi-popup{position: relative; position: fixed; z-index: 101; width: 750px; text-align: center;}
+        .hi-popup-bj{position: absolute; top: 0; left: 0; width: 100%; height: 145px;}
+        .hi-class-popup{
+            margin-top: 130px; margin-left:97px;margin-right:88px;
+            padding: 10px 40px; background: #f8f8f8; border-radius: 10px;}
+        .hi-class-popup h3{line-height: 80px;  border-bottom: 1px solid #e1e7e6; font-size: 26px;}
+        .hi-class-popup p{margin-top: 20px; line-height: 40px; text-align: left; font-size: 22px; color: #686868;}
+        .hi-class-popup .btn-danger{width: 142px; height: 50px; margin: 20px 0; line-height: 50px; padding: 0; background: #3e99af; color: #fff;}
+    </style>
+    <template id="hi-alert-t">
+        <div v-show="pop">
+            <div class="hi-popup">
+                <div>
+                    <img th:src="@{/img/rabbit2.png}" alt="" class="hi-popup-bj">
+                </div>
+                <div class="hi-class-popup">
+                    <h3>{{title}}</h3>
+                    <p>{{msg}}</p>
+                    <a href="javascript:;" class="btn btn-danger" v-on:click="close">知道了</a>
+                </div>
+            </div>
+            <div class="hi-mask"></div>
+        </div>
+    </template>
+    <script>
+        Vue.component('hi-alert', {
+            props: [],
+            data: function () {
+                return {
+                    title:'',
+                    msg:'',
+                    pop:false
+                }
+            },
+            template: '#hi-alert-t',
+            created: function () {
+                var self=this;
+                hi.bus.$on('hi-alert',function(msg,title){
+                    self.title=title;
+                    self.msg=msg;
+                    self.pop=true;
+                    self.popCenter();
+                });
+            },
+            mounted: function () {
+            },
+            methods:{
+                close:function(){
+                    var self=this;
+                    self.title='';
+                    self.msg='';
+                    self.pop=false;
+                },
+                popCenter:function(){
+                    var windowHeight=$(window).height();
+                    var windowWidth=$(window).width();
+                    var popHeight=$('.hi-popup').innerHeight()+434;
+                    var popWidth=$('.hi-popup').innerWidth();
+                    var popY=(windowHeight-popHeight)/2;
+                    var popX=(windowWidth-popWidth)/2;
+                    $('.hi-popup').css({"top":popY,"left":popX}).fadeIn();
+                    $('.hi-mask').fadeIn();
+                }
+
+            },
+            watch: {
+            }
+        })
+    </script>
+</th:block>

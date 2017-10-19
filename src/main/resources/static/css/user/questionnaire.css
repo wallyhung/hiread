@@ -1,0 +1,71 @@
+.popup {
+    text-align: center;
+}
+
+.popup-bj {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 145px;
+    background: url(../../img/class_popup_bj.png) no-repeat center bottom;
+    background-size: 90%;
+}
+.class-popup {
+    display: block;
+    margin-top: 130px;
+    padding: 40px;
+    background: #f8f8f8;
+    border-radius: 10px;
+}
+
+.class-popup h3 {
+    margin-top: 30px;
+    line-height: 50px;
+    font-size: 18px;
+}
+
+.class-popup h3 span {
+    padding-left: 10px;
+    text-shadow: 0 0 10px #c8852a;
+    color: #f59411;
+    font-size: 22px;
+}
+
+.class-popup p {
+    line-height: 40px;
+    text-align: center;
+    color: #686868;
+    font-size: 16px;
+}
+
+.class-popup .btn-danger {
+    width: 142px;
+    height: 50px;
+    margin: 20px 0;
+    line-height: 50px;
+    padding: 0;
+    border: none;
+    background: #0ad8c3;
+    -moz-box-shadow: 0 3px 6px #229287;
+    -webkit-box-shadow: 0 3px 6px #229287;
+    box-shadow: 0 3px 6px #229287;
+    color: #fff;
+}
+
+a, a:link, a:visited {
+    color: #333;
+    text-decoration: none;
+    /*display: inline-block;*/
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+.reading-select-center textarea {
+    border: solid 1px #e1e1e1;
+    width: 95%;
+    margin-left: 40px;
+    border-radius: 3px;
+}

@@ -1,0 +1,101 @@
+<th:block th:fragment="my-coupon" xmlns:th="http://www.thymeleaf.org">
+    <style></style>
+    <template id="my-coupon-tpl">
+        <div>
+            <div class="learning-title2">我的代金券</div>
+            <div class="pt-30 clear-fix">
+                <div class="size-18 font-b">即将到期</div>
+                <div class="layui-form">
+                    <table class="layui-table layui-table1" lay-even="" lay-skin="nob">
+                        <colgroup>
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th>金额</th>
+                            <th>有效期</th>
+                            <th>到期</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="coupon in coupons[COUPON_TYPE[1]]">
+                            <td>
+                                <a class="coupon-style-3">
+                                    <div class="text">
+                                        <p class="price">{{coupon.amount}}元</p>
+                                        <span class="desc">现金券</span>
+                                    </div>
+                                </a>
+                            </td>
+                            <td valign="middle">{{coupon.endDate}}</td>
+                            <td valign="middle">{{coupon.intervalDays}}天</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="size-18 font-b pt-30">全部</div>
+                <div class="layui-form">
+                    <table class="layui-table layui-table1" lay-even="" lay-skin="nob">
+                        <colgroup>
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th>金额</th>
+                            <th>有效期</th>
+                            <th>到期</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="coupon in coupons[COUPON_TYPE[0]]">
+                            <td>
+                                <a class="coupon-style-3">
+                                    <div class="text">
+                                        <p class="price">{{coupon.amount}}元</p>
+                                        <span class="desc">现金券</span>
+                                    </div>
+                                </a>
+                            </td>
+                            <td valign="middle">{{coupon.endDate}}</td>
+                            <td valign="middle">{{coupon.intervalDays}}天</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </template>
+    <script>
+        var layuiLayer = layui.layer;
+        // 定义路由组件
+        var MyCoupon = {
+            data: function () {
+                return {
+                    coupons: {},
+                    COUPON_TYPE: ['all', 'near_expired']
+                }
+            },
+            template: '#my-coupon-tpl',
+            created: function () {
+                this.getCoupons();
+            },
+            methods: {
+                getCoupons: function () {
+                    var vm = this;
+
+                    var type = 'all;near_expired';
+                    var formData = new FormData();
+                    formData.append('type', type);
+                    hi.ax.post('/user/vipcenter/my-coupon/list', formData).then(function (response) {
+                        var sr = response.data;
+                        if(sr.status == 'success'){
+                            vm.coupons = sr.entity;
+                        } else {
+                            layuiLayer.open({
+                                content: '出错了'
+                            })
+                        }
+                    })
+                }
+            }
+        }
+    </script>
+</th:block>

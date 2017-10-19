@@ -1,0 +1,471 @@
+<th:block th:fragment="products" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+        a.btn-warning{
+            color:#FFF;
+        }
+        .product-header-block .block-l{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .product-header-block .block-l img{
+            height:auto;
+        }
+    </style>
+    <template id="products-t">
+        <div>
+            <div class="banner-page">
+                <img th:src="@{/img/banner1.jpg}" alt="">
+            </div>
+            <div class="content-page clear-fix">
+                <div class="container">
+                    <div class="tabs-container tabs-container2">
+                        <ul class="nav nav-tabs nav-tabs3">
+                            <li class="active">
+                                <a data-toggle="tab" href="#tab-1" aria-expanded="true">
+                                    <span>全部课程</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a data-toggle="tab" href="#tab-2" aria-expanded="true">
+                                    <span>level 1-3</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a data-toggle="tab" href="#tab-3" aria-expanded="true">
+                                    <span>level 4-5</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a data-toggle="tab" href="#tab-4" aria-expanded="true">
+                                    <span>level 5-6</span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="tab-content tab-content3">
+                            <div id="tab-1" class="tab-pane active">
+                                <div class="panel-body">
+                                    <div class="course-list explore-list">
+                                        <div class="row" v-for="p in products">
+                                            <div class="col-md-12" >
+                                                <prod-info :p="p" :user="user" type="products"></prod-info>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="tab-2" class="tab-pane">
+                                <div class="panel-body">
+                                    <div class="course-list explore-list">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="course-header-item product-header-block clear-fix explore-header-item">
+                                                    <div class="header-main clear-fix">
+                                                        <div class="block-l">
+                                                            <a href="javascript:">
+                                                                <img th:src="@{/img/img26.jpg}" alt="">
+                                                            </a>
+                                                            <div class="tags tag-on-go">
+                                                                <span>正在开课</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="block-r">
+                                                            <div class="block-t clear-fix">
+                                                                <h2 class="title"><a href="javascript:">巧用思维导图之未来领导力</a></h2>
+                                                                <div class="date">课程描述课程描述课程描述课程描述课程描述课程描述</div>
+                                                                <div class="date1">优惠活动优惠活动优惠活动</div>
+                                                            </div>
+                                                            <div class="block-b">
+                                                                <ul>
+                                                                    <li><span class="block-b1">价格：</span><span class="block-b1-c">￥980.00</span></li>
+                                                                    <li><span class="block-b1 pt-15">优惠活动：</span><span>折</span>马上领取350元优惠券</li>
+                                                                    <li><span class="block-b1">优惠券：</span><span class="date2"><i class="fa fa-money"></i> 20</span></li>
+                                                                    <li><span class="block-b1">所属体系：</span>少儿中教DIY课程</li>
+                                                                    <li><span class="block-b1">学习时长：</span>180天</li>
+                                                                    <li><span class="block-b1">课时数：</span>50课时</li>
+                                                                </ul>
+                                                            </div>
+
+                                                        </div>
+                                                        <div class="pt-10 btn-pr">
+                                                            <a class="btn btn-warning" href="project.html">查看课程</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="course-header-item product-header-block clear-fix explore-header-item">
+                                                    <div class="header-main clear-fix">
+                                                        <div class="block-l">
+                                                            <a href="javascript:">
+                                                                <img th:src="@{/img/img25.jpg}" alt="">
+                                                            </a>
+                                                            <div class="tags tag-on-go">
+                                                                <span>正在开课</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="block-r">
+                                                            <div class="block-t clear-fix">
+                                                                <h2 class="title"><a href="javascript:">巧用思维导图之未来领导力</a></h2>
+                                                                <div class="date">课程描述课程描述课程描述课程描述课程描述课程描述</div>
+                                                                <div class="date1">优惠活动优惠活动优惠活动</div>
+                                                            </div>
+                                                            <div class="block-b">
+                                                                <ul>
+                                                                    <li><span class="block-b1">价格：</span><span class="block-b1-c">￥980.00</span></li>
+                                                                    <li><span class="block-b1 pt-15">优惠活动：</span><span>折</span>马上领取350元优惠券</li>
+                                                                    <li><span class="block-b1">优惠券：</span><span class="date2"><i class="fa fa-money"></i> 20</span></li>
+                                                                    <li><span class="block-b1">所属体系：</span>少儿中教DIY课程</li>
+                                                                    <li><span class="block-b1">学习时长：</span>180天</li>
+                                                                    <li><span class="block-b1">课时数：</span>50课时</li>
+                                                                </ul>
+                                                            </div>
+
+                                                        </div>
+                                                        <div class="pt-10 btn-pr">
+                                                            <a class="btn btn-warning" href="project.html">查看课程</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="course-header-item product-header-block clear-fix explore-header-item">
+                                                    <div class="header-main clear-fix">
+                                                        <div class="block-l">
+                                                            <a href="javascript:">
+                                                                <img th:src="@{/img/img25.jpg}" alt="">
+                                                            </a>
+                                                            <div class="tags tag-on-go">
+                                                                <span>正在开课</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="block-r">
+                                                            <div class="block-t clear-fix">
+                                                                <h2 class="title"><a href="javascript:">巧用思维导图之未来领导力</a></h2>
+                                                                <div class="date">课程描述课程描述课程描述课程描述课程描述课程描述</div>
+                                                                <div class="date1">优惠活动优惠活动优惠活动</div>
+                                                            </div>
+                                                            <div class="block-b">
+                                                                <ul>
+                                                                    <li><span class="block-b1">价格：</span><span class="block-b1-c">￥980.00</span></li>
+                                                                    <li><span class="block-b1 pt-15">优惠活动：</span><span>折</span>马上领取350元优惠券</li>
+                                                                    <li><span class="block-b1">优惠券：</span><span class="date2"><i class="fa fa-money"></i> 20</span></li>
+                                                                    <li><span class="block-b1">所属体系：</span>少儿中教DIY课程</li>
+                                                                    <li><span class="block-b1">学习时长：</span>180天</li>
+                                                                    <li><span class="block-b1">课时数：</span>50课时</li>
+                                                                </ul>
+                                                            </div>
+
+                                                        </div>
+                                                        <div class="pt-10 btn-pr">
+                                                            <a class="btn btn-warning" href="project.html">查看课程</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="tab-3" class="tab-pane">
+                                <div class="panel-body">
+                                    <div class="course-list explore-list">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="course-header-item product-header-block clear-fix explore-header-item">
+                                                    <div class="header-main clear-fix">
+                                                        <div class="block-l">
+                                                            <a href="javascript:">
+                                                                <img th:src="@{/img/img25.jpg}" alt="">
+                                                            </a>
+                                                            <div class="tags tag-on-go">
+                                                                <span>正在开课</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="block-r">
+                                                            <div class="block-t clear-fix">
+                                                                <h2 class="title"><a href="javascript:">巧用思维导图之未来领导力</a></h2>
+                                                                <div class="date">课程描述课程描述课程描述课程描述课程描述课程描述</div>
+                                                                <div class="date1">优惠活动优惠活动优惠活动</div>
+                                                            </div>
+                                                            <div class="block-b">
+                                                                <ul>
+                                                                    <li><span class="block-b1">价格：</span><span class="block-b1-c">￥980.00</span></li>
+                                                                    <li><span class="block-b1 pt-15">优惠活动：</span><span>折</span>马上领取350元优惠券</li>
+                                                                    <li><span class="block-b1">优惠券：</span><span class="date2"><i class="fa fa-money"></i> 20</span></li>
+                                                                    <li><span class="block-b1">所属体系：</span>少儿中教DIY课程</li>
+                                                                    <li><span class="block-b1">学习时长：</span>180天</li>
+                                                                    <li><span class="block-b1">课时数：</span>50课时</li>
+                                                                </ul>
+                                                            </div>
+
+                                                        </div>
+                                                        <div class="pt-10 btn-pr">
+                                                            <a class="btn btn-warning" href="project.html">查看课程</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="course-header-item product-header-block clear-fix explore-header-item">
+                                                    <div class="header-main clear-fix">
+                                                        <div class="block-l">
+                                                            <a href="javascript:">
+                                                                <img th:src="@{/img/img25.jpg}" alt="">
+                                                            </a>
+                                                            <div class="tags tag-on-go">
+                                                                <span>正在开课</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="block-r">
+                                                            <div class="block-t clear-fix">
+                                                                <h2 class="title"><a href="javascript:">巧用思维导图之未来领导力</a></h2>
+                                                                <div class="date">课程描述课程描述课程描述课程描述课程描述课程描述</div>
+                                                                <div class="date1">优惠活动优惠活动优惠活动</div>
+                                                            </div>
+                                                            <div class="block-b">
+                                                                <ul>
+                                                                    <li><span class="block-b1">价格：</span><span class="block-b1-c">￥980.00</span></li>
+                                                                    <li><span class="block-b1 pt-15">优惠活动：</span><span>折</span>马上领取350元优惠券</li>
+                                                                    <li><span class="block-b1">优惠券：</span><span class="date2"><i class="fa fa-money"></i> 20</span></li>
+                                                                    <li><span class="block-b1">所属体系：</span>少儿中教DIY课程</li>
+                                                                    <li><span class="block-b1">学习时长：</span>180天</li>
+                                                                    <li><span class="block-b1">课时数：</span>50课时</li>
+                                                                </ul>
+                                                            </div>
+
+                                                        </div>
+                                                        <div class="pt-10 btn-pr">
+                                                            <a class="btn btn-warning" href="project.html">查看课程</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="course-header-item product-header-block clear-fix explore-header-item">
+                                                    <div class="header-main clear-fix">
+                                                        <div class="block-l">
+                                                            <a href="javascript:">
+                                                                <img th:src="@{/img/img25.jpg}" alt="">
+                                                            </a>
+                                                            <div class="tags tag-on-go">
+                                                                <span>正在开课</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="block-r">
+                                                            <div class="block-t clear-fix">
+                                                                <h2 class="title"><a href="javascript:">巧用思维导图之未来领导力</a></h2>
+                                                                <div class="date">课程描述课程描述课程描述课程描述课程描述课程描述</div>
+                                                                <div class="date1">优惠活动优惠活动优惠活动</div>
+                                                            </div>
+                                                            <div class="block-b">
+                                                                <ul>
+                                                                    <li><span class="block-b1">价格：</span><span class="block-b1-c">￥980.00</span></li>
+                                                                    <li><span class="block-b1 pt-15">优惠活动：</span><span>折</span>马上领取350元优惠券</li>
+                                                                    <li><span class="block-b1">优惠券：</span><span class="date2"><i class="fa fa-money"></i> 20</span></li>
+                                                                    <li><span class="block-b1">所属体系：</span>少儿中教DIY课程</li>
+                                                                    <li><span class="block-b1">学习时长：</span>180天</li>
+                                                                    <li><span class="block-b1">课时数：</span>50课时</li>
+                                                                </ul>
+                                                            </div>
+
+                                                        </div>
+                                                        <div class="pt-10 btn-pr">
+                                                            <a class="btn btn-warning" href="project.html">查看课程</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="tab-4" class="tab-pane">
+                                <div class="panel-body">
+                                    <div class="course-list explore-list">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="course-header-item product-header-block clear-fix explore-header-item">
+                                                    <div class="header-main clear-fix">
+                                                        <div class="block-l">
+                                                            <a href="javascript:">
+                                                                <img th:src="@{/img/img25.jpg}" alt="">
+                                                            </a>
+                                                            <div class="tags tag-on-go">
+                                                                <span>正在开课</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="block-r">
+                                                            <div class="block-t clear-fix">
+                                                                <h2 class="title"><a href="javascript:">巧用思维导图之未来领导力</a></h2>
+                                                                <div class="date">课程描述课程描述课程描述课程描述课程描述课程描述</div>
+                                                                <div class="date1">优惠活动优惠活动优惠活动</div>
+                                                            </div>
+                                                            <div class="block-b">
+                                                                <ul>
+                                                                    <li><span class="block-b1">价格：</span><span class="block-b1-c">￥980.00</span></li>
+                                                                    <li><span class="block-b1 pt-15">优惠活动：</span><span>折</span>马上领取350元优惠券</li>
+                                                                    <li><span class="block-b1">优惠券：</span><span class="date2"><i class="fa fa-money"></i> 20</span></li>
+                                                                    <li><span class="block-b1">所属体系：</span>少儿中教DIY课程</li>
+                                                                    <li><span class="block-b1">学习时长：</span>180天</li>
+                                                                    <li><span class="block-b1">课时数：</span>50课时</li>
+                                                                </ul>
+                                                            </div>
+
+                                                        </div>
+                                                        <div class="pt-10 btn-pr">
+                                                            <a class="btn btn-warning" href="project.html">查看课程</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="course-header-item product-header-block clear-fix explore-header-item">
+                                                    <div class="header-main clear-fix">
+                                                        <div class="block-l">
+                                                            <a href="javascript:">
+                                                                <img th:src="@{/img/img25.jpg}" alt="">
+                                                            </a>
+                                                            <div class="tags tag-on-go">
+                                                                <span>正在开课</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="block-r">
+                                                            <div class="block-t clear-fix">
+                                                                <h2 class="title"><a href="javascript:">巧用思维导图之未来领导力</a></h2>
+                                                                <div class="date">课程描述课程描述课程描述课程描述课程描述课程描述</div>
+                                                                <div class="date1">优惠活动优惠活动优惠活动</div>
+                                                            </div>
+                                                            <div class="block-b">
+                                                                <ul>
+                                                                    <li><span class="block-b1">价格：</span><span class="block-b1-c">￥980.00</span></li>
+                                                                    <li><span class="block-b1 pt-15">优惠活动：</span><span>折</span>马上领取350元优惠券</li>
+                                                                    <li><span class="block-b1">优惠券：</span><span class="date2"><i class="fa fa-money"></i> 20</span></li>
+                                                                    <li><span class="block-b1">所属体系：</span>少儿中教DIY课程</li>
+                                                                    <li><span class="block-b1">学习时长：</span>180天</li>
+                                                                    <li><span class="block-b1">课时数：</span>50课时</li>
+                                                                </ul>
+                                                            </div>
+
+                                                        </div>
+                                                        <div class="pt-10 btn-pr">
+                                                            <a class="btn btn-warning" href="project.html">查看课程</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="course-header-item product-header-block clear-fix explore-header-item">
+                                                    <div class="header-main clear-fix">
+                                                        <div class="block-l">
+                                                            <a href="javascript:">
+                                                                <img th:src="@{/img/img25.jpg}" alt="">
+                                                            </a>
+                                                            <div class="tags tag-on-go">
+                                                                <span>正在开课</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="block-r">
+                                                            <div class="block-t clear-fix">
+                                                                <h2 class="title"><a href="javascript:">巧用思维导图之未来领导力</a></h2>
+                                                                <div class="date">课程描述课程描述课程描述课程描述课程描述课程描述</div>
+                                                                <div class="date1">优惠活动优惠活动优惠活动</div>
+                                                            </div>
+                                                            <div class="block-b">
+                                                                <ul>
+                                                                    <li><span class="block-b1">价格：</span><span class="block-b1-c">￥980.00</span></li>
+                                                                    <li><span class="block-b1 pt-15">优惠活动：</span><span>折</span>马上领取350元优惠券</li>
+                                                                    <li><span class="block-b1">优惠券：</span><span class="date2"><i class="fa fa-money"></i> 20</span></li>
+                                                                    <li><span class="block-b1">所属体系：</span>少儿中教DIY课程</li>
+                                                                    <li><span class="block-b1">学习时长：</span>180天</li>
+                                                                    <li><span class="block-b1">课时数：</span>50课时</li>
+                                                                </ul>
+                                                            </div>
+
+                                                        </div>
+                                                        <div class="pt-10 btn-pr">
+                                                            <a class="btn btn-warning" href="project.html">查看课程</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <nav class="text-center">
+                    <ul class="pagination clearfix ">
+                        <li class="active"><a href="javascript:">1</a></li>
+                        <li><a href="javascript:">2</a></li>
+                        <li><a href="javascript:">3</a></li>
+                        <li><a href="javascript:">4</a></li>
+                        <li><a href="javascript:">5</a></li>
+                        <li><a href="javascript:"><i class="fa fa-angle-right"></i></a></li>
+                        <li><a href="javascript:">尾</a></li>
+                    </ul>
+
+                </nav>
+            </div>
+        </div>
+    </template>
+    <script>
+        var products= {
+            data: function () {
+                return {
+                    products:[],
+                    user:{},
+                    setup:{}
+                }
+            },
+            template: '#products-t',
+            mixins: [hi.mixin],
+            created:function(){
+                var self=this;
+                hi.ax.get('/product/products/list').then(function(r){
+                    if(r.data.entity){
+                        var products=r.data.entity;
+                        _.each(products,function(p){
+                            hi.prodService.computeProduct(p);
+                        });
+                        self.products=products;
+                    }
+                });
+                axios.all([hi.ax.get('/user/info'),
+                    hi.ax.get('/sys/setup')]).then(axios.spread(function (r1, r2) {
+                    if (r2.data.entity) {
+                        self.setup=r2.data.entity;
+                    }
+                    if(!self.setup){
+                        hi.alert('系统正在维护中');
+                        return;
+                    }
+                    if (r1.data.entity) {
+                        var user = r1.data.entity;
+                        hi.userService.computeUser(user,self.setup);
+                        self.user = user;
+                    }
+
+                }));
+
+            },
+            mounted:function(){
+
+            },
+            computed:{
+            },
+            methods: {
+
+
+            },
+            watch:{
+            }
+        }
+
+
+    </script>
+</th:block>

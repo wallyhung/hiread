@@ -1,0 +1,44 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="/test/demo/css/videojs/video-js.css" rel="stylesheet">
+
+    <script src="/test/demo/js/videojs/video.js"></script>
+    
+    <style>
+        /* Audio: Remove big play button (leave only the button in controls). */
+        .video-js.vjs-audio .vjs-big-play-button {
+            display: none;
+        }
+        /* Audio: Make the controlbar visible by default */
+        .video-js.vjs-audio .vjs-control-bar {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+            background-color:#bbb;
+        }
+        /* Make player height minimum to the controls height so when we hide video/poster area the controls are displayed correctly. */
+        .video-js.vjs-audio {
+            min-height: 3em;
+        }
+    </style>
+</head>
+<body>
+
+<audio id="my-audio" class="video-js vjs-default-skin" controls data-setup='{}'>
+    <source src="http://freshly-ground.com/data/audio/mpc/20090119%20-%20Untitled%20Groove.mp3" type='audio/mp3'/>
+</audio>
+<script>
+    videojs('my-audio', {
+        "aspectRatio": "1:0","fluid": true,"controlBar": {"fullscreenToggle": false}
+    },function(){
+    });
+</script>
+
+
+</body>
+</html>
